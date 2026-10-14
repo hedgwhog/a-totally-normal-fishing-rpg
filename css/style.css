@@ -1,0 +1,84 @@
+body {
+    font-family: monospace;
+}
+
+#container {
+    position: relative;
+    z-index: 19;
+    width: 720px;
+    height: 480px;
+    border: 2px dashed black;
+}
+
+.center {
+    position: relative;
+    top: 10px;
+    text-align: center;
+}
+
+.list {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    border: 1px ridge black;
+    width: 140px;
+    height: 460px;
+}
+
+.list button {
+    position: relative;
+    font-size: 18px;
+    left: 5px;
+    width: 90%;
+    margin-top: 5px;
+}
+
+#dayContainer {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 30px;
+    padding: 10px;
+    border: 1px dashed black;
+}
+
+#time {
+    position: absolute;
+    top: 70px;
+    right: 10px;
+    font-size: 15px;
+    padding: 4px;
+    border: 1px dashed black;
+}
+
+#dayPopupHidden {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: black;
+    z-index: 100;
+    width: 720px;
+    height: 480px;
+    color: white;
+    font-size: 50px;
+    text-align: center;
+    display: none;
+
+    opacity: 1;
+    transition: ease-in-out 1s
+}
+
+@starting-style {
+#dayPopupHidden {
+    opacity: 0;
+  }
+}
+
+#sellFish {
+    position: absolute;
+    width: auto;
+    height: 50px;
+    bottom: 10px;
+    left: 160px;
+    display: block;
+}
