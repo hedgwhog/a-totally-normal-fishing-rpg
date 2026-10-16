@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Text-rpg</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -12,6 +12,11 @@
 
             <div id="dayContainer">Day 1</div>
             <div id="time">Morning</div>
+            
+            <div id="inventory">
+                <h3>Inventory</h3>
+                <div id="inventoryItem"></div>
+            </div>
 
         <div class="dock-container">
             <div class="list">
@@ -20,9 +25,19 @@
             </div>
             <h1 class="center">The docks</h1>
             <div class="center" id="coinAmount">Coins: 0</div>
-            <div class="center" id="fishAmount">You got 0 fih</div>
+            <div class="center" id="fishAmount">You got 0 fish</div>
 
-            <button id="sellFish">Sell fish to the Fishmonger<br>4 fih = 1 coin</button>
+            <div class="event-container">
+                <button id="sellFish">Sell fish to the Fishmonger<br>4 fish = 1 coin</button>
+                <button id="marketplace" onclick="marketplaceDisplay.style.display = 'block'">Marketplace</button>
+            </div>
+
+            <div id="marketplaceDisplay">
+                <h1>Marketplace</h1>
+                <h4>Marketplace opens once every 5 days, for a 2 day period.</h4>
+                <button class="marketplaceDisplay-close" onclick="marketplaceDisplay.style.display = 'none'">Close marketplace</button>
+                <div id="marketplaceItem"></div>
+            </div>
         </div>
     </div>
     <script type="module" src="js/events.js"></script>
