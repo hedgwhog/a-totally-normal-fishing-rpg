@@ -3,45 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text-rpg</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Welcome</title>
+    <style>
+        .contain {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+            line-height: 0.4;
+        }
+        .border {
+            border: 5px dotted black;
+            padding: 30px;
+        }
+    </style>
 </head>
 <body>
-    <div id="container">
-            <div id="dayPopupHidden"></div>
-
-            <div id="dayContainer">Day 1</div>
-            <div id="time">Morning</div>
-            
-            <div id="inventory">
-                <h3>Inventory</h3>
-                <div id="inventoryItem"></div>
-            </div>
-
-        <div class="dock-container">
-            <div class="list">
-                <button id="nextDay">Sleeping</button>
-                <button id="nextFish">Fishing</button>
-            </div>
-            <h1 class="center">The docks</h1>
-            <div class="center" id="coinAmount">Coins: 0</div>
-            <div class="center" id="fishAmount">You got 0 fish</div>
-
-            <div class="event-container">
-                <button id="sellFish">Sell fish to the Fishmonger<br>4 fish = 1 coin</button>
-                <button id="marketplace" onclick="marketplaceDisplay.style.display = 'block'">Marketplace</button>
-            </div>
-
-            <div id="marketplaceDisplay">
-                <h1>Marketplace</h1>
-                <h4>Marketplace opens once every 5 days, for a 2 day period.</h4>
-                <button class="marketplaceDisplay-close" onclick="marketplaceDisplay.style.display = 'none'">Close marketplace</button>
-                <div id="marketplaceItem"></div>
-            </div>
+    <div class="contain">
+        <div class="border">
+            <h1>Welcome to:</h1>
+            <h2>A totally normal fishing rpg (trust)</h2>
+            <p>Please click here to launch the game:</p>
+            <button onclick="launchGame()">Launch game</button>
+            <h5>WARNING: By pressing to launch the game, you will open a new window.<br><br><br><br>I will kindly ask you not the resize the window, since it isn't designed for that.</h5>
         </div>
     </div>
-    <script type="module" src="js/events.js"></script>
-    <script type="module" src="js/user.js"></script>
-    <script type="module" src="js/time.js"></script>
+    <script>
+        function launchGame() {
+            const width = 740;
+            const height = 500;
+            
+            window.open(
+                "introduction.html", 
+                "TextRPG", 
+                `width=${width},height=${height},top=0,left=0,menubar=no,toolbar=no,location=no,status=no,resizable=no`
+            );
+        }
+    </script>
 </body>
 </html>
