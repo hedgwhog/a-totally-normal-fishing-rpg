@@ -12,10 +12,37 @@
 
             <div id="dayContainer">Day 1</div>
             <div id="time">Morning</div>
+            <div class="inventory-title">Inventory:</div>
             
             <div id="inventory">
-                <h3>Inventory</h3>
-                <div id="inventoryItem"></div>
+                <div class="inventoryOutline">
+                    <p>Affinity</p>
+                 </div>
+
+                 <div class="inventoryOutline" id="inventoryHat">
+                    <pre class="ASCII" id="ASCIIHat"></pre>
+                     <div class="name" id="nameHat"></div>
+                     <div class="effect" id="effectHat"></div>
+                 </div>
+
+                 <div class="inventoryOutline" id="inventoryWaders">
+                    <pre class="ASCII" id="ASCIIWaders"></pre>
+                     <div class="name" id="nameWaders"></div>
+                     <div class="effect" id="effectWaders"></div>
+                 </div>
+
+                 <div class="inventoryOutline" id="inventoryRod">
+                    <pre class="ASCII" id="ASCIIRod"></pre>
+                     <div class="name" id="nameRod"></div>
+                     <div class="effect" id="effectRod"></div>
+                 </div>
+
+                 <button id="backpackButton" onclick="inventoryBackpack.style.display = 'flex'">Backpack</button>
+
+                <div id="inventoryBackpack">
+                    <button id="backpackClose" onclick="inventoryBackpack.style.display = 'none'">Close backpack</button>
+                    <div id="inventoryItems"></div>
+                </div>
             </div>
 
         <div class="dock-container">
@@ -23,6 +50,7 @@
                 <button id="nextDay">Sleeping</button>
                 <button id="nextFish">Fishing</button>
             </div>
+
             <h1 class="center">Safe haven</h1>
             <div class="center" id="coinAmount">Coins: 0</div>
             <div class="center" id="fishAmount">You got 0 fish</div>

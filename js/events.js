@@ -12,9 +12,9 @@ coinAmount.innerHTML = "You got " + addCoin + " coins";
 fishAmount.innerHTML = "You got " + addFish + " fish";
 
 const marketplaceItems = [
-    { id: "8rod", name: "a slightly better fishing rod (+2 fish)", price: 8, type: "rod", stats: { fishPerCatch: 2 } },
-    { id: "14rod", name: "an even more slightly better fishing rod (+3 fish)", price: 14, type: "rod", stats: { fishPerCatch: 3 } },
-    { id: "fishingHat", name: "fishing hat (+1 fish bonus)", price: 3, type: "fishingHat", stats: { bonusFishPerCatch: 1 } },
+    { id: "8rod", name: "a slightly better fishing rod (+2 fish)", price: 8, slot: "Rod", effect: "Catch 2 fish", stats: { fishPerCatch: 2 } },
+    { id: "14rod", name: "an even more slightly better fishing rod (+3 fish)", price: 14, slot: "Rod", effect: "Catch 3 fish", stats: { fishPerCatch: 3 } },
+    { id: "fishingHat", name: "fishing hat (+1 fish bonus)", price: 0, slot: "Hat", effect: "+1 fish per catch", stats: { bonusFishPerCatch: 1 } },
 ];
  
 function showMarketplace() {
