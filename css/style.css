@@ -2,6 +2,10 @@ body {
     font-family: monospace;
 }
 
+button {
+    background-color: #EFEFEF;
+}
+
 #container {
     position: relative;
     z-index: 19;
@@ -31,6 +35,7 @@ body {
     left: 5px;
     width: 90%;
     margin-top: 5px;
+    padding: 5px;
 }
 
 #dayContainer {
@@ -74,11 +79,79 @@ body {
   }
 }
 
-#sellFish {
+#inventory {
     position: absolute;
-    width: auto;
-    height: 50px;
+    bottom: 10px;
+    right: 10px;
+    width: 130px;
+    height: 360px;
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    border: 1px dashed black;
+}
+
+#inventory h3 {
+    text-align: center;
+}
+
+#inventoryItem {
+    position: absolute;
+    top: 40px;
+    display: flex;
+    text-align: center;
+}
+
+.event-container {
+    position: absolute;
     bottom: 10px;
     left: 160px;
-    display: block;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+#sellFish, #marketplace {
+    height: 50px;
+    width: auto;
+    display: none;
+}
+
+#marketplaceDisplay {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: white;
+    width: 550px;
+    height: 460px;
+    display: none;
+    border: 1px solid black;
+}
+
+#marketplaceDisplay h1 {
+    position: absolute;
+    left: 40px;
+}
+
+#marketplaceDisplay h4 {
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    text-decoration: underline;
+}
+
+.marketplaceDisplay-close {
+    position: absolute;
+    right: 0;
+    background-color: black;
+    color: white;
+    padding: 10px;
+}
+
+#marketplaceItem {
+    position: absolute;
+    top: 90px;
+    left: 40px;
+    display: flex;
+    flex-direction: column;
 }
