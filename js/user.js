@@ -2,9 +2,16 @@ let inventory = JSON.parse(localStorage.getItem("saveInventory")) || [];
 
 const inventoryItem = document.getElementById("inventoryItem");
 
+const rod = { id: "rod", name: "a Fishing Rod", type: "rod", stats: { fishPerCatch: 1 } };
+ 
+if (!inventory.some(item => item.type === "rod")) {
+    inventory.push(rod);
+    localStorage.setItem("saveInventory", JSON.stringify(inventory));
+}
+
 function showInventory() {
     if (inventory.length === 0) {
-        inventoryItem.innerHTML = "...";
+        inventoryItem.innerHTML = "A fishing rod";
     } else {
         inventoryItem.innerHTML = inventory.map(item => item.name).join("<br><br>");
     }
