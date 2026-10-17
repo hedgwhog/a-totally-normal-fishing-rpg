@@ -25,7 +25,7 @@ const fishList = [
     // Shallow
     { id: "crappie", name: "Crappie", price: 2, waters: ["shallow"], zone: 4, speed: 50, chance: 45, rarity: 0 },
     { id: "bluegill", name: "Bluegill", price: 1, waters: ["shallow"], zone: 6, speed: 40, chance: 60, rarity: 0 },
-    { id: "100panfish", name: "Panfish", price: 1, waters: ["shallow"], zone: 6, speed: 40, chance: 60, rarity: 1 },
+    { id: "panfish", name: "Panfish", price: 1, waters: ["shallow"], zone: 6, speed: 40, chance: 60, rarity: 1 },
 
     { id: "catfish", name: "Catfish", price: 4, waters: ["shallow"], zone: 3, speed: 75, chance: 5, rarity: 3 },
 
