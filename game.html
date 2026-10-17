@@ -51,13 +51,21 @@
                 <button id="nextFish">Fishing</button>
             </div>
 
-            <h1 class="center">Safe haven</h1>
+            <div class="event-list">
+                <button id="sellFish">Sell fish to the<br>local Fishmonger</button>
+                <button id="marketplace" onclick="marketplaceDisplay.style.display = 'block'">Marketplace</button>
+            </div>
+
+            <h1 class="center">Freshwater<br>haven</h1>
             <div class="center" id="coinAmount">Coins: 0</div>
             <div class="center" id="fishAmount">You got 0 fish</div>
+            <div class="center" id="fishTypes"></div>
 
-            <div class="event-container">
-                <button id="sellFish">Sell fish to the Fishmonger<br>4 fish = 1 coin</button>
-                <button id="marketplace" onclick="marketplaceDisplay.style.display = 'block'">Marketplace</button>
+            <div class="center"></div>
+
+            <div id="fishingPopup" style="display: none;">
+                <pre id="fishingText"></pre>
+                <div id="fishingButtons"></div>
             </div>
 
             <div id="marketplaceDisplay">
