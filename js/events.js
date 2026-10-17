@@ -241,6 +241,7 @@ function finishFishing(hits, type) {
     let message = "The fish got away...";
     if (hits >= 3) { // if more then 3 hits, you get a fish
         fish[type.id] = (fish[type.id] || 0) + 1;
+        console.log("caught:", type.id, JSON.stringify(fish));
         localStorage.setItem("saveFish", JSON.stringify(fish));
         message = "You caught a " + type.name + "!";
     }
