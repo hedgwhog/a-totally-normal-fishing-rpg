@@ -1,5 +1,9 @@
 body {
     font-family: monospace;
+    cursor: crosshair;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
 }
 
 button {
@@ -77,18 +81,6 @@ button {
     position: absolute;
     bottom: 10px;
     left: 10px;
-    width: 99px;
-    height: 350px;
-    display: flex; 
-    justify-content: center;
-    border: 1px dashed black;
-    border-top: none !important;
-}
-
-#inventory {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
     width: 101px;
     height: 350px;
     display: flex;
@@ -99,6 +91,7 @@ button {
     box-sizing: border-box;
     border: 1px dashed black;
     border-top: none !important;
+    z-index: 20;
 }
 
 .inventoryOutline {
@@ -122,7 +115,7 @@ button {
 .inventoryOutline .name,
 .inventoryOutline .effect {
     display: none;
-    font-size: 10px;
+    font-size: 8px;
     text-align: center;
     padding: 3px;
 }
@@ -142,6 +135,7 @@ button {
 
 #backpackButton {
     width: 80px;
+    cursor: pointer;
 }
 
 #inventoryBackpack {
@@ -162,6 +156,7 @@ button {
 
 #backpackClose {
     width: 80px;
+    cursor: pointer;
 }
 
 #inventoryItems {
@@ -174,6 +169,15 @@ button {
     position: relative;
     text-align: center;
     right: 130px;
+    z-index: 10;
+}
+
+#fishingPopup {
+    position: absolute;
+    bottom: 40px;
+    left: 200px;
+    font-size: 14px;
+    text-align: center;
 }
 
 .list {
@@ -192,6 +196,7 @@ button {
     width: 90px;
     margin-top: 5px;
     padding: 5px;
+    cursor: pointer;
 }
 
 .event-list {
@@ -202,8 +207,9 @@ button {
     top: 10px;
     right: 115px;
     width: 260px;
-    height: 460px;
+    height: 300px;
     /* border: 1px solid red; */
+    z-index: 14;
 }
 
 .event-list button {
@@ -212,6 +218,7 @@ button {
     width: 125px;
     height: 45px;
     padding: 5px;
+    cursor: pointer;
 }
 
 #marketplaceDisplay {
@@ -219,10 +226,11 @@ button {
     top: 10px;
     left: 10px;
     background-color: white;
-    width: 550px;
+    width: 595px;
     height: 460px;
     display: none;
     border: 1px solid black;
+    z-index: 20;
 }
 
 #marketplaceDisplay h1 {
@@ -251,4 +259,10 @@ button {
     left: 40px;
     display: flex;
     flex-direction: column;
+    gap: 5px;
+}
+
+#marketplaceItem button {
+    padding: 4px;
+    cursor: pointer;
 }
