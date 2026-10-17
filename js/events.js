@@ -11,6 +11,12 @@ const marketplaceItem = document.getElementById("marketplaceItem");
 coinAmount.innerHTML = "You got " + addCoin + " coins";
 fishAmount.innerHTML = "You got " + addFish + " fish";
 
+// const fishes [
+//     { id: "salmon", name: "Salmon", price: "1" }
+//     { id: "cod", name: "Cod", price: "1" }
+//     { id: "salmon", name: "Salmon", price: "1" }
+// ]
+
 const marketplaceItems = [
     { id: "8rod", name: "a slightly better fishing rod (+2 fish)", price: 8, slot: "Rod", effect: "Catch 2 fish", stats: { fishPerCatch: 2 } },
     { id: "14rod", name: "an even more slightly better fishing rod (+3 fish)", price: 14, slot: "Rod", effect: "Catch 3 fish", stats: { fishPerCatch: 3 } },
@@ -59,7 +65,7 @@ function coins() {
     addCoin++;
     localStorage.setItem("saveCoin", addCoin); 
     coinAmount.innerHTML = "You got " + addCoin + " coins";
-} 
+}
 
 function nextFish(e) {
     let time = times[i];
@@ -96,6 +102,7 @@ function nextFish(e) {
         alert("You can't fish at night, you are too sleepy.");
     }
 }
+
 
 function sellFish() {
     if (addFish < 4) {
