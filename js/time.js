@@ -6,6 +6,7 @@ const timeDisplay = document.getElementById("time")
 const dayDisplay = document.getElementById("dayPopupHidden")
 const fishmonger = document.getElementById("sellFish")
 const marketplace = document.getElementById("marketplace")
+const dayDisplayToggle = document.getElementById("dayDisplayToggle");
 
 timeDisplay.innerHTML = times[i];
 document.getElementById("dayContainer").innerHTML = "Day " + addDay;
@@ -30,6 +31,15 @@ function updateMarketplace() {
     }
 }
 
+const savedSettingDay = localStorage.getItem("enableAnimationDay");
+        if (savedSettingDay !== null) {
+        dayDisplayToggle.checked = savedSettingDay === "true";
+    }
+
+    dayDisplayToggle.addEventListener("change", () => {
+    localStorage.setItem("enableAnimationDay", dayDisplayToggle.checked);
+});
+
 export function nextTime() {
     i++;
     if (i >= times.length) {
@@ -52,12 +62,18 @@ function nextDay() {
         dayDisplay.style.display = "block"; 
         dayDisplay.innerHTML = "Day " + addDay;
 
-        setTimeout(() => {
-            dayDisplay.style.display = "none";
-            document.getElementById("dayContainer").innerHTML = "Day " + addDay;
-        }, 2000)
+        const updateDayAnimation = () => {
+        dayDisplay.style.display = "none";
+        document.getElementById("dayContainer").innerHTML = "Day " + addDay;
+        };
 
-        console.log(addDay) // What are you looking at huh
+        if (dayDisplayToggle.checked) {
+            setTimeout(updateDayAnimation, 2000);
+        } else {
+            updateDayAnimation();
+        }
+
+        console.log(addDay)
         i = -1
         nextTime(times[i]);
     } else {

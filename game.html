@@ -10,10 +10,12 @@
     <div id="container">
             <div id="dayPopupHidden"></div>
 
-            <div id="dayContainer">Day 1</div>
+            <div id="dayContainer">
+                <p>Day 1</p>
+            </div>
             <div id="time">Morning</div>
-            <div class="inventory-title">Inventory:</div>
-            
+            <button class="settings" onclick="settingsPopup.style.display = 'flex'">Settings:</button>
+
             <div id="inventory">
                 <div class="inventoryOutline">
                     <p>Affinity</p>
@@ -47,6 +49,7 @@
 
         <div class="dock-container">
             <div class="list">
+                <button onclick="catalogDisplay.style.display = 'flex'">Catalog</button>
                 <button id="nextDay">Sleeping</button>
                 <button id="nextFish">Fishing</button>
             </div>
@@ -59,7 +62,7 @@
             <h1 class="center">Freshwater<br>haven</h1>
             <div class="center" id="coinAmount">Coins: 0</div>
             <div class="center" id="fishAmount">You got 0 fish</div>
-            <div class="center" id="fishTypes"></div>
+            <div id="fishTypes"></div>
 
             <div class="center"></div>
 
@@ -75,6 +78,27 @@
                 <div id="marketplaceItem"></div>
             </div>
         </div>
+
+        <div id="settingsPopup">
+            <button id="settingsClose" onclick="settingsPopup.style.display = 'none'">Close settings</button>
+            <h1>Settings:</h1>
+            <h4>Yes → Alex ← you can maximize your settings to speedrun fishing....</h4>
+            <label for="dayDisplayToggle">Enable day animation: <input type="checkbox" id="dayDisplayToggle" checked></label>
+        </div>
+
+        <div id="catalogDisplay">
+            <button id="catalogClose" onclick="catalogDisplay.style.display = 'none'">Close catalog</button>
+            <h1>Catalog</h1>
+            <div class="catalogInfo">
+                <h4>Fishing works as the following:</h4>
+                <h4>You have different kinds of waters you can fish in, each kind of waters, has a different loot pool of fish.</h4>
+                <h4>If you hover over your fishing rod, you can see in what kind of waters it can fish. It can be multiple.</h4>
+                <h4>You can buy different items. After you have bought an item, you can equip it by selecting it in your backpack.</h4>
+                <h4>Items can have different perks, which could increase your catches positively.</h4>
+            </div>
+
+        </div>
+            
     </div>
     <script type="module" src="js/events.js"></script>
     <script type="module" src="js/user.js"></script>
