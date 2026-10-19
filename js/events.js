@@ -1,8 +1,26 @@
 import { i, times, nextTime } from "./time.js";
 import { hasItem, addItem, getStat, getEquipped, backpackFull } from "./user.js";
+import { marketplaceItems } from "./items.js";
+import { fishList } from "./fish.js";
 
-const savedFish = JSON.parse(localStorage.getItem("saveFish")) || {};
-let fish = typeof savedFish === "object" ? savedFish : { cod: savedFish };
+// Load saved fish, keeping only fish that still exist and have valid counts
+let savedFish;
+try {
+    savedFish = JSON.parse(localStorage.getItem("saveFish")) || {};
+} catch {
+    savedFish = {};
+}
+if (typeof savedFish === "number") savedFish = { cod: savedFish }; // very old save format
+if (typeof savedFish !== "object" || Array.isArray(savedFish)) savedFish = {};
+
+let fish = {};
+for (const type of fishList) {
+    const amount = parseInt(savedFish[type.id]);
+    if (amount > 0) fish[type.id] = amount;
+}
+
+localStorage.setItem("saveFish", JSON.stringify(fish));
+
 let selected = {};
 let addCoin = parseInt(localStorage.getItem("saveCoin")) || 0;
 
@@ -15,41 +33,6 @@ const fishingText = document.getElementById("fishingText");
 const fishingButtons = document.getElementById("fishingButtons");
 
 coinAmount.innerHTML = "You got " + addCoin + " coins";
-
-// water: type of water the fish lives in.
-// zone: size of the hitbox, smaller is harder!
-// speed: ms for the bar, lower ms is harder!
-// chance: how often it shows up in comparison to other fish
-// rarity: 0 = common, higher = more rare. The luch stat boosts the chance of rarer fish.
-const fishList = [
-    // Shallow
-    { id: "crappie", name: "Crappie", price: 2, waters: ["shallow"], zone: 4, speed: 60, chance: 45, rarity: 0 },
-    { id: "bluegill", name: "Bluegill", price: 1, waters: ["shallow"], zone: 6, speed: 50, chance: 60, rarity: 0 },
-    { id: "panfish", name: "Panfish", price: 1, waters: ["shallow"], zone: 6, speed: 50, chance: 60, rarity: 1 },
-
-    { id: "catfish", name: "Catfish", price: 4, waters: ["shallow"], zone: 3, speed: 25, chance: 5, rarity: 3 },
-
-    // Shallow & Coastal
-    { id: "flounder", name: "Flounder", price: 3, waters: ["shallow", "coastal"], zone: 4, speed: 45, chance: 30, rarity: 0.2 },
-    { id: "bass", name: "Bass", price: 2, waters: ["shallow", "coastal"], zone: 5, speed: 66, chance: 35, rarity: 0 },
-
-    // Coastal
-    { id: "snook", name: "Snook", price: 2, waters: ["coastal"], zone: 4, speed: 40, chance: 35, rarity: 0 },
-    { id: "mackerel", name: "Mackerel", price: 2, waters: ["coastal"], zone: 4, speed: 40, chance: 35, rarity: 0 },
-    { id: "cod", name: "Cod", price: 1, waters: ["coastal"], zone: 5, speed: 45, chance: 70, rarity: 0 },
-
-    { id: "lumpfish", name: "Lumpfish", price: 7, waters: ["coastal"], zone: 3, speed: 15, chance: 8, rarity: 5 },
-];
-
-// slow bar = the higher number, the more helpfull it is aka "Focus"
-// zone bonus = bigger bar
-// luck = higher chance for fish
-const marketplaceItems = [
-    { id: "rodShallow", name: "Shallow fishing rod (Shallow)", price: 20, slot: "Rod", effect: "Focus: 5%", stats: { slowBar: 5 }, waters: ["shallow"] },
-    { id: "rodCoastal", name: "Coastal fishing rod (Coastal)", price: 45, slot: "Rod", effect: "Focus: 5%", stats: { slowBar: 5 }, waters: ["coastal"] },
-    { id: "rodDock", name: "Dock fishing rod (Shallow & Coastal)", price: 75, slot: "Rod", effect: "Focus: 5% + Luck: +0.5 ", stats: { slowBar: 2.5, luck: 0.5 }, waters: ["shallow", "coastal"] },
-    { id: "fishingHat", name: "Cozy fishing hat", price: 25, slot: "Hat", effect: "Luck: +1", stats: { luck: 1 } },
-];
 
 function showMarketplace() {
     marketplaceItem.innerHTML = "";
