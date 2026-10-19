@@ -1,9 +1,9 @@
 import { i, times, nextTime } from "./time.js";
-import { hasItem, addItem, getStat, getEquipped, backpackFull } from "./user.js";
+import { hasItem, addItem, getStat, getEquipped, backpackFull, getBackpack, removeItem } from "./user.js";
 import { marketplaceItems } from "./items.js";
 import { fishList } from "./fish.js";
 
-// Load saved fish, keeping only fish that still exist and have valid counts
+// some safety for old saves (I hope it works)
 let savedFish;
 try {
     savedFish = JSON.parse(localStorage.getItem("saveFish")) || {};
@@ -41,10 +41,27 @@ function showMarketplace() {
         if (hasItem(item.id)) {
             itemButton.innerHTML = item.name + " (owned)" ;
         } else {
-            itemButton.innerHTML = item.name + " | Effects: " + item.effect + " = " + item.price + " coins.";
+            itemButton.innerHTML = item.name + " | Effects: " + item.effect + " | " + item.price + " coins";
         }
         itemButton.addEventListener("click", () => buyItem(item));
         marketplaceItem.appendChild(itemButton);
+    });
+
+    const sellTitle = document.createElement("p");
+    sellTitle.textContent = "Sell your items (" + 70 + "% of the price):";
+    marketplaceItem.appendChild(sellTitle);
+
+    const sellableItems = getBackpack().filter(item => sellPrice(item) > 0);
+    if (sellableItems.length === 0) {
+        const nothingToSell = document.createElement("p");
+        nothingToSell.textContent = "You have nothing to sell. Only items in your backpack can be sold.";
+        marketplaceItem.appendChild(nothingToSell);
+    }
+    sellableItems.forEach(item => {
+        const sellButton = document.createElement("button");
+        sellButton.innerHTML = "Sell '" + item.name + "' | " + sellPrice(item) + " coins";
+        sellButton.addEventListener("click", () => sellItem(item));
+        marketplaceItem.appendChild(sellButton);
     });
 }
 
@@ -67,6 +84,29 @@ function buyItem(item) {
     addItem(item);
     showMarketplace();
 }
+
+function sellPrice(item) {
+    if (item.sellValue) return item.sellValue;
+    return Math.floor((item.price || 0) * 70 / 100);
+}
+
+function sellItem(item) {
+    const price = sellPrice(item);
+    const wantsToSell = confirm(
+        "The trader looks at your " + item.name + ":\n" +
+        "\"I'll give you " + price + " coins for it.\"\n\n" +
+        "Do you want to sell it?"
+    );
+    if (!wantsToSell) return;
+
+    if (removeItem(item.id)) {
+        coins(price);
+        alert("You sold your " + item.name + " for " + price + " coins.");
+    }
+    showMarketplace();
+}
+
+document.addEventListener("inventoryChanged", showMarketplace);
 showMarketplace();
 
 function setButtonsDisabled(status) {
@@ -164,7 +204,7 @@ function fishingEvent() {
         alert("You need to equip a fishing rod first.");
         return;
     }
-    const waters = rod.waters;  
+    const waters = rod.waters || [];
     const canCatch = fishList.filter(fishType => fishType.waters.some(water => waters.includes(water)));
     if (canCatch.length === 0) {
         alert("Your " + rod.name + " can't catch anything here.");
@@ -179,6 +219,7 @@ function fishingEvent() {
     let position = 0; // starts on the left side of the catch bar
     let direction = 1;
     let catchZoneStart = Math.floor(Math.random() * (catchBar - catchZone));
+    let finished = false;
 
     function fishingDraw() {
         let fishBar = "";
@@ -187,7 +228,7 @@ function fishingEvent() {
             else if (addFish >= catchZoneStart && addFish < catchZoneStart + catchZone) fishBar += "=";
             else fishBar += "-";
         }
-        fishingText.textContent = "You'll catch a fish after 3 rounds:\n\n" +
+        fishingText.textContent = "Click the button or press space to reel.\n\n You'll catch a fish after 3 hits in 3 rounds.\n\n" +
             "[" + fishBar + "]\n\n" +
             "Round " + fishRound + "/3, hits: " + fishHits;
     }
@@ -196,34 +237,38 @@ function fishingEvent() {
         position += direction;
         if (position === 0 || position === catchBar - 1) direction = -direction;
         fishingDraw();
-    },  type.speed + getStat("slowBar", 0));
+    }, type.speed + getStat("slowBar", 0));
 
     function reel() {
+        if (finished) return; // ignore any inputs after done fishing
         if (position >= catchZoneStart && position < catchZoneStart + catchZone) fishHits++;
         if (fishRound === 3) {
+            finished = true;
             clearInterval(timer);
+            window.removeEventListener("keydown", spacebarReel);
             finishFishing(fishHits, type);
             return;
         }
         fishRound++;
         catchZoneStart = Math.floor(Math.random() * (catchBar - catchZone));
     }
-    // For in the future spacebar press becomes fishing.
-    // window.addEventListener('keydown', function (spacebarReel) {
-    //     if (spacebarReel.key === ' ') {
-    //         spacebarReel.preventDefault();
-    //         reel();
-    //     }
-    // });
-    openEvent("", [["Click here to fish", reel]]);
+
+    function spacebarReel(event) {
+        if (event.code !== "Space" || event.repeat) return; 
+        event.preventDefault();
+        if (document.activeElement) document.activeElement.blur(); 
+        reel();
+    }
+
+    window.addEventListener("keydown", spacebarReel);
+    openEvent("", [["Click here to reel", reel]]);
     fishingDraw();
 }
 
 function finishFishing(hits, type) {
     let message = "The fish got away...";
-    if (hits >= 3) { // if more then 3 hits, you get a fish
+    if (hits >= 3) { // if 3 hits, you get a fish
         fish[type.id] = (fish[type.id] || 0) + 1;
-        console.log("caught:", type.id, JSON.stringify(fish));
         localStorage.setItem("saveFish", JSON.stringify(fish));
         message = "You caught a " + type.name + "!";
     }
