@@ -61,6 +61,8 @@ function nextDay() {
         localStorage.setItem("gameDay", addDay); 
         dayDisplay.style.display = "block"; 
         dayDisplay.innerHTML = "Day " + addDay;
+        dayDisplay.style.justifyContent = "center"
+        dayDisplay.style.alignContent = "center"
 
         const updateDayAnimation = () => {
         dayDisplay.style.display = "none";

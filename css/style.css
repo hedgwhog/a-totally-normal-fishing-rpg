@@ -5,6 +5,12 @@ body {
     -ms-user-select: none; /* IE 10 and IE 11 */
     user-select: none; /* Standard syntax */
     overflow: hidden;
+    transition: filter 0.3s ease;
+    background-color: white;
+}
+
+.inverted-theme {
+  filter: invert(100%);
 }
 
 button {
@@ -61,6 +67,8 @@ button {
     color: white;
     font-size: 50px;
     text-align: center;
+    justify-content: center;
+    align-items: center;
     display: none;
 
     opacity: 1;
@@ -105,7 +113,7 @@ button {
     height: 460px;
     display: none;
     border: 1px solid black;
-     z-index: 25;
+    z-index: 25;
 
 }
 
@@ -121,11 +129,13 @@ button {
     text-decoration: underline;
 }
 
-
-#settingsPopup label {
+.settings-wrap {
     position: absolute;
     top: 90px;
-    left: 40px;
+    left: 40px; 
+}
+
+#settingsPopup label {
     display: flex;
     flex-direction: row;
     gap: 5px;

@@ -1,14 +1,13 @@
 const starterHat = { id: "oldHat", name: "Old Hat", slot: "Hat", effect: "", stats: {} };
-const starterWaders = { id: "oldWaders", name: "Old Waders", slot: "Waders", effect: "", stats: {} };
+const starterCloak = { id: "oldCloak", name: "Old Cloak", slot: "Cloak", effect: "", stats: {} };
 const starterRod = { id: "oldRod", name: "Old Fishing Rod (shallow)", slot: "Rod", effect: "", stats: {}, waters: ["shallow"]};
+const backpackSize = 4;
 
-const backpackSize = 5;
-
-let equipped = JSON.parse(localStorage.getItem("saveEquipped")) || { Hat: starterHat, Waders: starterWaders, Rod: starterRod };
+let equipped = JSON.parse(localStorage.getItem("saveEquipped")) || { Hat: starterHat, Cloak: starterCloak, Rod: starterRod };
 let backpack = JSON.parse(localStorage.getItem("saveBackpack")) || [];
 
 equipped.Hat = equipped.Hat || starterHat;
-equipped.Waders = equipped.Waders || starterWaders;
+equipped.Cloak = equipped.Cloak || starterCloak;
 equipped.Rod = equipped.Rod || starterRod;
 
 const inventoryItems = document.getElementById("inventoryItems");
@@ -29,7 +28,7 @@ async function showArt(element, item) {
 }
 
 function showInventory() {
-    for (const slot of ["Hat", "Waders", "Rod"]) {
+    for (const slot of ["Hat", "Cloak", "Rod"]) {
         const item = equipped[slot];
         showArt(document.getElementById("ASCII" + slot), item);
         document.getElementById("name" + slot).textContent = item ? item.name : "";
