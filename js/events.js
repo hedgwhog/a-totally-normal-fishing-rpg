@@ -118,6 +118,7 @@ function showFish() {
         plusFish.addEventListener("click", () => changeSelected(type, 1));
 
         const rowFish = document.createElement("div");
+        rowFish.style.width = "240px"
         rowFish.append(
             document.createElement("br"),
             type.name + ": " + ownFish,
@@ -163,7 +164,6 @@ function nextFish() {
     }
 }
 
-// Picks a fish, rarer fish get more likely with luck
 function pickFish(canCatch) {
     const luck = getStat("luck", 0);
     const weights = canCatch.map(type => type.chance * (1 + luck * type.rarity));
@@ -176,7 +176,6 @@ function pickFish(canCatch) {
 }
 
 function fishingEvent() {
-    // the rod decides which waters you can fish in (no rod or an old save = shallow only)
     const rod = getEquipped("Rod");
     if (!rod) {
         alert("You need to equip a fishing rod first.");
