@@ -1,8 +1,8 @@
 import { marketplaceItems } from "./items.js";
 
-const starterHat = { id: "oldHat", name: "Old Hat", slot: "Hat", effect: "", stats: {} };
-const starterCloak = { id: "oldCloak", name: "Old Cloak", slot: "Cloak", effect: "", stats: {} };
-const starterRod = { id: "oldRod", name: "Old Fishing Rod (shallow)", slot: "Rod", effect: "", stats: {}, waters: ["shallow"] };
+const starterHat = { id: "oldHat", name: "Old Hat", slot: "Hat", effect: "", stats: {}, sellValue: 2 };
+const starterCloak = { id: "oldCloak", name: "Old Cloak", slot: "Cloak", effect: "", stats: {}, sellValue: 2 };
+const starterRod = { id: "oldRod", name: "Old Fishing Rod (shallow)", slot: "Rod", effect: "", stats: {}, waters: ["shallow"], sellValue: 2 };
 const starters = { Hat: starterHat, Cloak: starterCloak, Rod: starterRod };
 const backpackSize = 4;
 
@@ -42,6 +42,7 @@ const inventoryItems = document.getElementById("inventoryItems");
 function save() {
     localStorage.setItem("saveEquipped", JSON.stringify(equipped));
     localStorage.setItem("saveBackpack", JSON.stringify(backpack));
+    document.dispatchEvent(new Event("inventoryChanged"));
 }
 
 // Loads the art from ascii/<item id>.txt
@@ -98,6 +99,19 @@ export function addItem(item) {
     backpack.push(item);
     save();
     showInventory();
+}
+
+export function getBackpack() {
+    return backpack;
+}
+
+export function removeItem(id) {
+    const index = backpack.findIndex(item => item.id === id);
+    if (index === -1) return null;
+    const [removed] = backpack.splice(index, 1);
+    save();
+    showInventory();
+    return removed;
 }
 
 export function getEquipped(slot) {
