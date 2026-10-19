@@ -23,31 +23,31 @@ coinAmount.innerHTML = "You got " + addCoin + " coins";
 // rarity: 0 = common, higher = more rare. The luch stat boosts the chance of rarer fish.
 const fishList = [
     // Shallow
-    { id: "crappie", name: "Crappie", price: 2, waters: ["shallow"], zone: 4, speed: 50, chance: 45, rarity: 0 },
-    { id: "bluegill", name: "Bluegill", price: 1, waters: ["shallow"], zone: 6, speed: 40, chance: 60, rarity: 0 },
-    { id: "panfish", name: "Panfish", price: 1, waters: ["shallow"], zone: 6, speed: 40, chance: 60, rarity: 1 },
+    { id: "crappie", name: "Crappie", price: 2, waters: ["shallow"], zone: 4, speed: 60, chance: 45, rarity: 0 },
+    { id: "bluegill", name: "Bluegill", price: 1, waters: ["shallow"], zone: 6, speed: 50, chance: 60, rarity: 0 },
+    { id: "panfish", name: "Panfish", price: 1, waters: ["shallow"], zone: 6, speed: 50, chance: 60, rarity: 1 },
 
-    { id: "catfish", name: "Catfish", price: 4, waters: ["shallow"], zone: 3, speed: 75, chance: 5, rarity: 3 },
+    { id: "catfish", name: "Catfish", price: 4, waters: ["shallow"], zone: 3, speed: 25, chance: 5, rarity: 3 },
 
     // Shallow & Coastal
-    { id: "flounder", name: "Flounder", price: 3, waters: ["shallow", "coastal"], zone: 4, speed: 40, chance: 30, rarity: 0.2 },
-    { id: "bass", name: "Bass", price: 2, waters: ["shallow", "coastal"], zone: 5, speed: 50, chance: 35, rarity: 0 },
+    { id: "flounder", name: "Flounder", price: 3, waters: ["shallow", "coastal"], zone: 4, speed: 45, chance: 30, rarity: 0.2 },
+    { id: "bass", name: "Bass", price: 2, waters: ["shallow", "coastal"], zone: 5, speed: 66, chance: 35, rarity: 0 },
 
     // Coastal
-    { id: "snook", name: "Snook", price: 2, waters: ["coastal"], zone: 4, speed: 65, chance: 35, rarity: 0 },
-    { id: "mackerel", name: "Mackerel", price: 2, waters: ["coastal"], zone: 4, speed: 65, chance: 35, rarity: 0 },
-    { id: "cod", name: "Cod", price: 1, waters: ["coastal"], zone: 5, speed: 50, chance: 70, rarity: 0 },
+    { id: "snook", name: "Snook", price: 2, waters: ["coastal"], zone: 4, speed: 40, chance: 35, rarity: 0 },
+    { id: "mackerel", name: "Mackerel", price: 2, waters: ["coastal"], zone: 4, speed: 40, chance: 35, rarity: 0 },
+    { id: "cod", name: "Cod", price: 1, waters: ["coastal"], zone: 5, speed: 45, chance: 70, rarity: 0 },
 
-    { id: "lumpfish", name: "Lumpfish", price: 7, waters: ["coastal"], zone: 3, speed: 90, chance: 8, rarity: 5 },
+    { id: "lumpfish", name: "Lumpfish", price: 7, waters: ["coastal"], zone: 3, speed: 15, chance: 8, rarity: 5 },
 ];
 
-// slow bar = the higher number, the more helpfull it is aka "Relax"
+// slow bar = the higher number, the more helpfull it is aka "Focus"
 // zone bonus = bigger bar
 // luck = higher chance for fish
 const marketplaceItems = [
-    { id: "rodShallow", name: "Shallow fishing rod (Shallow)", price: 20, slot: "Rod", effect: "Relax: 0.05", stats: { slowBar: 5 }, waters: ["shallow"] },
-    { id: "rodCoastal", name: "Coastal fishing rod (Coastal)", price: 45, slot: "Rod", effect: "Relax: 0.05", stats: { slowBar: 5 }, waters: ["coastal"] },
-    { id: "rodDock", name: "Dock fishing rod (Shallow & Coastal)", price: 75, slot: "Rod", effect: "Relax: 0.05 + Luck: +0.5 ", stats: { slowBar: 2.5, luck: 0.5 }, waters: ["shallow", "coastal"] },
+    { id: "rodShallow", name: "Shallow fishing rod (Shallow)", price: 20, slot: "Rod", effect: "Focus: 5%", stats: { slowBar: 5 }, waters: ["shallow"] },
+    { id: "rodCoastal", name: "Coastal fishing rod (Coastal)", price: 45, slot: "Rod", effect: "Focus: 5%", stats: { slowBar: 5 }, waters: ["coastal"] },
+    { id: "rodDock", name: "Dock fishing rod (Shallow & Coastal)", price: 75, slot: "Rod", effect: "Focus: 5% + Luck: +0.5 ", stats: { slowBar: 2.5, luck: 0.5 }, waters: ["shallow", "coastal"] },
     { id: "fishingHat", name: "Cozy fishing hat", price: 25, slot: "Hat", effect: "Luck: +1", stats: { luck: 1 } },
 ];
 
@@ -56,9 +56,9 @@ function showMarketplace() {
     marketplaceItems.forEach(item => {
         const itemButton = document.createElement("button");
         if (hasItem(item.id)) {
-            itemButton.innerHTML = " (owned): " + item.name;
+            itemButton.innerHTML = item.name + " (owned)" ;
         } else {
-            itemButton.innerHTML = item.price + " Coins: " + item.name;
+            itemButton.innerHTML = item.name + " | Effects: " + item.effect + " = " + item.price + " coins.";
         }
         itemButton.addEventListener("click", () => buyItem(item));
         marketplaceItem.appendChild(itemButton);
