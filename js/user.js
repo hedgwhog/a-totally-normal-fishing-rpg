@@ -1,14 +1,41 @@
+import { marketplaceItems } from "./items.js";
+
 const starterHat = { id: "oldHat", name: "Old Hat", slot: "Hat", effect: "", stats: {} };
 const starterCloak = { id: "oldCloak", name: "Old Cloak", slot: "Cloak", effect: "", stats: {} };
-const starterRod = { id: "oldRod", name: "Old Fishing Rod (shallow)", slot: "Rod", effect: "", stats: {}, waters: ["shallow"]};
+const starterRod = { id: "oldRod", name: "Old Fishing Rod (shallow)", slot: "Rod", effect: "", stats: {}, waters: ["shallow"] };
+const starters = { Hat: starterHat, Cloak: starterCloak, Rod: starterRod };
 const backpackSize = 4;
 
-let equipped = JSON.parse(localStorage.getItem("saveEquipped")) || { Hat: starterHat, Cloak: starterCloak, Rod: starterRod };
-let backpack = JSON.parse(localStorage.getItem("saveBackpack")) || [];
+const allItems = [starterHat, starterCloak, starterRod, ...marketplaceItems];
 
-equipped.Hat = equipped.Hat || starterHat;
-equipped.Cloak = equipped.Cloak || starterCloak;
-equipped.Rod = equipped.Rod || starterRod;
+// replaces a saved item with its current ID, if it is null, then it gets returned to nothing (check line 29 for that fix)
+function refreshItem(savedItem) {
+    if (!savedItem || !savedItem.id) return null;
+    const current = allItems.find(item => item.id === savedItem.id);
+    return current ? { ...savedItem, ...current } : null;
+}
+
+// Makes sure that you don't crash
+function loadSave(key, fallback) {
+    try {
+        return JSON.parse(localStorage.getItem(key)) ?? fallback;
+    } catch {
+        return fallback;
+    }
+}
+
+// if an item is missing in your inventory, you automatically get your starter item
+let savedEquipped = loadSave("saveEquipped", {});
+if (typeof savedEquipped !== "object" || Array.isArray(savedEquipped)) savedEquipped = {};
+let equipped = {};
+for (const slot of ["Hat", "Cloak", "Rod"]) {
+    equipped[slot] = refreshItem(savedEquipped[slot]) || starters[slot];
+}
+
+// Makes sure that when the backpack has items without ID (due of new updates), that they get removed
+let backpack = loadSave("saveBackpack", []);
+if (!Array.isArray(backpack)) backpack = [];
+backpack = backpack.map(refreshItem).filter(Boolean).slice(0, backpackSize);
 
 const inventoryItems = document.getElementById("inventoryItems");
 
@@ -89,4 +116,5 @@ export function getStat(name, base) {
     return statFound ? statStat : base;
 }
 
+save();
 showInventory();
