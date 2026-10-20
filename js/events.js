@@ -2,6 +2,7 @@ import { i, times, nextTime } from "./time.js";
 import { hasItem, addItem, getStat, getEquipped, backpackFull, getBackpack, removeItem } from "./user.js";
 import { marketplaceItems } from "./items.js";
 import { fishList } from "./fish.js";
+import { affinityFishCaught, getFishSlowdown, getSellMultiplier } from "./affinity.js";
 
 // some safety for old saves (I hope it works)
 let savedFish;
@@ -127,7 +128,7 @@ function totalFish() {
 }
 
 function showFish() {
-    fishAmount.innerHTML = "You got " + totalFish() + " fish";
+    fishAmount.innerHTML = "You got " + totalFish() + " fish in total";
     fishTypes.innerHTML = "";
     fishList.forEach(type => {
         const ownFish = fish[type.id] || 0;
@@ -141,7 +142,7 @@ function showFish() {
         plusFish.addEventListener("click", () => changeSelected(type, 1));
 
         const rowFish = document.createElement("div");
-        rowFish.style.width = "240px"
+        rowFish.style.width = "227px"
         rowFish.append(
             document.createElement("br"),
             " Worth €" + type.price + " per fish",
@@ -191,7 +192,7 @@ function nextFish() {
 
 function pickFish(canCatch) {
     const luck = getStat("luck", 0);
-    const weights = canCatch.map(type => type.chance * (1 + luck * type.rarity));
+    const weights = canCatch.map(type => Math.max(0, type.chance * (1 + luck * type.rarity)));
     let roll = Math.random() * weights.reduce((sum, weight) => sum + weight, 0);
     for (let n = 0; n < canCatch.length; n++) {
         roll -= weights[n];
@@ -235,18 +236,26 @@ function fishingEvent() {
             "Round " + fishRound + "/3, hits: " + fishHits;
     }
 
-    const timer = setInterval(() => {
-        position += direction;
-        if (position === 0 || position === catchBar - 1) direction = -direction;
-        fishingDraw();
-    }, type.speed + getStat("slowBar", 0));
+        // the speed gets checked after every step, so the Poison affinity can make it slower while you fish
+        const startTime = Date.now();
+        let timer;
+        function barSpeed() {
+            return (type.speed + getStat("slowBar", 0)) * getFishSlowdown((Date.now() - startTime) / 1000);
+        }
+        function moveBar() {
+            position += direction;
+            if (position === 0 || position === catchBar - 1) direction = -direction;
+            fishingDraw();
+            timer = setTimeout(moveBar, barSpeed());
+        }
+    timer = setTimeout(moveBar, barSpeed());
 
     function reel() {
         if (finished) return; // ignore any inputs after done fishing
         if (position >= catchZoneStart && position < catchZoneStart + catchZone) fishHits++;
         if (fishRound === 3) {
             finished = true;
-            clearInterval(timer);
+            clearTimeout(timer);
             window.removeEventListener("keydown", spacebarReel);
             finishFishing(fishHits, type);
             return;
@@ -272,7 +281,7 @@ function finishFishing(hits, type) {
     if (hits >= 3) { // if 3 hits, you get a fish
         fish[type.id] = (fish[type.id] || 0) + 1;
         localStorage.setItem("saveFish", JSON.stringify(fish));
-        message = "You caught a " + type.name + "!";
+        message = "You caught a " + type.name + "!" + affinityFishCaught();
     }
 
     openEvent(message, [["Continue", () => {
@@ -298,6 +307,7 @@ function sellFish() {
         return;
     }
 
+    sellFishTotal = Math.round(sellFishTotal * getSellMultiplier()); // Laziness sells for less
     openEvent("The Fishmonger checks your fish:\n" + sellFishList + "\n\"I'll give you " + sellFishTotal + " coins for those.\"", [
         ["Sell", () => {
             fishList.forEach(type => {
