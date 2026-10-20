@@ -1,5 +1,5 @@
-const dropMin = 1; // the stone drops after this many catches.
-const dropMax = 2;
+const dropMin = 55; // the stone drops after this many catches.
+const dropMax = 75;
 const xpPerFish = 1;
 
 // name: display name
@@ -13,8 +13,8 @@ const affinities = {
     poison: {
         name: "Poison", chance: 40, cost: 0, stats: {},
         effect: "Fish get slower",
-        description: "Every 10 seconds, the fish gets slowed 5%. It stacks until 30%",
-        slowEvery: 10, slowStep: 5, slowMax: 30,
+        description: "Every 5 seconds, the fish gets slowed 10%. It stacks until 40%",
+        slowEvery: 5, slowStep: 10, slowMax: 40,
         branches: {},
     },
     probability: {
