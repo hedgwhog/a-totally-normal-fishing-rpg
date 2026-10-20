@@ -7,11 +7,22 @@ const starterRod = { id: "oldRod", name: "Old Fishing Rod (shallow)", slot: "Rod
 const starters = { Hat: starterHat, Cloak: starterCloak, Rod: starterRod };
 const backpackSize = 4;
 
+// stat: which stat it boosts, perLevel: how much each level adds
+// chance: how often you get it in the atelier (hitbox is really rare)
+export const enchants = {
+    luck: { name: "Luck", stat: "luck", perLevel: 0.5, maxLevel: 10, chance: 48 },
+    focus: { name: "Focus", stat: "slowBar", perLevel: 2.5, maxLevel: 10, chance: 48 },
+    hitbox: { name: "Hitbox", stat: "zoneBonus", perLevel: 1, maxLevel: 3, chance: 4 },
+};
+export const roman = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
+
 const allItems = [starterHat, starterCloak, starterRod, ...marketplaceItems];
 
 // replaces a saved item with its current ID, if it is null, then it gets returned to nothing (check line 29 for that fix)
 function refreshItem(savedItem) {
     if (!savedItem || !savedItem.id) return null;
+    if (savedItem.enchant) savedItem.enchants = [savedItem.enchant];
+    delete savedItem.enchant;
     const current = allItems.find(item => item.id === savedItem.id);
     return current ? { ...savedItem, ...current } : null;
 }
@@ -30,7 +41,7 @@ let savedEquipped = loadSave("saveEquipped", {});
 if (typeof savedEquipped !== "object" || Array.isArray(savedEquipped)) savedEquipped = {};
 let equipped = {};
 for (const slot of ["Hat", "Cloak", "Rod"]) {
-    equipped[slot] = refreshItem(savedEquipped[slot]) || starters[slot];
+    equipped[slot] = refreshItem(savedEquipped[slot]) || { ...starters[slot] };
 }
 
 // Makes sure that when the backpack has items without ID (due of new updates), that they get removed
@@ -39,6 +50,43 @@ if (!Array.isArray(backpack)) backpack = [];
 backpack = backpack.map(refreshItem).filter(Boolean).slice(0, backpackSize);
 
 const inventoryItems = document.getElementById("inventoryItems");
+const resonanceDisplay = document.querySelector(".resonance");
+
+let resonance = parseInt(localStorage.getItem("saveResonance")) || 0;
+
+function showResonance() {
+    resonanceDisplay.innerHTML = "Resonance: <br>" + resonance;
+}
+
+export function getResonance() {
+    return resonance;
+}
+
+export function addResonance(amount) {
+    resonance += amount;
+    localStorage.setItem("saveResonance", resonance);
+    showResonance();
+}
+
+export function getEnchants(item) {
+    return (item.enchants || []).filter(enchant => enchants[enchant.id]);
+}
+
+export function enchantName(enchant) {
+    return enchants[enchant.id].name + " " + roman[enchant.level];
+}
+
+export function enchantText(item) {
+    const list = getEnchants(item);
+    if (list.length === 0) return "No enchant";
+    return list.map(enchantName).join(", ");
+}
+
+export function setEnchants(item, list) {
+    item.enchants = list;
+    save();
+    showInventory();
+}
 
 function save() {
     localStorage.setItem("saveEquipped", JSON.stringify(equipped));
@@ -56,12 +104,48 @@ async function showArt(element, item) {
     element.textContent = await response.text();
 }
 
+function itemPages(item) {
+    const pages = [[item.name, item.effect]];
+    if (item.slot === "Rod") pages.push(["Enchants:", enchantText(item)]);
+    return pages;
+}
+
+function showPages(box, item) {
+    const pages = item ? itemPages(item) : [["", ""]];
+    let page = 0;
+
+    function showPage() {
+        box.querySelector(".name").textContent = pages[page][0];
+        box.querySelector(".effect").textContent = pages[page][1];
+    }
+
+    function makeArrow(label, change) {
+        const arrow = document.createElement("button");
+        arrow.textContent = label;
+        arrow.addEventListener("click", event => {
+            event.stopPropagation();
+            page = (page + change + pages.length) % pages.length;
+            showPage();
+        });
+        return arrow;
+    }
+
+    let arrows = box.querySelector(".pageArrows");
+    if (!arrows) {
+        arrows = document.createElement("div");
+        arrows.className = "pageArrows";
+        box.appendChild(arrows);
+    }
+    arrows.innerHTML = "";
+    if (pages.length > 1) arrows.append(makeArrow("<", -1), makeArrow(">", 1));
+    showPage();
+}
+
 function showInventory() {
     for (const slot of ["Hat", "Cloak", "Rod"]) {
         const item = equipped[slot];
         showArt(document.getElementById("ASCII" + slot), item);
-        document.getElementById("name" + slot).textContent = item ? item.name : "";
-        document.getElementById("effect" + slot).textContent = item ? item.effect : "";
+        showPages(document.getElementById("inventory" + slot), item);
     }
 
     inventoryItems.innerHTML = "";
@@ -70,8 +154,9 @@ function showInventory() {
         const inventoryBox = document.createElement("div");
         inventoryBox.className = "inventoryOutline";
         if (inventoryItem) {
-            inventoryBox.innerHTML = '<pre class="ASCII"></pre><div class="name">' + inventoryItem.name + '</div><div class="effect">' + inventoryItem.effect + '</div>';
+            inventoryBox.innerHTML = '<pre class="ASCII"></pre><div class="name"></div><div class="effect"></div>';
             showArt(inventoryBox.querySelector(".ASCII"), inventoryItem);
+            showPages(inventoryBox, inventoryItem);
             inventoryBox.addEventListener("click", () => equip(item));
         }
         inventoryItems.appendChild(inventoryBox);
@@ -97,7 +182,7 @@ export function backpackFull() {
 }
 
 export function addItem(item) {
-    backpack.push(item);
+    backpack.push({ ...item });
     save();
     showInventory();
 }
@@ -127,8 +212,15 @@ export function getStat(name, base) {
             statStat += item.stats[name];
             statFound = true;
         }
+        if (item) {
+            for (const enchant of getEnchants(item)) {
+                if (enchants[enchant.id].stat === name) {
+                    statStat += enchants[enchant.id].perLevel * enchant.level;
+                    statFound = true;
+                }
+            }
+        }
     }
-    // your affinity gives stats too
     const affinityStat = getAffinityStat(name);
     if (affinityStat) {
         statStat += affinityStat;
@@ -139,3 +231,4 @@ export function getStat(name, base) {
 
 save();
 showInventory();
+showResonance();
