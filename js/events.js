@@ -144,7 +144,9 @@ function showFish() {
         rowFish.style.width = "240px"
         rowFish.append(
             document.createElement("br"),
-            type.name + ": " + ownFish,
+            " Worth €" + type.price + " per fish",
+            document.createElement("br"),
+            type.name + ": " + ownFish,  
             document.createElement("br"),
             "(selling " + (selected[type.id] || 0) + ") ",
             minusFish, plusFish
