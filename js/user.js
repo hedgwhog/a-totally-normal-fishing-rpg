@@ -1,4 +1,5 @@
 import { marketplaceItems } from "./items.js";
+import { getAffinityStat } from "./affinity.js";
 
 const starterHat = { id: "oldHat", name: "Old Hat", slot: "Hat", effect: "", stats: {}, sellValue: 2 };
 const starterCloak = { id: "oldCloak", name: "Old Cloak", slot: "Cloak", effect: "", stats: {}, sellValue: 2 };
@@ -126,6 +127,12 @@ export function getStat(name, base) {
             statStat += item.stats[name];
             statFound = true;
         }
+    }
+    // your affinity gives stats too
+    const affinityStat = getAffinityStat(name);
+    if (affinityStat) {
+        statStat += affinityStat;
+        statFound = true;
     }
     return statFound ? statStat : base;
 }

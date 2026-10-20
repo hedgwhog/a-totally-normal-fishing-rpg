@@ -15,8 +15,11 @@
             <button class="settings" onclick="settingsPopup.style.display = 'flex'">Settings:</button>
 
             <div id="inventory">
-                <div class="inventoryOutline">
-                    <p>Affinity</p>
+                 <div class="inventoryOutline" id="inventoryAffinity">
+                    <p id="affinityLocked">Affinity</p>
+                    <pre class="ASCII" id="ASCIIAffinity"></pre>
+                     <div class="name" id="nameAffinity"></div>
+                     <div class="effect" id="effectAffinity"></div>
                  </div>
 
                  <div class="inventoryOutline" id="inventoryHat">
@@ -46,25 +49,37 @@
             </div>
 
         <div class="dock-container">
+            <h1 class="center">Freshwater haven</h1>
+            <div class="item-list">
+                <div id="coinAmount">Coins: 0</div><br>
+                <div>Items:</div>
+                <div id="affinityItem"><button id="useStone">(*) Use Affinity Stone</button></div>
+            </div>
+            <div class="fish-list">
+                <div id="fishAmount">You got 0 fish</div>
+                <div id="fishTypes"></div>
+            </div>
+
+            <div class="event-list">
+                <button id="marketplace" onclick="marketplaceDisplay.style.display = 'block'">Marketplace</button>
+                <button id="sellFish">Sell fish to the<br>local Fishmonger</button>
+            </div>
+
+            <div class="xp-list">
+                <!-- Resonance (for experience for enchanting) -->
+                <!-- <div class="resonance">Resonance: 100</div> -->
+                <div id="affinityXp"></div>
+             </div>
+
             <div class="list">
                 <button onclick="catalogDisplay.style.display = 'flex'">Catalog</button>
                 <button id="nextDay">Sleeping</button>
                 <button id="nextFish">Fishing</button>
             </div>
 
-            <h1 class="center">Freshwater<br>haven</h1>
-            <div class="center" id="coinAmount">Coins: 0</div>
-            <div class="center" id="fishAmount">You got 0 fish</div>
-            <div id="fishTypes"></div>
-
             <div id="fishingPopup" style="display: none;">
                 <pre id="fishingText"></pre>
                 <div id="fishingButtons"></div>
-            </div>
-
-            <div class="event-list">
-                <button id="sellFish">Sell fish to the<br>local Fishmonger</button>
-                <button id="marketplace" onclick="marketplaceDisplay.style.display = 'block'">Marketplace</button>
             </div>
 
             <div id="marketplaceDisplay">
@@ -83,6 +98,13 @@
                 <label for="dayDisplayToggle">Enable day animation: <input type="checkbox" id="dayDisplayToggle" checked></label>
                 <label class="switch">Invert colors:<input type="checkbox" id="invert-toggle"></label>
             </div>
+        </div>
+
+        <div id="affinityDisplay">
+            <button id="affinityClose">Close affinity</button>
+            <h1>Affinity</h1>
+            <pre id="affinityArt"></pre>
+            <div id="affinityInfo"></div>
         </div>
 
         <div id="catalogDisplay">
