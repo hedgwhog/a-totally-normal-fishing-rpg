@@ -99,7 +99,6 @@ export function getAffinityStat(name) {
         const luck = node.luckMin + Math.random() * (node.luckMax - node.luckMin);
         return Math.round(luck * 10) / 10;
     }
-    console.log(luck)
     return node.stats[name] || 0;
 }
 
