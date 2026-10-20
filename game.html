@@ -8,7 +8,7 @@
 </head>
 <body>
     <div id="container">
-            <div id="dayPopupHidden">test</div>
+            <div id="dayPopupHidden"></div>
             <div id="dayContainer"></div>
 
             <div id="time">Morning</div>
@@ -53,7 +53,7 @@
             <div class="item-list">
                 <div id="coinAmount">Coins: 0</div><br>
                 <div>Items:</div>
-                <div id="affinityItem"><button id="useStone">(*) Use Affinity Stone</button></div>
+                <div id="affinityItem"><button id="useStone">[*] Use Affinity Stone</button></div>
             </div>
             <div class="fish-list">
                 <div id="fishAmount">You got 0 fish</div>
@@ -62,12 +62,13 @@
 
             <div class="event-list">
                 <button id="marketplace" onclick="marketplaceDisplay.style.display = 'block'">Marketplace</button>
+                <button id="ichthyologist">Ichthyologist</button>
                 <button id="sellFish">Sell fish to the<br>local Fishmonger</button>
+                <button id="resonance">Resonance atelier</button>
             </div>
 
             <div class="xp-list">
-                <!-- Resonance (for experience for enchanting) -->
-                <!-- <div class="resonance">Resonance: 100</div> -->
+                <div class="resonance">Resonance: <br>0</div>
                 <div id="affinityXp"></div>
              </div>
 
@@ -84,9 +85,23 @@
 
             <div id="marketplaceDisplay">
                 <h1>Marketplace</h1>
-                <h4>Marketplace opens once every 5 days, for a 2 day period.</h4>
+                <h4> Opens once every 5 days, for a 2 day period. Only in the morning, afternoon & evening.</h4>
                 <button class="marketplaceDisplay-close" onclick="marketplaceDisplay.style.display = 'none'">Close marketplace</button>
                 <div id="marketplaceItem"></div>
+            </div>
+
+            <div id="resonanceDisplay">
+                <h1>Resonance atelier</h1>
+                <h4>Open 4 days, then closed for 1 day. Only in the morning, afternoon & night.</h4>
+                <button class="marketplaceDisplay-close" onclick="resonanceDisplay.style.display = 'none'">Close atelier</button>
+                <div id="resonanceItem"></div>
+            </div>
+
+            <div id="ichthyologistDisplay">
+                <h1>Ichthyologist</h1>
+                <h4>A fish researcher wants to study some fish. She is up 24/7</h4>
+                <button class="marketplaceDisplay-close" onclick="ichthyologistDisplay.style.display = 'none'">Close</button>
+                <div id="ichthyologistItem"></div>
             </div>
         </div>
 
@@ -111,18 +126,25 @@
             <button id="catalogClose" onclick="catalogDisplay.style.display = 'none'">Close catalog</button>
             <h1>Catalog</h1>
             <div class="catalogInfo">
-                <h4>Fishing works as the following:</h4>
-                <h4>You have different kinds of waters you can fish in, each kind of waters, has a different loot pool of fish.</h4>
-                <h4>If you hover over your fishing rod, you can see in what kind of waters it can fish. It can be multiple.</h4>
-                <h4>You can buy different items. After you have bought an item, you can equip it by selecting it in your backpack.</h4>
-                <h4>Items can have different effects, which could increase your catches positively.</h4>
-                <h4>Those effects are:
-                    <ul>
-                        <li>Focus = Fish swim that % slower.</li>
-                        <li>Hitbox = Makes the hitbox for hitting '+' that much bigger.</li>
-                        <li>Luck = Higher % chance of getting rarer fish.</li>
-                    </ul>
-                </h4>
+                <h5 style="text-decoration: underline;">Some explantion of how different mechanics work.</h5>
+                <h3>Fishing:</h3>
+                <h4>To catch fish, you need to time catching the fish. Depending on what fish, the fish can be faster, smaller and rarer to get.</h4>
+                <h4>Some fishes can only be catched in a certain habitat, so you need to have the correct fishing rod to be able to catch them. Every habitat has their own lootpool.</h4>
+                <h4>You can sell your catched fish for coins, by selecting the amount and type with the "+" and "-" keys, and then selling it to the fishmonger.</h4>
+                <h4>You can fish other items up, but those are quite rare.</h4>
+                
+                <br><h3>Marketplace:</h3>
+                <h4>You can upgrade your gear here for coins. It is also the place to sell old gear you have no interest in. You can also buy a different type of fishing rods here. _______ .Keep scrolling. </h4>
+                <h4>The following upgrades could also be included in a fishing rod:</h4>
+                <h4> - Focus: By focussing, it seems like the fish swim slower.</h4>
+                <h4> - Luck: Makes rarer fish magically show up more.</h4>
+
+                <br><h3>Resonance:</h3>
+                <h4>You can resonance your fishing rod to make it better. You get a random upgrade, and depending on the level of resonance, it can be a lot better.</h4>
+                <h4>dissonance to be able to resonance your fishing rod again. </h4>
+
+                <br><h3>Affinity:</h3>
+                <h4>Quite unclear? Something related to effects, I think.</h4>
             </div>
 
         </div>

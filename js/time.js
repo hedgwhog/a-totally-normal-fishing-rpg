@@ -6,12 +6,14 @@ const timeDisplay = document.getElementById("time")
 const dayDisplay = document.getElementById("dayPopupHidden")
 const fishmonger = document.getElementById("sellFish")
 const marketplace = document.getElementById("marketplace")
+const resonanceShop = document.getElementById("resonance")
 const dayDisplayToggle = document.getElementById("dayDisplayToggle");
 
 timeDisplay.innerHTML = times[i];
 document.getElementById("dayContainer").innerHTML = "Day " + addDay;
 updateFishmonger();
 updateMarketplace();
+updateResonanceShop();
 
 function updateFishmonger() {
     fishmonger.style.display = (times[i] === "morning") ? "block" : "none";
@@ -28,6 +30,19 @@ function updateMarketplace() {
         marketplace.style.display = "block";
     } else {
         marketplace.style.display = "none";
+    }
+}
+
+function updateResonanceShop() {
+    const openDays = (addDay % 5 !== 0);
+
+    const time = times[i];
+    const activeTimes = (time === "morning" || time === "afternoon" || time === "night");
+
+    if (openDays && activeTimes) {
+        resonanceShop.style.display = "block";
+    } else {
+        resonanceShop.style.display = "none";
     }
 }
 
@@ -51,6 +66,7 @@ export function nextTime() {
     console.log(times[i]);
     updateFishmonger();
     updateMarketplace(); 
+    updateResonanceShop();
 }
 
 function nextDay() {

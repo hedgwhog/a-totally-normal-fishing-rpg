@@ -1,5 +1,5 @@
 import { i, times, nextTime } from "./time.js";
-import { hasItem, addItem, getStat, getEquipped, backpackFull, getBackpack, removeItem } from "./user.js";
+import { hasItem, addItem, getStat, getEquipped, backpackFull, getBackpack, removeItem, getResonance, addResonance, enchants, roman, enchantText, getEnchants, enchantName, setEnchants } from "./user.js";
 import { marketplaceItems } from "./items.js";
 import { fishList } from "./fish.js";
 import { affinityFishCaught, getFishSlowdown, getSellMultiplier } from "./affinity.js";
@@ -32,6 +32,11 @@ const marketplaceItem = document.getElementById("marketplaceItem");
 const fishingPopup = document.getElementById("fishingPopup");
 const fishingText = document.getElementById("fishingText");
 const fishingButtons = document.getElementById("fishingButtons");
+const ichthyologist = document.getElementById("ichthyologist")
+const ichthyologistDisplay = document.getElementById("ichthyologistDisplay");
+const ichthyologistItem = document.getElementById("ichthyologistItem");
+const resonanceDisplay = document.getElementById("resonanceDisplay");
+const resonanceItem = document.getElementById("resonanceItem");
 
 coinAmount.innerHTML = "You got " + addCoin + " coins";
 
@@ -60,7 +65,7 @@ function showMarketplace() {
     }
     sellableItems.forEach(item => {
         const sellButton = document.createElement("button");
-        sellButton.innerHTML = "Sell '" + item.name + "' | " + sellPrice(item) + " coins";
+        sellButton.innerHTML = "Sell: " + item.name + " | Effects: " + item.effect + " | " + sellPrice(item) + " coins";
         sellButton.addEventListener("click", () => sellItem(item));
         marketplaceItem.appendChild(sellButton);
     });
@@ -236,7 +241,6 @@ function fishingEvent() {
             "Round " + fishRound + "/3, hits: " + fishHits;
     }
 
-        // the speed gets checked after every step, so the Poison affinity can make it slower while you fish
         const startTime = Date.now();
         let timer;
         function barSpeed() {
@@ -281,7 +285,8 @@ function finishFishing(hits, type) {
     if (hits >= 3) { // if 3 hits, you get a fish
         fish[type.id] = (fish[type.id] || 0) + 1;
         localStorage.setItem("saveFish", JSON.stringify(fish));
-        message = "You caught a " + type.name + "!" + affinityFishCaught();
+        addResonance(type.resonance);
+        message = "You caught a " + type.name + "!\n+" + type.resonance + " Resonance" + affinityFishCaught();
     }
 
     openEvent(message, [["Continue", () => {
@@ -323,7 +328,176 @@ function sellFish() {
     ]);
 }
 
+
+function addText(box, text) {
+    const line = document.createElement("p");
+    line.textContent = text;
+    box.appendChild(line);
+}
+
+function addButton(box, label, action) {
+    const button = document.createElement("button");
+    button.textContent = label;
+    button.addEventListener("click", action);
+    box.appendChild(button);
+}
+
+const enchantLevels = [
+    { level: 1, cost: 25 },
+    { level: 2, cost: 50 },
+];
+const DissonanceCost = 20;
+let enchantRod = null;
+
+function randomEnchant() {
+    const randomEnchantIds = Object.keys(enchants);
+    let roll = Math.random() * randomEnchantIds.reduce((sum, id) => sum + enchants[id].chance, 0);
+    for (const enchantId of randomEnchantIds) {
+        roll -= enchants[enchantId].chance;
+        if (roll < 0) return enchantId;
+    }
+    return randomEnchantIds[randomEnchantIds.length - 1];
+}
+
+function showResonanceShop() {
+    resonanceItem.innerHTML = "";
+    addText(resonanceItem, "You have " + getResonance() + " resonance and " + addCoin + " coins.");
+
+    if (!enchantRod) {
+        addText(resonanceItem, "Choose the rod you want to resonance:");
+        const rods = [getEquipped("Rod"), ...getBackpack().filter(item => item.slot === "Rod")];
+        rods.forEach((rod, n) => {
+            const place = (n === 0) ? "equipped" : "backpack";
+            addButton(resonanceItem, rod.name + " (" + place + ") | " + enchantText(rod), () => {
+                enchantRod = rod;
+                showResonanceShop();
+            });
+        });
+        return;
+    }
+
+    addText(resonanceItem, "Rod: " + enchantRod.name + " | " + enchantText(enchantRod));
+    addText(resonanceItem, "Choose a rank:");
+    enchantLevels.forEach(level => {
+        addButton(resonanceItem, "Rank " + roman[level.level] + " | " + level.cost + " resonance", () => enchantRodLevel(level));
+    });
+    addButton(resonanceItem, "Dissonance | " + DissonanceCost + " coins", DissonancRod);
+    addButton(resonanceItem, "Back", () => {
+        enchantRod = null;
+        showResonanceShop();
+    });
+}
+
+function enchantRodLevel(level) {
+    if (getResonance() < level.cost) {
+        alert("You need " + level.cost + " resonance for level " + roman[level.level] + ".");
+        return;
+    }
+    const randomEnchantId = randomEnchant();
+    const newEnchant = { id: randomEnchantId, level: Math.min(level.level, enchants[randomEnchantId].maxLevel) };
+    const enchantList = getEnchants(enchantRod);
+    const oldEnchant = enchantList.find(enchant => enchant.id === randomEnchantId);
+    addResonance(-level.cost);
+
+    if (!oldEnchant) {
+        setEnchants(enchantRod, [...enchantList, newEnchant]);
+        alert("Your rod starts to hum...\nIt got " + enchantName(newEnchant) + "!");
+    } else if (oldEnchant.level < newEnchant.level) {
+        setEnchants(enchantRod, enchantList.map(enchant => enchant.id === randomEnchantId ? newEnchant : enchant));
+        alert("Your rod starts to hum...\n" + enchantName(oldEnchant) + " got upgraded to " + enchantName(newEnchant) + "!");
+    } else {
+        alert("The resonance fizzles...\nYour rod already has " + enchantName(oldEnchant) + ".");
+    }
+    showResonanceShop();
+}
+
+function DissonancRod() {
+    if (addCoin < DissonanceCost) {
+        alert("You need " + DissonanceCost + " coins to disenchant.");
+        return;
+    }
+    if (!confirm("Remove " + enchantText(enchantRod) + " for " + DissonanceCost + " coins?")) return;
+    coins(-DissonanceCost);
+    setEnchants(enchantRod, []);
+    showResonanceShop();
+}
+
+const rareFishShallowCoastal = ["catfish", "lumpfish"];
+const fishResearcherRounds = [
+    { waters: ["shallow"], extra: [], coins: 10, resonance: 5 },
+    { waters: ["coastal"], extra: [], coins: 15, resonance: 10 },
+    { waters: ["shallow", "coastal"], extra: rareFishShallowCoastal, coins: 25, resonance: 20 },
+];
+
+function newFishResearcherQuest(round) {
+    const fishResearcherQuest = fishResearcherRounds[round - 1];
+    if (!fishResearcherQuest) return { round: round, wanted: [] };
+    const fishResearcherFishPool = fishList.filter(type => type.waters.some(water => fishResearcherQuest.waters.includes(water)) && !rareFishShallowCoastal.includes(type.id));
+    const fishResearcherRandomFish = fishResearcherFishPool.sort(() => Math.random() - 0.5).slice(0, 3).map(type => type.id);
+    return { round: round, wanted: [...fishResearcherQuest.extra, ...fishResearcherRandomFish] };
+}
+
+let fishResearcher;
+try {
+    fishResearcher = JSON.parse(localStorage.getItem("saveFishResearcher"));
+} catch {
+    fishResearcher = null;
+}
+// to make sure a quests does exist, even with an old safe.
+if (!fishResearcher || !Array.isArray(fishResearcher.wanted) || !fishResearcher.wanted.every(id => fishList.some(type => type.id === id))) {
+    fishResearcher = newFishResearcherQuest(1);
+}
+localStorage.setItem("saveFishResearcher", JSON.stringify(fishResearcher));
+
+function showFishResearcher() {
+    ichthyologistItem.innerHTML = "";
+    const fishResearcherQuest = fishResearcherRounds[fishResearcher.round - 1];
+    if (!fishResearcherQuest) {
+        addText(ichthyologistItem, "\"Thanks to you, my research is finished.\"");
+        return;
+    }
+    // I want to add some information about getting to the next place after this quest.
+
+    addText(ichthyologistItem, "\"Could you bring me one of each fish?\"");
+    fishResearcher.wanted.forEach(id => {
+        const fishType = fishList.find(type => type.id === id);
+        addText(ichthyologistItem, "- " + fishType.name + " (you have " + (fish[id] || 0) + ")");
+    });
+    addText(ichthyologistItem, "Reward: " + fishResearcherQuest.coins + " coins & " + fishResearcherQuest.resonance + " resonance");
+    addButton(ichthyologistItem, "Give the fish", giveFishResearcherFish);
+}
+
+function giveFishResearcherFish() {
+    if (fishResearcher.wanted.some(id => !fish[id])) {
+        alert("You don't have all the fish yet.");
+        return;
+    }
+    const fishResearcherQuest = fishResearcherRounds[fishResearcher.round - 1];
+    fishResearcher.wanted.forEach(id => {
+        fish[id]--;
+        selected[id] = Math.min(selected[id] || 0, fish[id]);
+    });
+    localStorage.setItem("saveFish", JSON.stringify(fish));
+    coins(fishResearcherQuest.coins);
+    addResonance(fishResearcherQuest.resonance);
+    alert("The researcher checks the fish and is satisfied \nYou got " + fishResearcherQuest.coins + " coins & " + fishResearcherQuest.resonance + " resonance!");
+
+    fishResearcher = newFishResearcherQuest(fishResearcher.round + 1);
+    localStorage.setItem("saveFishResearcher", JSON.stringify(fishResearcher));
+    showFish();
+    showFishResearcher();
+}
+
 showFish();
 
 document.getElementById('nextFish').addEventListener('click', nextFish);
 document.getElementById('sellFish').addEventListener('click', sellFish);
+document.getElementById('resonance').addEventListener('click', () => {
+    enchantRod = null;
+    showResonanceShop();
+    resonanceDisplay.style.display = "block";
+});
+ichthyologist.addEventListener('click', () => {
+    showFishResearcher();
+    ichthyologistDisplay.style.display = "block";
+});
