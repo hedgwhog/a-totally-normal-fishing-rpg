@@ -1,4 +1,3 @@
-import { marketplaceItems } from "./items.js";
 import { getAffinityStat } from "./affinity.js";
 
 const starterHat = { id: "oldHat", name: "Old Hat", slot: "Hat", effect: "", stats: {}, sellValue: 2 };
@@ -9,22 +8,26 @@ const backpackSize = 4;
 
 // stat: which stat it boosts, perLevel: how much each level adds
 // chance: how often you get it in the atelier (hitbox is really rare)
+// minRank: minimum rank for it to be able to show up
+// levelUp. I can lower the chance of getting a higher level of an enchant for rare enchants
 export const enchants = {
-    luck: { name: "Luck", stat: "luck", perLevel: 0.5, maxLevel: 10, chance: 48 },
-    focus: { name: "Focus", stat: "slowBar", perLevel: 2.5, maxLevel: 10, chance: 48 },
-    hitbox: { name: "Hitbox", stat: "zoneBonus", perLevel: 1, maxLevel: 3, chance: 4 },
+    luck: { name: "Luck", stat: "luck", perLevel: 0.5, maxLevel: 10, chance: 43 },
+    focus: { name: "Focus", stat: "slowBar", perLevel: 2.5, maxLevel: 10, chance: 44 },
+    hitbox: { name: "Hitbox", stat: "zoneBonus", perLevel: 1, maxLevel: 2, minRank: 2, chance: 2, levelUp: 0.15 },
+    rewind: { name: "Rewind", stat: "rewind", perLevel: 1, maxLevel: 3, minRank: 2, chance: 4, levelUp: 0.20 },
 };
 export const roman = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
 
-const allItems = [starterHat, starterCloak, starterRod, ...marketplaceItems];
+// every island adds its own items to this list with addItemTypes()
+const allItems = [starterHat, starterCloak, starterRod];
 
-// replaces a saved item with its current ID, if it is null, then it gets returned to nothing (check line 29 for that fix)
+// gives a saved item the newest stats of that item. Items without an ID get removed
 function refreshItem(savedItem) {
     if (!savedItem || !savedItem.id) return null;
     if (savedItem.enchant) savedItem.enchants = [savedItem.enchant];
     delete savedItem.enchant;
     const current = allItems.find(item => item.id === savedItem.id);
-    return current ? { ...savedItem, ...current } : null;
+    return current ? { ...savedItem, ...current } : savedItem;
 }
 
 // Makes sure that you don't crash
@@ -50,6 +53,29 @@ if (!Array.isArray(backpack)) backpack = [];
 backpack = backpack.map(refreshItem).filter(Boolean).slice(0, backpackSize);
 
 const inventoryItems = document.getElementById("inventoryItems");
+
+// Islands
+// every island has its own <div class="island"> in the html (with the title and event list)
+let island = localStorage.getItem("saveIsland") || "freshwaterHaven";
+if (!document.getElementById(island)) island = "freshwaterHaven";
+
+function showIsland() {
+    document.querySelectorAll(".island").forEach(islandBox => {
+        islandBox.style.display = (islandBox.id === island) ? "block" : "none";
+    });
+}
+
+export function getIsland() {
+    return island;
+}
+
+export function goToIsland(id) {
+    island = id;
+    localStorage.setItem("saveIsland", island);
+    showIsland();
+}
+
+// Resonance
 const resonanceDisplay = document.querySelector(".resonance");
 
 let resonance = parseInt(localStorage.getItem("saveResonance")) || 0;
@@ -200,6 +226,15 @@ export function removeItem(id) {
     return removed;
 }
 
+// an island calls this with its items, so your saved items get their newest stats
+export function addItemTypes(items) {
+    allItems.push(...items);
+    for (const slot of Object.keys(equipped)) equipped[slot] = refreshItem(equipped[slot]);
+    backpack = backpack.map(refreshItem);
+    save();
+    showInventory();
+}
+
 export function getEquipped(slot) {
     return equipped[slot];
 }
@@ -232,3 +267,4 @@ export function getStat(name, base) {
 save();
 showInventory();
 showResonance();
+showIsland();

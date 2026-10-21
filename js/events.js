@@ -1,6 +1,5 @@
-import { i, times, nextTime } from "./time.js";
-import { hasItem, addItem, getStat, getEquipped, backpackFull, getBackpack, removeItem, getResonance, addResonance, enchants, roman, enchantText, getEnchants, enchantName, setEnchants } from "./user.js";
-import { marketplaceItems } from "./items.js";
+import { i, times, nextTime, nextDay } from "./time.js";
+import { getStat, getEquipped, addResonance } from "./user.js";
 import { fishList } from "./fish.js";
 import { affinityFishCaught, getFishSlowdown, getSellMultiplier } from "./affinity.js";
 
@@ -28,108 +27,39 @@ let addCoin = parseInt(localStorage.getItem("saveCoin")) || 0;
 const fishAmount = document.getElementById("fishAmount");
 const fishTypes = document.getElementById("fishTypes");
 const coinAmount = document.getElementById("coinAmount");
-const marketplaceItem = document.getElementById("marketplaceItem");
 const fishingPopup = document.getElementById("fishingPopup");
 const fishingText = document.getElementById("fishingText");
 const fishingButtons = document.getElementById("fishingButtons");
-const ichthyologist = document.getElementById("ichthyologist")
-const ichthyologistDisplay = document.getElementById("ichthyologistDisplay");
-const ichthyologistItem = document.getElementById("ichthyologistItem");
-const resonanceDisplay = document.getElementById("resonanceDisplay");
-const resonanceItem = document.getElementById("resonanceItem");
 
 coinAmount.innerHTML = "You got " + addCoin + " coins";
 
-function showMarketplace() {
-    marketplaceItem.innerHTML = "";
-    marketplaceItems.forEach(item => {
-        const itemButton = document.createElement("button");
-        if (hasItem(item.id)) {
-            itemButton.innerHTML = item.name + " (owned)" ;
-        } else {
-            itemButton.innerHTML = item.name + " | Effects: " + item.effect + " | " + item.price + " coins";
-        }
-        itemButton.addEventListener("click", () => buyItem(item));
-        marketplaceItem.appendChild(itemButton);
-    });
+// Coins
 
-    const sellTitle = document.createElement("p");
-    sellTitle.textContent = "Sell your items (" + 70 + "% of the price):";
-    marketplaceItem.appendChild(sellTitle);
-
-    const sellableItems = getBackpack().filter(item => sellPrice(item) > 0);
-    if (sellableItems.length === 0) {
-        const nothingToSell = document.createElement("p");
-        nothingToSell.textContent = "You have nothing to sell. Only items in your backpack can be sold.";
-        marketplaceItem.appendChild(nothingToSell);
-    }
-    sellableItems.forEach(item => {
-        const sellButton = document.createElement("button");
-        sellButton.innerHTML = "Sell: " + item.name + " | Effects: " + item.effect + " | " + sellPrice(item) + " coins";
-        sellButton.addEventListener("click", () => sellItem(item));
-        marketplaceItem.appendChild(sellButton);
-    });
+export function getCoins() {
+    return addCoin;
 }
 
-function buyItem(item) {
-    if (hasItem(item.id)) {
-        alert("You already own the " + item.name + ".");
-        return;
-    }
-    if (backpackFull()) {
-        alert("Your backpack is full, you can't buy the " + item.name + ".");
-        return;
-    }
-    if (addCoin < item.price) {
-        alert("You need " + item.price + " coins to buy the " + item.name + ".");
-        return;
-    }
-    addCoin -= item.price;
-    localStorage.setItem("saveCoin", addCoin);
-    coinAmount.innerHTML = "You got " + addCoin + " coins";
-    addItem(item);
-    showMarketplace();
-}
-
-function sellPrice(item) {
-    if (item.sellValue) return item.sellValue;
-    return Math.floor((item.price || 0) * 70 / 100);
-}
-
-function sellItem(item) {
-    const price = sellPrice(item);
-    const wantsToSell = confirm(
-        "The trader looks at your " + item.name + ":\n" +
-        "\"I'll give you " + price + " coins for it.\"\n\n" +
-        "Do you want to sell it?"
-    );
-    if (!wantsToSell) return;
-
-    if (removeItem(item.id)) {
-        coins(price);
-        alert("You sold your " + item.name + " for " + price + " coins.");
-    }
-    showMarketplace();
-}
-
-document.addEventListener("inventoryChanged", showMarketplace);
-showMarketplace();
-
-function setButtonsDisabled(status) {
-    const allButtons = document.querySelectorAll("button");
-    allButtons.forEach(btn => {
-        btn.disabled = status;
-    });
-}
-
-function coins(amount) {
+export function coins(amount) {
     addCoin += amount;
     localStorage.setItem("saveCoin", addCoin);
     coinAmount.innerHTML = "You got " + addCoin + " coins";
 }
 
+// Fish amounts
+
 function totalFish() {
     return Object.values(fish).reduce((sum, amount) => sum + amount, 0);
+}
+
+export function getFishAmount(id) {
+    return fish[id] || 0;
+}
+
+export function removeFish(id, amount) {
+    fish[id] = getFishAmount(id) - amount;
+    selected[id] = Math.min(selected[id] || 0, fish[id]);
+    localStorage.setItem("saveFish", JSON.stringify(fish));
+    showFish();
 }
 
 function showFish() {
@@ -167,7 +97,15 @@ function changeSelected(type, change) {
     showFish();
 }
 
-function openEvent(text, buttons) {
+// Popup for events (fishing, selling)
+function setButtonsDisabled(status) {
+    const allButtons = document.querySelectorAll("button");
+    allButtons.forEach(btn => {
+        btn.disabled = status;
+    });
+}
+
+export function openEvent(text, buttons) {
     setButtonsDisabled(true);
     fishingText.textContent = text;
     fishingButtons.innerHTML = "";
@@ -180,11 +118,12 @@ function openEvent(text, buttons) {
     fishingPopup.style.display = "block";
 }
 
-function closeEvent() {
+export function closeEvent() {
     fishingPopup.style.display = "none";
     setButtonsDisabled(false);
 }
 
+// Fishing
 function nextFish() {
     let time = times[i];
 
@@ -219,53 +158,125 @@ function fishingEvent() {
         return;
     }
     const type = pickFish(canCatch);
+    const barWidths = Array.isArray(type.barWidth) ? type.barWidth : Array(type.bars || 1).fill(type.barWidth);
+    const barCount = barWidths.length; 
+    const zoneSize = Math.max(1, type.zone + getStat("zoneBonus", 0));
+    const fishLooks = ["="]; 
 
-    const catchBar = 22;
-    const catchZone = Math.max(1, type.zone + getStat("zoneBonus", 0));
+    const bars = [];
+    barWidths.forEach(width => {
+        const bar = { width: width, catchZone: Math.min(width - 1, zoneSize), fishDirection: -1 };
+        bar.zoneStart = randomZoneStart(bar);
+        bars.push(bar);
+    });
+    let activeBar = 0; 
     let fishRound = 1; // starts on round 1
     let fishHits = 0; // starts on 0 hits
     let position = 0; // starts on the left side of the catch bar
     let direction = 1;
-    let catchZoneStart = Math.floor(Math.random() * (catchBar - catchZone));
     let finished = false;
+    let rewinds = getStat("rewind", 0); // Rewind enchant: how many rounds you can redo
+    const roundHits = [];
 
-    function fishingDraw() {
-        let fishBar = "";
-        for (let addFish = 0; addFish < catchBar; addFish++) {
-            if (addFish === position) fishBar += "|";
-            else if (addFish >= catchZoneStart && addFish < catchZoneStart + catchZone) fishBar += "=";
-            else fishBar += "-";
-        }
-        fishingText.textContent = "Click the button or press space to reel.\n\n You'll catch a fish after 3 hits in 3 rounds.\n\n" +
-            "[" + fishBar + "]\n\n" +
-            "Round " + fishRound + "/3, hits: " + fishHits;
+    function randomZoneStart(bar) {
+        return Math.floor(Math.random() * (bar.width - bar.catchZone + 1));
     }
 
-        const startTime = Date.now();
-        let timer;
-        function barSpeed() {
-            return (type.speed + getStat("slowBar", 0)) * getFishSlowdown((Date.now() - startTime) / 1000);
+    function switchBar(n) {
+        activeBar = n;
+        position = Math.min(position, bars[activeBar].width - 1);
+    }
+
+    function fishingDraw() {
+        let text = "Click the button or press space to reel.\n\n You'll catch a fish after " + type.hits + " hits in " + type.rounds + " rounds.\n\n";
+        bars.forEach((bar, n) => {
+            let fishBar = "";
+            for (let addFish = 0; addFish < bar.width; addFish++) {
+                if (n === activeBar && addFish === position) fishBar += "|";
+                else if (addFish >= bar.zoneStart && addFish < bar.zoneStart + bar.catchZone) fishBar += fishLooks[n % fishLooks.length];
+                else fishBar += "-";
+            }
+            const marker = (barCount > 1 && n === activeBar) ? "> " : "  ";
+            text += marker + "[" + fishBar + "]\n";
+        });
+        text += "\nRound " + fishRound + "/" + type.rounds + ", hits: " + fishHits;
+        if (rewinds > 0) text += ", rewinds left: " + rewinds;
+        fishingText.textContent = text;
+    }
+
+    const startTime = Date.now();
+    let lineTimer;
+    let fishTimer;
+
+    function lineSpeed() {
+        return type.speed + getStat("slowBar", 0);
+    }
+    function moveLine() {
+        const width = bars[activeBar].width;
+        position += direction;
+        if (position <= 0) {
+            position = 0;
+            direction = 1;
         }
-        function moveBar() {
-            position += direction;
-            if (position === 0 || position === catchBar - 1) direction = -direction;
-            fishingDraw();
-            timer = setTimeout(moveBar, barSpeed());
+        if (position >= width - 1) {
+            position = width - 1;
+            direction = -1;
         }
-    timer = setTimeout(moveBar, barSpeed());
+        fishingDraw();
+        lineTimer = setTimeout(moveLine, lineSpeed());
+    }
+
+    function fishSpeed() {
+        return (type.fishSpeed + getStat("slowFish", 0)) * getFishSlowdown((Date.now() - startTime) / 1000);
+    }
+    function moveFish() {
+        bars.forEach(bar => {
+            const next = bar.zoneStart + bar.fishDirection;
+            if (next < 0 || next > bar.width - bar.catchZone) bar.fishDirection = -bar.fishDirection;
+            bar.zoneStart += bar.fishDirection;
+        });
+        fishingDraw();
+        fishTimer = setTimeout(moveFish, fishSpeed());
+    }
+
+    lineTimer = setTimeout(moveLine, lineSpeed());
+    if (type.fishSpeed > 0) fishTimer = setTimeout(moveFish, fishSpeed());
 
     function reel() {
         if (finished) return; // ignore any inputs after done fishing
-        if (position >= catchZoneStart && position < catchZoneStart + catchZone) fishHits++;
-        if (fishRound === 3) {
+        const bar = bars[activeBar];
+        const hit = position >= bar.zoneStart && position < bar.zoneStart + bar.catchZone;
+        if (hit) fishHits++;
+
+        // stops if you have enough hits
+        const caught = fishHits >= type.hits;
+
+        // stops if you have no more rounds left and no more rewinds
+        const noChanceLeft = fishHits + (type.rounds - fishRound) < type.hits && rewinds === 0;
+        if (fishRound === type.rounds || caught || noChanceLeft) {
             finished = true;
-            clearTimeout(timer);
+            clearTimeout(lineTimer);
+            clearTimeout(fishTimer);
             window.removeEventListener("keydown", spacebarReel);
             finishFishing(fishHits, type);
             return;
         }
+        roundHits.push({ hit: hit, bar: activeBar });
         fishRound++;
-        catchZoneStart = Math.floor(Math.random() * (catchBar - catchZone));
+        bar.zoneStart = randomZoneStart(bar);
+        if (hit) switchBar((activeBar + 1) % barCount);
+        fishingDraw();
+    }
+
+    function rewind() {
+        if (finished || rewinds === 0 || roundHits.length === 0) return;
+        const lastRound = roundHits.pop();
+        if (lastRound.hit) fishHits--;
+        switchBar(lastRound.bar);
+        fishRound--;
+        rewinds--;
+        bars[activeBar].zoneStart = randomZoneStart(bars[activeBar]);
+        fishingDraw();
     }
 
     function spacebarReel(event) {
@@ -276,27 +287,42 @@ function fishingEvent() {
     }
 
     window.addEventListener("keydown", spacebarReel);
-    openEvent("", [["Click here to reel", reel]]);
+    const fishingEventButtons = [["Click here to reel", reel]];
+    if (rewinds > 0) fishingEventButtons.push(["Rewind", rewind]);
+    openEvent("", fishingEventButtons);
     fishingDraw();
 }
 
-function finishFishing(hits, type) {
-    let message = "The fish got away...";
-    if (hits >= 3) { // if 3 hits, you get a fish
-        fish[type.id] = (fish[type.id] || 0) + 1;
-        localStorage.setItem("saveFish", JSON.stringify(fish));
-        addResonance(type.resonance);
-        message = "You caught a " + type.name + "!\n+" + type.resonance + " Resonance" + affinityFishCaught();
+function finishFishing(hits, type) { 
+    let message = "The fish got away..."; 
+    
+    if (hits >= type.hits) { // enough hits, you get a fish
+        fish[type.id] = (fish[type.id] || 0) + 1; 
+        localStorage.setItem("saveFish", JSON.stringify(fish)); 
+        addResonance(type.resonance); 
+        message = "You caught a " + type.name + "!\n+" + type.resonance + " Resonance" + affinityFishCaught(); 
+    } 
+
+    function handleContinue() {
+        window.removeEventListener("keydown", enterContinue);
+        closeEvent(); 
+        showFish(); 
+        nextTime(); 
     }
 
-    openEvent(message, [["Continue", () => {
-        closeEvent();
-        showFish();
-        nextTime();
-    }]]);
+    function enterContinue(event) { 
+        if (event.code !== "Enter" || event.repeat) return; 
+        event.preventDefault(); 
+        if (document.activeElement) document.activeElement.blur(); 
+        handleContinue(); 
+    } 
+
+    window.addEventListener("keydown", enterContinue); 
+    openEvent(message, [["Continue or press enter", () => handleContinue()]]); 
 }
 
-function sellFish() {
+
+export function sellFish() {
     let sellFishTotal = 0;
     let sellFishList = "";
     fishList.forEach(type => {
@@ -328,176 +354,31 @@ function sellFish() {
     ]);
 }
 
-
-function addText(box, text) {
+// some helpers
+export function addText(box, text) {
     const line = document.createElement("p");
     line.textContent = text;
     box.appendChild(line);
 }
 
-function addButton(box, label, action) {
+export function addButton(box, label, action) {
     const button = document.createElement("button");
     button.textContent = label;
     button.addEventListener("click", action);
     box.appendChild(button);
 }
 
-const enchantLevels = [
-    { level: 1, cost: 25 },
-    { level: 2, cost: 50 },
-];
-const DissonanceCost = 20;
-let enchantRod = null;
-
-function randomEnchant() {
-    const randomEnchantIds = Object.keys(enchants);
-    let roll = Math.random() * randomEnchantIds.reduce((sum, id) => sum + enchants[id].chance, 0);
-    for (const enchantId of randomEnchantIds) {
-        roll -= enchants[enchantId].chance;
-        if (roll < 0) return enchantId;
-    }
-    return randomEnchantIds[randomEnchantIds.length - 1];
-}
-
-function showResonanceShop() {
-    resonanceItem.innerHTML = "";
-    addText(resonanceItem, "You have " + getResonance() + " resonance and " + addCoin + " coins.");
-
-    if (!enchantRod) {
-        addText(resonanceItem, "Choose the rod you want to resonance:");
-        const rods = [getEquipped("Rod"), ...getBackpack().filter(item => item.slot === "Rod")];
-        rods.forEach((rod, n) => {
-            const place = (n === 0) ? "equipped" : "backpack";
-            addButton(resonanceItem, rod.name + " (" + place + ") | " + enchantText(rod), () => {
-                enchantRod = rod;
-                showResonanceShop();
-            });
-        });
-        return;
-    }
-
-    addText(resonanceItem, "Rod: " + enchantRod.name + " | " + enchantText(enchantRod));
-    addText(resonanceItem, "Choose a rank:");
-    enchantLevels.forEach(level => {
-        addButton(resonanceItem, "Rank " + roman[level.level] + " | " + level.cost + " resonance", () => enchantRodLevel(level));
-    });
-    addButton(resonanceItem, "Dissonance | " + DissonanceCost + " coins", DissonancRod);
-    addButton(resonanceItem, "Back", () => {
-        enchantRod = null;
-        showResonanceShop();
-    });
-}
-
-function enchantRodLevel(level) {
-    if (getResonance() < level.cost) {
-        alert("You need " + level.cost + " resonance for level " + roman[level.level] + ".");
-        return;
-    }
-    const randomEnchantId = randomEnchant();
-    const newEnchant = { id: randomEnchantId, level: Math.min(level.level, enchants[randomEnchantId].maxLevel) };
-    const enchantList = getEnchants(enchantRod);
-    const oldEnchant = enchantList.find(enchant => enchant.id === randomEnchantId);
-    addResonance(-level.cost);
-
-    if (!oldEnchant) {
-        setEnchants(enchantRod, [...enchantList, newEnchant]);
-        alert("Your rod starts to hum...\nIt got " + enchantName(newEnchant) + "!");
-    } else if (oldEnchant.level < newEnchant.level) {
-        setEnchants(enchantRod, enchantList.map(enchant => enchant.id === randomEnchantId ? newEnchant : enchant));
-        alert("Your rod starts to hum...\n" + enchantName(oldEnchant) + " got upgraded to " + enchantName(newEnchant) + "!");
+// Sleeping
+function sleep() {
+    const time = times[i];
+    if (time === "evening" || time === "night") {
+        nextDay();
     } else {
-        alert("The resonance fizzles...\nYour rod already has " + enchantName(oldEnchant) + ".");
+        alert("You can't sleep during the day, get back to work.");
     }
-    showResonanceShop();
-}
-
-function DissonancRod() {
-    if (addCoin < DissonanceCost) {
-        alert("You need " + DissonanceCost + " coins to disenchant.");
-        return;
-    }
-    if (!confirm("Remove " + enchantText(enchantRod) + " for " + DissonanceCost + " coins?")) return;
-    coins(-DissonanceCost);
-    setEnchants(enchantRod, []);
-    showResonanceShop();
-}
-
-const rareFishShallowCoastal = ["catfish", "lumpfish"];
-const fishResearcherRounds = [
-    { waters: ["shallow"], extra: [], coins: 10, resonance: 5 },
-    { waters: ["coastal"], extra: [], coins: 15, resonance: 10 },
-    { waters: ["shallow", "coastal"], extra: rareFishShallowCoastal, coins: 25, resonance: 20 },
-];
-
-function newFishResearcherQuest(round) {
-    const fishResearcherQuest = fishResearcherRounds[round - 1];
-    if (!fishResearcherQuest) return { round: round, wanted: [] };
-    const fishResearcherFishPool = fishList.filter(type => type.waters.some(water => fishResearcherQuest.waters.includes(water)) && !rareFishShallowCoastal.includes(type.id));
-    const fishResearcherRandomFish = fishResearcherFishPool.sort(() => Math.random() - 0.5).slice(0, 3).map(type => type.id);
-    return { round: round, wanted: [...fishResearcherQuest.extra, ...fishResearcherRandomFish] };
-}
-
-let fishResearcher;
-try {
-    fishResearcher = JSON.parse(localStorage.getItem("saveFishResearcher"));
-} catch {
-    fishResearcher = null;
-}
-// to make sure a quests does exist, even with an old safe.
-if (!fishResearcher || !Array.isArray(fishResearcher.wanted) || !fishResearcher.wanted.every(id => fishList.some(type => type.id === id))) {
-    fishResearcher = newFishResearcherQuest(1);
-}
-localStorage.setItem("saveFishResearcher", JSON.stringify(fishResearcher));
-
-function showFishResearcher() {
-    ichthyologistItem.innerHTML = "";
-    const fishResearcherQuest = fishResearcherRounds[fishResearcher.round - 1];
-    if (!fishResearcherQuest) {
-        addText(ichthyologistItem, "\"Thanks to you, my research is finished.\"");
-        return;
-    }
-    // I want to add some information about getting to the next place after this quest.
-
-    addText(ichthyologistItem, "\"Could you bring me one of each fish?\"");
-    fishResearcher.wanted.forEach(id => {
-        const fishType = fishList.find(type => type.id === id);
-        addText(ichthyologistItem, "- " + fishType.name + " (you have " + (fish[id] || 0) + ")");
-    });
-    addText(ichthyologistItem, "Reward: " + fishResearcherQuest.coins + " coins & " + fishResearcherQuest.resonance + " resonance");
-    addButton(ichthyologistItem, "Give the fish", giveFishResearcherFish);
-}
-
-function giveFishResearcherFish() {
-    if (fishResearcher.wanted.some(id => !fish[id])) {
-        alert("You don't have all the fish yet.");
-        return;
-    }
-    const fishResearcherQuest = fishResearcherRounds[fishResearcher.round - 1];
-    fishResearcher.wanted.forEach(id => {
-        fish[id]--;
-        selected[id] = Math.min(selected[id] || 0, fish[id]);
-    });
-    localStorage.setItem("saveFish", JSON.stringify(fish));
-    coins(fishResearcherQuest.coins);
-    addResonance(fishResearcherQuest.resonance);
-    alert("The researcher checks the fish and is satisfied \nYou got " + fishResearcherQuest.coins + " coins & " + fishResearcherQuest.resonance + " resonance!");
-
-    fishResearcher = newFishResearcherQuest(fishResearcher.round + 1);
-    localStorage.setItem("saveFishResearcher", JSON.stringify(fishResearcher));
-    showFish();
-    showFishResearcher();
 }
 
 showFish();
 
 document.getElementById('nextFish').addEventListener('click', nextFish);
-document.getElementById('sellFish').addEventListener('click', sellFish);
-document.getElementById('resonance').addEventListener('click', () => {
-    enchantRod = null;
-    showResonanceShop();
-    resonanceDisplay.style.display = "block";
-});
-ichthyologist.addEventListener('click', () => {
-    showFishResearcher();
-    ichthyologistDisplay.style.display = "block";
-});
+document.getElementById('nextDay').addEventListener('click', sleep);
