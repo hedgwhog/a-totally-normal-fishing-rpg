@@ -228,6 +228,8 @@ function fishingEvent() {
     let direction = 1;
     let catchZoneStart = Math.floor(Math.random() * (catchBar - catchZone));
     let finished = false;
+    let rewinds = getStat("rewind", 0); // Rewind enchant: how many rounds you can redo
+    const roundHits = []; // true or false for every round you already reeled
 
     function fishingDraw() {
         let fishBar = "";
@@ -236,9 +238,10 @@ function fishingEvent() {
             else if (addFish >= catchZoneStart && addFish < catchZoneStart + catchZone) fishBar += "=";
             else fishBar += "-";
         }
-        fishingText.textContent = "Click the button or press space to reel.\n\n You'll catch a fish after 3 hits in 3 rounds.\n\n" +
+        fishingText.textContent = "Click the button or press space to reel.\n\n You'll catch a fish after " + type.hits + " hits in " + type.rounds + " rounds.\n\n" +
             "[" + fishBar + "]\n\n" +
-            "Round " + fishRound + "/3, hits: " + fishHits;
+            "Round " + fishRound + "/" + type.rounds + ", hits: " + fishHits;
+        if (rewinds > 0) fishingText.textContent += ", rewinds left: " + rewinds;
     }
 
         const startTime = Date.now();
@@ -256,16 +259,32 @@ function fishingEvent() {
 
     function reel() {
         if (finished) return; // ignore any inputs after done fishing
-        if (position >= catchZoneStart && position < catchZoneStart + catchZone) fishHits++;
-        if (fishRound === 3) {
+        const hit = position >= catchZoneStart && position < catchZoneStart + catchZone;
+        if (hit) fishHits++;
+        // stop right away if you have enough hits
+        const caught = fishHits >= type.hits;
+        // stop right away if you can't get enough hits anymore (and have no rewinds left)
+        const noChanceLeft = fishHits + (type.rounds - fishRound) < type.hits && rewinds === 0;
+        if (fishRound === type.rounds || caught || noChanceLeft) {
             finished = true;
             clearTimeout(timer);
             window.removeEventListener("keydown", spacebarReel);
             finishFishing(fishHits, type);
             return;
         }
+        roundHits.push(hit);
         fishRound++;
         catchZoneStart = Math.floor(Math.random() * (catchBar - catchZone));
+    }
+
+    // goes back one round and takes away the hit of that round
+    function rewind() {
+        if (finished || rewinds === 0 || roundHits.length === 0) return;
+        if (roundHits.pop()) fishHits--;
+        fishRound--;
+        rewinds--;
+        catchZoneStart = Math.floor(Math.random() * (catchBar - catchZone));
+        fishingDraw();
     }
 
     function spacebarReel(event) {
@@ -276,25 +295,40 @@ function fishingEvent() {
     }
 
     window.addEventListener("keydown", spacebarReel);
-    openEvent("", [["Click here to reel", reel]]);
+    const fishingEventButtons = [["Click here to reel", reel]];
+    if (rewinds > 0) fishingEventButtons.push(["Rewind", rewind]);
+    openEvent("", fishingEventButtons);
     fishingDraw();
 }
 
-function finishFishing(hits, type) {
-    let message = "The fish got away...";
-    if (hits >= 3) { // if 3 hits, you get a fish
-        fish[type.id] = (fish[type.id] || 0) + 1;
-        localStorage.setItem("saveFish", JSON.stringify(fish));
-        addResonance(type.resonance);
-        message = "You caught a " + type.name + "!\n+" + type.resonance + " Resonance" + affinityFishCaught();
+function finishFishing(hits, type) { 
+    let message = "The fish got away..."; 
+    
+    if (hits >= type.hits) { // enough hits, you get a fish
+        fish[type.id] = (fish[type.id] || 0) + 1; 
+        localStorage.setItem("saveFish", JSON.stringify(fish)); 
+        addResonance(type.resonance); 
+        message = "You caught a " + type.name + "!\n+" + type.resonance + " Resonance" + affinityFishCaught(); 
+    } 
+
+    function handleContinue() {
+        window.removeEventListener("keydown", enterContinue);
+        closeEvent(); 
+        showFish(); 
+        nextTime(); 
     }
 
-    openEvent(message, [["Continue", () => {
-        closeEvent();
-        showFish();
-        nextTime();
-    }]]);
+    function enterContinue(event) { 
+        if (event.code !== "Enter" || event.repeat) return; 
+        event.preventDefault(); 
+        if (document.activeElement) document.activeElement.blur(); 
+        handleContinue(); 
+    } 
+
+    window.addEventListener("keydown", enterContinue); 
+    openEvent(message, [["Continue or press enter", () => handleContinue()]]); 
 }
+
 
 function sellFish() {
     let sellFishTotal = 0;
@@ -342,15 +376,17 @@ function addButton(box, label, action) {
     box.appendChild(button);
 }
 
+// extraChance: chance for a 2nd enchant, everything after that is 0.5
+// levelUpChance: chance to go from level I to II. Every level after that is harder (II -> III is half, III -> IV is a third...)
 const enchantLevels = [
-    { level: 1, cost: 25 },
-    { level: 2, cost: 50 },
+    { level: 1, cost: 25, extraChance: 0.25, levelUpChance: 0.4 },
+    { level: 2, cost: 50, extraChance: 0.4, levelUpChance: 0.75 },
+    { level: 3, cost: 125, extraChance: 0.65, levelUpChance: 0.95 },
 ];
 const DissonanceCost = 20;
 let enchantRod = null;
 
-function randomEnchant() {
-    const randomEnchantIds = Object.keys(enchants);
+function randomEnchant(randomEnchantIds) {
     let roll = Math.random() * randomEnchantIds.reduce((sum, id) => sum + enchants[id].chance, 0);
     for (const enchantId of randomEnchantIds) {
         roll -= enchants[enchantId].chance;
@@ -388,26 +424,36 @@ function showResonanceShop() {
     });
 }
 
+function rollEnchantLevel(id, level) {
+    let enchantLevel = 1;
+    const levelUp = level.levelUpChance * (enchants[id].levelUp || 1);
+    while (enchantLevel < enchants[id].maxLevel && Math.random() < levelUp / enchantLevel) enchantLevel++;
+    return enchantLevel;
+}
+
 function enchantRodLevel(level) {
-    if (getResonance() < level.cost) {
-        alert("You need " + level.cost + " resonance for level " + roman[level.level] + ".");
+    if (getEnchants(enchantRod).length > 0) {
+        alert("This rod already has " + enchantText(enchantRod) + ".\nDissonance it first.");
         return;
     }
-    const randomEnchantId = randomEnchant();
-    const newEnchant = { id: randomEnchantId, level: Math.min(level.level, enchants[randomEnchantId].maxLevel) };
-    const enchantList = getEnchants(enchantRod);
-    const oldEnchant = enchantList.find(enchant => enchant.id === randomEnchantId);
+    if (getResonance() < level.cost) {
+        alert("You need " + level.cost + " resonance for rank " + roman[level.level] + ".");
+        return;
+    }
     addResonance(-level.cost);
 
-    if (!oldEnchant) {
-        setEnchants(enchantRod, [...enchantList, newEnchant]);
-        alert("Your rod starts to hum...\nIt got " + enchantName(newEnchant) + "!");
-    } else if (oldEnchant.level < newEnchant.level) {
-        setEnchants(enchantRod, enchantList.map(enchant => enchant.id === randomEnchantId ? newEnchant : enchant));
-        alert("Your rod starts to hum...\n" + enchantName(oldEnchant) + " got upgraded to " + enchantName(newEnchant) + "!");
-    } else {
-        alert("The resonance fizzles...\nYour rod already has " + enchantName(oldEnchant) + ".");
+    const rolledEnchants = [];
+    let extraChance = 1;
+    while (Math.random() < extraChance) {
+        const enchantOptions = Object.keys(enchants).filter(id => (enchants[id].minRank || 1) <= level.level && !rolledEnchants.some(enchant => enchant.id === id));
+        if (enchantOptions.length === 0) break;
+        const randomEnchantId = randomEnchant(enchantOptions);
+        rolledEnchants.push({ id: randomEnchantId, level: rollEnchantLevel(randomEnchantId, level) });
+        extraChance = (rolledEnchants.length === 1) ? level.extraChance : extraChance / 2;
     }
+
+    setEnchants(enchantRod, rolledEnchants);
+    alert("Your rod starts to glow...\nIt got " + enchantText(enchantRod));
     showResonanceShop();
 }
 

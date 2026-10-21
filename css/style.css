@@ -109,7 +109,7 @@ button {
     top: 10px;
     left: 10px;
     background-color: white;
-    width: 595px;
+    width: 540px;
     height: 460px;
     display: none;
     border: 1px solid black;
@@ -441,7 +441,7 @@ button {
 
 .catalogInfo {
     position: absolute;
-    top: 40px;
+    top: 55px;
     left: 40px;
     height: 400px;
     width: 450px;

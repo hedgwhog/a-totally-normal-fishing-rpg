@@ -9,10 +9,13 @@ const backpackSize = 4;
 
 // stat: which stat it boosts, perLevel: how much each level adds
 // chance: how often you get it in the atelier (hitbox is really rare)
+// minRank: minimum rank for it to be able to show up
+// levelUp. I can lower the chance of getting a higher level of an enchant for rare enchants
 export const enchants = {
-    luck: { name: "Luck", stat: "luck", perLevel: 0.5, maxLevel: 10, chance: 48 },
-    focus: { name: "Focus", stat: "slowBar", perLevel: 2.5, maxLevel: 10, chance: 48 },
-    hitbox: { name: "Hitbox", stat: "zoneBonus", perLevel: 1, maxLevel: 3, chance: 4 },
+    luck: { name: "Luck", stat: "luck", perLevel: 0.5, maxLevel: 10, chance: 43 },
+    focus: { name: "Focus", stat: "slowBar", perLevel: 2.5, maxLevel: 10, chance: 44 },
+    hitbox: { name: "Hitbox", stat: "zoneBonus", perLevel: 1, maxLevel: 2, minRank: 2, chance: 2, levelUp: 0.15 },
+    rewind: { name: "Rewind", stat: "rewind", perLevel: 1, maxLevel: 3, minRank: 2, chance: 4, levelUp: 0.20 },
 };
 export const roman = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
 
