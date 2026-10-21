@@ -48,8 +48,7 @@
                 </div>
             </div>
 
-        <div class="dock-container">
-            <h1 class="center">Freshwater haven</h1>
+        <div class="event-container">
             <div class="item-list">
                 <div id="coinAmount">Coins: 0</div><br>
                 <div>Items:</div>
@@ -58,13 +57,6 @@
             <div class="fish-list">
                 <div id="fishAmount">You got 0 fish</div>
                 <div id="fishTypes"></div>
-            </div>
-
-            <div class="event-list">
-                <button id="marketplace" onclick="marketplaceDisplay.style.display = 'block'">Marketplace</button>
-                <button id="ichthyologist">Ichthyologist</button>
-                <button id="sellFish">Sell fish to the<br>local Fishmonger</button>
-                <button id="resonance">Resonance altar</button>
             </div>
 
             <div class="xp-list">
@@ -83,25 +75,37 @@
                 <div id="fishingButtons"></div>
             </div>
 
-            <div id="marketplaceDisplay">
-                <h1>Marketplace</h1>
-                <h4> Opens once every 5 days, for a 2 day period. Only in the morning, afternoon & evening.</h4>
-                <button class="marketplaceDisplay-close" onclick="marketplaceDisplay.style.display = 'none'">Close marketplace</button>
-                <div id="marketplaceItem"></div>
-            </div>
+            <!-- Freshwater haven -->
+            <div class="island" id="freshwaterHaven">
+                <h1 class="center">Freshwater haven</h1>
 
-            <div id="resonanceDisplay">
-                <h1>Resonance altar</h1>
-                <h4>Open 4 days, then closed for 1 day. Only in the morning, afternoon & night.</h4>
-                <button class="marketplaceDisplay-close" onclick="resonanceDisplay.style.display = 'none'">Close resonance altar</button>
-                <div id="resonanceItem"></div>
-            </div>
+                <div class="event-list">
+                    <button id="marketplace" onclick="marketplaceDisplay.style.display = 'block'">Marketplace</button>
+                    <button id="ichthyologist">Ichthyologist</button>
+                    <button id="sellFish">Sell fish to the<br>local Fishmonger</button>
+                    <button id="resonance">Resonance altar</button>
+                </div>
 
-            <div id="ichthyologistDisplay">
-                <h1>Ichthyologist</h1>
-                <h4>A fish researcher wants to study some fish. She is up 24/7</h4>
-                <button class="marketplaceDisplay-close" onclick="ichthyologistDisplay.style.display = 'none'">Close ichthyologist</button>
-                <div id="ichthyologistItem"></div>
+                <div id="marketplaceDisplay">
+                    <h1>Marketplace</h1>
+                    <h4> Opens once every 5 days, for a 2 day period. Only in the morning, afternoon & evening.</h4>
+                    <button class="marketplaceDisplay-close" onclick="marketplaceDisplay.style.display = 'none'">Close marketplace</button>
+                    <div id="marketplaceItem"></div>
+                </div>
+
+                <div id="resonanceDisplay">
+                    <h1>Resonance altar</h1>
+                    <h4>Open 4 days, then closed for 1 day. Only in the morning, afternoon & night.</h4>
+                    <button class="marketplaceDisplay-close" onclick="resonanceDisplay.style.display = 'none'">Close resonance altar</button>
+                    <div id="resonanceItem"></div>
+                </div>
+
+                <div id="ichthyologistDisplay">
+                    <h1>Ichthyologist</h1>
+                    <h4>A fish researcher wants to study some fish. She is up 24/7</h4>
+                    <button class="marketplaceDisplay-close" onclick="ichthyologistDisplay.style.display = 'none'">Close ichthyologist</button>
+                    <div id="ichthyologistItem"></div>
+                </div>
             </div>
         </div>
 
@@ -126,25 +130,26 @@
             <button id="catalogClose" onclick="catalogDisplay.style.display = 'none'">Close catalogue</button>
             <h1>Catalogue</h1>
             <div class="catalogInfo">
-                <h5 style="text-decoration: underline;">Some explantion of how different mechanics work.</h5>
                 <h3>Fishing:</h3>
-                <h4>To catch fish, you need to time catching the fish. Depending on what fish, the fish can be faster, smaller and rarer to get.</h4>
-                <h4>Some fishes can only be catched in a certain habitat, so you need to have the correct fishing rod to be able to catch them. Every habitat has their own lootpool.</h4>
-                <h4>You can sell your catched fish for coins, by selecting the amount and type with the "+" and "-" keys, and then selling it to the fishmonger.</h4>
-                <h4>You can fish other items up, but those are quite rare.</h4>
-                
+                <h4>To catch a fish, press SPACE (or click the button) when your line | is on the fish (===). The fish moves as well.</h4>
+                <h4>Every fish is different: its speed, the size, the length and its value on the market. You need a certain amount of hits in a certain amount of rounds.</h4>
+                <h4>Some fish can only be caught in a certain habitat, so you need to have the correct fishing rod to be able to catch them. Every habitat has its own lootpool. (NOTE: The habitat automatically changes depending on the fishing rod you currently have equipped)</h4>
+                <h4>You can sell your fish to The Fishmonger for coins. You can choose the amount you want to sell by using the "+" and "-" icons.</h4>
+
                 <br><h3>Marketplace:</h3>
-                <h4>You can upgrade your gear here for coins. It is also the place to sell old gear you have no interest in. You can also buy a different type of fishing rods here. _______ .Keep scrolling. </h4>
-                <h4>The following upgrades could also be included in a fishing rod:</h4>
-                <h4> - Focus: By focussing, it seems like the fish swim slower.</h4>
-                <h4> - Luck: Makes rarer fish magically show up more.</h4>
+                <h4>Over here you can buy new gear and sell your old gear.</h4>
 
                 <br><h3>Resonance:</h3>
-                <h4>You can resonance your fishing rod to make it better. You get a random upgrade, and depending on the level of resonance, it can be a lot better.</h4>
-                <h4>dissonance to be able to resonance your fishing rod again. </h4>
+                <h4>At the resonance altar you can "resonate" your fishing rod to make it better. The resonance you get are random. A higher rank costs more, but gives a bigger chance on stronger and multiple resonances.</h4>
+                <h4>Currently available:</h4>
+                <h4> - FOCUS: By focusing, your fishing line moves slower, which makes it easier to time.</h4>
+                <h4> - LUCK: You're more likely to hook more valuable fish.</h4>
+                <h4> - HITBOX: The fish becomes easier to hit. Every level makes its zone 1 bigger.</h4>
+                <h4> - REWIND: Rewind after a miss and try again (except the last round!). Every level gives you 1 rewind per fish.</h4>
+                <h4>A rod with upgrades can't be resonated again. Use DISSONANCE to remove all its upgrades first, if you want to reroll them.</h4>
 
                 <br><h3>Affinity:</h3>
-                <h4>Quite unclear? Something related to effects, I think.</h4>
+                <h4>???</h4>
             </div>
 
         </div>
@@ -152,11 +157,7 @@
     <script type="module" src="js/events.js"></script>
     <script type="module" src="js/user.js"></script>
     <script type="module" src="js/time.js"></script>
-    <script>
-        const invertCheckbox = document.getElementById('invert-toggle');
-        invertCheckbox.addEventListener('change', () => {
-        document.documentElement.classList.toggle('inverted-theme', invertCheckbox.checked);
-        });
-    </script>
+    <script type="module" src="js/affinity.js"></script>
+    <script type="module" src="js/FreshwaterHaven.js"></script>
 </body>
 </html>

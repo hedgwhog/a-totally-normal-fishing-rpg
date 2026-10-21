@@ -1,59 +1,36 @@
+import { dayAnimationEnabled } from "./affinity.js";
+
 export let i = parseInt(localStorage.getItem("gameTimeIndex")) || 0;
 export let times = ["morning", "afternoon", "evening", "night"];
 let addDay = parseInt(localStorage.getItem("gameDay")) || 1;
 
 const timeDisplay = document.getElementById("time")
 const dayDisplay = document.getElementById("dayPopupHidden")
-const fishmonger = document.getElementById("sellFish")
-const marketplace = document.getElementById("marketplace")
-const resonanceShop = document.getElementById("resonance")
-const dayDisplayToggle = document.getElementById("dayDisplayToggle");
+
+// Shops that are only open on specific days and times are grouped
+// id: the id of the button,
+// times: when its open
+// openDay: true on the days it is open
+const timedShops = {
+    freshwaterHaven: [
+        { id: "sellFish", times: ["morning"], openDay: day => true },
+        { id: "marketplace", times: ["morning", "afternoon", "evening"], openDay: day => day % 7 < 2 }, // open 2 days every 7 days
+        { id: "resonance", times: ["morning", "afternoon", "night"], openDay: day => day % 5 !== 0 }, // open 4 days, closed 1 day
+    ],
+};
+
+function updateShops() {
+    for (const shops of Object.values(timedShops)) {
+        for (const shop of shops) {
+            const open = shop.times.includes(times[i]) && shop.openDay(addDay);
+            document.getElementById(shop.id).style.display = open ? "block" : "none";
+        }
+    }
+}
 
 timeDisplay.innerHTML = times[i];
 document.getElementById("dayContainer").innerHTML = "Day " + addDay;
-updateFishmonger();
-updateMarketplace();
-updateResonanceShop();
-
-function updateFishmonger() {
-    fishmonger.style.display = (times[i] === "morning") ? "block" : "none";
-}
-
-function updateMarketplace() {
-    const cycleDay = addDay % 7; 
-    const openDays = (cycleDay < 2);
-
-    const time = times[i];
-    const activeTimes = (time === "morning" || time === "afternoon" || time === "evening");
-
-    if (openDays && activeTimes) {
-        marketplace.style.display = "block";
-    } else {
-        marketplace.style.display = "none";
-    }
-}
-
-function updateResonanceShop() {
-    const openDays = (addDay % 5 !== 0);
-
-    const time = times[i];
-    const activeTimes = (time === "morning" || time === "afternoon" || time === "night");
-
-    if (openDays && activeTimes) {
-        resonanceShop.style.display = "block";
-    } else {
-        resonanceShop.style.display = "none";
-    }
-}
-
-const savedSettingDay = localStorage.getItem("enableAnimationDay");
-        if (savedSettingDay !== null) {
-        dayDisplayToggle.checked = savedSettingDay === "true";
-    }
-
-    dayDisplayToggle.addEventListener("change", () => {
-    localStorage.setItem("enableAnimationDay", dayDisplayToggle.checked);
-});
+updateShops();
 
 export function nextTime() {
     i++;
@@ -64,39 +41,30 @@ export function nextTime() {
     localStorage.setItem("gameTimeIndex", i);
     timeDisplay.innerHTML = times[i];
     console.log(times[i]);
-    updateFishmonger();
-    updateMarketplace(); 
-    updateResonanceShop();
+    updateShops();
 }
 
-function nextDay() {
-    let time = times[i]
+// starts the next day
+export function nextDay() {
+    addDay++
+    localStorage.setItem("gameDay", addDay); 
+    dayDisplay.style.display = "block"; 
+    dayDisplay.innerHTML = "Day " + addDay;
+    dayDisplay.style.justifyContent = "center"
+    dayDisplay.style.alignContent = "center"
 
-    if (time === "evening" || time === "night") {
-        addDay++
-        localStorage.setItem("gameDay", addDay); 
-        dayDisplay.style.display = "block"; 
-        dayDisplay.innerHTML = "Day " + addDay;
-        dayDisplay.style.justifyContent = "center"
-        dayDisplay.style.alignContent = "center"
+    const updateDayAnimation = () => {
+    dayDisplay.style.display = "none";
+    document.getElementById("dayContainer").innerHTML = "Day " + addDay;
+    };
 
-        const updateDayAnimation = () => {
-        dayDisplay.style.display = "none";
-        document.getElementById("dayContainer").innerHTML = "Day " + addDay;
-        };
-
-        if (dayDisplayToggle.checked) {
-            setTimeout(updateDayAnimation, 2000);
-        } else {
-            updateDayAnimation();
-        }
-
-        console.log(addDay)
-        i = -1
-        nextTime(times[i]);
+    if (dayAnimationEnabled()) {
+        setTimeout(updateDayAnimation, 2000);
     } else {
-        alert("You can't sleep during the day, get back to work.")
+        updateDayAnimation();
     }
-}
 
-document.getElementById('nextDay').addEventListener('click', nextDay);
+    console.log(addDay)
+    i = -1
+    nextTime(times[i]);
+}

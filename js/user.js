@@ -1,4 +1,3 @@
-import { marketplaceItems } from "./items.js";
 import { getAffinityStat } from "./affinity.js";
 
 const starterHat = { id: "oldHat", name: "Old Hat", slot: "Hat", effect: "", stats: {}, sellValue: 2 };
@@ -19,15 +18,16 @@ export const enchants = {
 };
 export const roman = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
 
-const allItems = [starterHat, starterCloak, starterRod, ...marketplaceItems];
+// every island adds its own items to this list with addItemTypes()
+const allItems = [starterHat, starterCloak, starterRod];
 
-// replaces a saved item with its current ID, if it is null, then it gets returned to nothing (check line 29 for that fix)
+// gives a saved item the newest stats of that item. Items without an ID get removed
 function refreshItem(savedItem) {
     if (!savedItem || !savedItem.id) return null;
     if (savedItem.enchant) savedItem.enchants = [savedItem.enchant];
     delete savedItem.enchant;
     const current = allItems.find(item => item.id === savedItem.id);
-    return current ? { ...savedItem, ...current } : null;
+    return current ? { ...savedItem, ...current } : savedItem;
 }
 
 // Makes sure that you don't crash
@@ -53,6 +53,29 @@ if (!Array.isArray(backpack)) backpack = [];
 backpack = backpack.map(refreshItem).filter(Boolean).slice(0, backpackSize);
 
 const inventoryItems = document.getElementById("inventoryItems");
+
+// Islands
+// every island has its own <div class="island"> in the html (with the title and event list)
+let island = localStorage.getItem("saveIsland") || "freshwaterHaven";
+if (!document.getElementById(island)) island = "freshwaterHaven";
+
+function showIsland() {
+    document.querySelectorAll(".island").forEach(islandBox => {
+        islandBox.style.display = (islandBox.id === island) ? "block" : "none";
+    });
+}
+
+export function getIsland() {
+    return island;
+}
+
+export function goToIsland(id) {
+    island = id;
+    localStorage.setItem("saveIsland", island);
+    showIsland();
+}
+
+// Resonance
 const resonanceDisplay = document.querySelector(".resonance");
 
 let resonance = parseInt(localStorage.getItem("saveResonance")) || 0;
@@ -203,6 +226,15 @@ export function removeItem(id) {
     return removed;
 }
 
+// an island calls this with its items, so your saved items get their newest stats
+export function addItemTypes(items) {
+    allItems.push(...items);
+    for (const slot of Object.keys(equipped)) equipped[slot] = refreshItem(equipped[slot]);
+    backpack = backpack.map(refreshItem);
+    save();
+    showInventory();
+}
+
 export function getEquipped(slot) {
     return equipped[slot];
 }
@@ -235,3 +267,4 @@ export function getStat(name, base) {
 save();
 showInventory();
 showResonance();
+showIsland();
