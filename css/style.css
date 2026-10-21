@@ -475,7 +475,7 @@ button {
     top: 10px;
     left: 10px;
     background-color: white;
-    width: 595px;
+    width: 540px;
     height: 460px;
     display: none;
     border: 1px solid black;
@@ -500,7 +500,7 @@ button {
     position: absolute;
     top: 60px;
     left: 200px;
-    width: 370px;
+    width: 330px;
 }
 
 #affinityInfo p {

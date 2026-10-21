@@ -248,3 +248,24 @@ slot.addEventListener("click", () => {
 });
 
 showAffinity();
+
+// Settings
+const dayDisplayToggle = document.getElementById("dayDisplayToggle");
+const invertCheckbox = document.getElementById("invert-toggle");
+
+const savedSettingDay = localStorage.getItem("enableAnimationDay");
+if (savedSettingDay !== null) {
+    dayDisplayToggle.checked = savedSettingDay === "true";
+}
+
+dayDisplayToggle.addEventListener("change", () => {
+    localStorage.setItem("enableAnimationDay", dayDisplayToggle.checked);
+});
+
+export function dayAnimationEnabled() {
+    return dayDisplayToggle.checked;
+}
+
+invertCheckbox.addEventListener("change", () => {
+    document.documentElement.classList.toggle("inverted-theme", invertCheckbox.checked);
+});
