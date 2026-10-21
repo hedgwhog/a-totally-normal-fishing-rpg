@@ -1,5 +1,5 @@
 const dropMin = 55; // the stone drops after this many catches.
-const dropMax = 75;
+const dropMax = 95;
 const xpPerFish = 1;
 
 // name: display name
@@ -133,7 +133,7 @@ function showAffinity() {
 
     stoneBox.style.display = affinity.hasStone ? "block" : "none";
     xpDisplay.style.display = unlocked ? "block" : "none";
-    xpDisplay.innerHTML = "Current: <br>" + affinity.xp;
+    xpDisplay.innerHTML = "Shards: <br>" + affinity.xp;
     slotLocked.style.display = unlocked ? "none" : "block";
 
     if (unlocked) {
@@ -165,7 +165,7 @@ function showPopup() {
 
     popupInfo.innerHTML = "";
     addLine("Affinity: " + nodes.map(node => node.name).join(" > "));
-    addLine("Current: " + affinity.xp);
+    addLine("Shards: " + affinity.xp);
     addLine("");
     addLine("Effect:");
     addLine(current.description);
@@ -200,7 +200,7 @@ function useStone() {
     affinity.path = [pickedId];
     saveAffinity();
     showAffinity();
-    alert("The stone melts into your hand...\nYou got the " + affinities[pickedId].name + " affinity!");
+    alert("The stone melts into your hand...\nYou got the " + affinities[pickedId].name + " affinity!" + "\n To learn more about it, click on affinity.");
 }
 
 function learnAffinity(id) {
