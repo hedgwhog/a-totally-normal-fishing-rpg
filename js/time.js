@@ -1,70 +1,58 @@
-import { dayAnimationEnabled } from "./affinity.js";
+import { dayAnimationEnabled } from "./settings.js";
+import { playMusicFor } from "./audio.js";
 
-export let i = parseInt(localStorage.getItem("gameTimeIndex")) || 0;
-export let times = ["morning", "afternoon", "evening", "night"];
-let addDay = parseInt(localStorage.getItem("gameDay")) || 1;
+export const times = ["morning", "afternoon", "evening", "night"];
 
-const timeDisplay = document.getElementById("time")
-const dayDisplay = document.getElementById("dayPopupHidden")
+let timeIndex = parseInt(localStorage.getItem("gameTimeIndex")) || 0;
+if (timeIndex < 0 || timeIndex >= times.length) timeIndex = 0;
+let day = parseInt(localStorage.getItem("gameDay")) || 1;
 
-// Shops that are only open on specific days and times are grouped
-// id: the id of the button,
-// times: when its open
-// openDay: true on the days it is open
-const timedShops = {
-    freshwaterHaven: [
-        { id: "sellFish", times: ["morning"], openDay: day => true },
-        { id: "marketplace", times: ["morning", "afternoon", "evening"], openDay: day => day % 7 < 2 }, // open 2 days every 7 days
-        { id: "resonance", times: ["morning", "afternoon", "night"], openDay: day => day % 5 !== 0 }, // open 4 days, closed 1 day
-    ],
-};
+const timeDisplay = document.getElementById("time");
+const dayDisplay = document.getElementById("dayContainer");
+const dayPopup = document.getElementById("dayPopupHidden");
 
-function updateShops() {
-    for (const shops of Object.values(timedShops)) {
-        for (const shop of shops) {
-            const open = shop.times.includes(times[i]) && shop.openDay(addDay);
-            document.getElementById(shop.id).style.display = open ? "block" : "none";
-        }
-    }
+const listeners = [];
+
+export function onTimeChange(listener) {
+    listeners.push(listener);
 }
 
-timeDisplay.innerHTML = times[i];
-document.getElementById("dayContainer").innerHTML = "Day " + addDay;
-updateShops();
+export function getTime() {
+    return times[timeIndex];
+}
+
+export function getDay() {
+    return day;
+}
+
+export function refreshTime() {
+    timeDisplay.textContent = getTime();
+    dayDisplay.textContent = "Day " + day;
+    playMusicFor(getTime());
+    listeners.forEach(listener => listener(getTime(), day));
+}
 
 export function nextTime() {
-    i++;
-    if (i >= times.length) {
-        i = 0;
+    if (getTime() === "night") {
+        nextDay();
+        return;
     }
-    
-    localStorage.setItem("gameTimeIndex", i);
-    timeDisplay.innerHTML = times[i];
-    console.log(times[i]);
-    updateShops();
+    timeIndex++;
+    localStorage.setItem("gameTimeIndex", timeIndex);
+    refreshTime();
 }
 
-// starts the next day
 export function nextDay() {
-    addDay++
-    localStorage.setItem("gameDay", addDay); 
-    dayDisplay.style.display = "block"; 
-    dayDisplay.innerHTML = "Day " + addDay;
-    dayDisplay.style.justifyContent = "center"
-    dayDisplay.style.alignContent = "center"
+    day++;
+    timeIndex = 0; // a new day always starts in the morning
+    localStorage.setItem("gameDay", day);
+    localStorage.setItem("gameTimeIndex", timeIndex);
 
-    const updateDayAnimation = () => {
-    dayDisplay.style.display = "none";
-    document.getElementById("dayContainer").innerHTML = "Day " + addDay;
-    };
-
+    // the big "Day" popup, it disappears after 2000 ms
     if (dayAnimationEnabled()) {
-        setTimeout(updateDayAnimation, 2000);
-    } else {
-        updateDayAnimation();
+        dayPopup.textContent = "Day " + day;
+        dayPopup.style.display = "flex";
+        setTimeout(() => dayPopup.style.display = "none", 2000);
     }
-
-    console.log(addDay)
-    i = -1
-    nextTime(times[i]);
+    refreshTime();
 }
