@@ -9,6 +9,7 @@ body {
     background-color: white;
 }
 
+/* The setting to invert the color sontrast*/
 .inverted-theme {
   filter: invert(100%);
 }
@@ -25,6 +26,7 @@ button {
     border: 2px dashed black;
 }
 
+/* Day number */
 #dayContainer {
     position: absolute;
     height: 28px;
@@ -44,6 +46,7 @@ button {
     white-space: nowrap;
 }
 
+/* Time of the day */
 #time {
     position: absolute;
     top: 55px;
@@ -56,6 +59,7 @@ button {
     border-top: none !important;
 }
 
+/* Next day animation popup */
 #dayPopupHidden {
     position: absolute;
     top: 0;
@@ -81,6 +85,7 @@ button {
   }
 }
 
+/* Settings: */
 .settings {
     position: absolute;
     top: 88px;
@@ -104,7 +109,8 @@ button {
     z-index: 20;
 }
 
-#settingsPopup {
+/* All popups, they have the same backround UI*/
+.bigPopup {
     position: absolute;
     top: 10px;
     left: 10px;
@@ -114,21 +120,31 @@ button {
     display: none;
     border: 1px solid black;
     z-index: 25;
-
 }
 
-#settingsPopup h1 {
+.bigPopup > h1 {
     position: absolute;
     left: 40px;
 }
 
-#settingsPopup h4 {
+.bigPopup > h4 {
     position: absolute;
     top: 40px;
     left: 40px;
     text-decoration: underline;
 }
 
+.popupClose {
+    position: absolute;
+    right: 0;
+    background-color: black;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 1;
+}
+
+/* Settings list */
 .settings-wrap {
     position: absolute;
     top: 90px;
@@ -141,16 +157,7 @@ button {
     gap: 5px;
 }
 
-#settingsClose {
-    position: absolute;
-    right: 0;
-    background-color: black;
-    color: white;
-    padding: 10px;
-    cursor: pointer;
-}
-
-
+/* Inventory: */
 #inventory {
     position: absolute;
     bottom: 10px;
@@ -207,6 +214,7 @@ button {
     display: block;
 }
 
+/* Backpack button */
 #backpackButton {
     width: 80px;
     cursor: pointer;
@@ -237,8 +245,11 @@ button {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    overflow-y: auto;
+    padding: 0 4px;
 }
 
+/* The name of the area*/
 .center {
     position: absolute;
     width: 400px;
@@ -248,17 +259,24 @@ button {
     /* text-decoration: overline; */
 }
 
+/* Coins and item list: */
 .item-list {
     position: absolute;
     top: 85px;
     width: 220px;
     text-align: center;
+    overflow-y: auto;
     left: 110px;
     height: 209px;
     z-index: 10;
     border-bottom: 1px dashed black;
 }
 
+.item-list button {
+    cursor: pointer;
+}
+
+/* Fish list: */
 .fish-list {
     position: absolute;
     top: 85px;
@@ -268,20 +286,12 @@ button {
     z-index: 10;
 }
 
-#fishingPopup {
-    position: absolute;
-    bottom: 10px;
-    left: 140px;
-    font-size: 14px;
-    text-align: center;
-    /* border: 1px solid red; */
-}
-
 #fishTypes {
     /* background-color: antiquewhite; */
     height: 194px;
     width: 227px;
     overflow-y: auto;
+    overflow-x: hidden;
     border-bottom: 1px dashed black;
     /* border-right: 1px dashed black;
     border-top: 1px dashed black; */
@@ -290,6 +300,11 @@ button {
     position: absolute;
 }
 
+#fishTypes button {
+    cursor: pointer;
+}
+
+/* List of events that will always show up. */
 .list {
     position: absolute;
     display: flex;
@@ -313,6 +328,7 @@ button {
     cursor: pointer;
 }
 
+/* Resonance: */
 .xp-list {
     position: absolute;
     bottom: 185px;
@@ -326,20 +342,9 @@ button {
     padding: 5px;
 }
 
-#affinityXp {
-    display: none;
-    position: relative;
-    width: calc(50% - 5px);
-    padding: 5px;
-    height: 25px;
-    font-size: 10px;
-    text-align: center;
-    border: 1px solid black;
-}
-
 .resonance {
     position: relative;
-    width: calc(50% - 5px);
+    width: 100%;
     padding: 5px;
     height: 25px;
     font-size: 10px;
@@ -347,6 +352,7 @@ button {
     border: 1px dashed black;
 }
 
+/* List of event that show up depending per area*/
 .event-list {
     position: absolute;
     display: flex;
@@ -373,77 +379,33 @@ button {
     cursor: pointer;
 }
 
-#marketplaceDisplay {
+/* List to enable scrolling in the list */
+#marketplaceItem,
+#merchantItem {
     position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: white;
-    width: 540px;
-    height: 460px;
-    display: none;
-    border: 1px solid black;
-    z-index: 20;
-}
-
-#marketplaceDisplay h1 {
-    position: absolute;
-    left: 40px;
-}
-
-#marketplaceDisplay h4 {
-    position: absolute;
-    top: 40px;
-    left: 40px;
-    text-decoration: underline;
-}
-
-.marketplaceDisplay-close {
-    position: absolute;
-    right: 0;
-    background-color: black;
-    color: white;
-    padding: 10px;
-    cursor: pointer;
-}
-
-#marketplaceItem {
-    position: absolute;
-    top: 90px;
+    top: 112px;
     left: 40px;
     width: 450px;
+    height: 340px;
+    overflow-y: auto;
+    padding-right: 10px;
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
 
-#marketplaceItem button {
+#marketplaceItem button,
+#merchantItem button {
     padding: 4px;
     cursor: pointer;
 }
 
-#catalogDisplay {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: white;
-    width: 540px;
-    height: 460px;
-    display: none;
-    border: 1px solid black;
-    z-index: 25;
-
-}
-
-#catalogDisplay h1 {
-    position: absolute;
-    left: 40px;
-}
-
+/* Catalogue: */
 .catalogInfo {
     position: absolute;
-    top: 55px;
+    top: 95px;
     left: 40px;
-    height: 400px;
+    height: 355px;
     width: 450px;
     overflow-y: auto;
     /* border: 1px solid red; */
@@ -451,105 +413,55 @@ button {
     -ms-overflow-style: none;
 }
 
-#catalogClose {
-    position: absolute;
-    right: 0;
-    background-color: black;
-    color: white;
-    padding: 10px;
-    cursor: pointer;
-}
 
-#affinityItem {
-    display: none;
-}
-
-#affinityItem button {
-    font-size: 12px;
-    padding: 3px;
-    cursor: pointer;
-}
-
-#affinityDisplay {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: white;
-    width: 540px;
-    height: 460px;
-    display: none;
-    border: 1px solid black;
-    z-index: 25;
-}
-
-#affinityDisplay h1 {
-    position: absolute;
-    left: 40px;
-}
-
-#affinityArt {
-    position: absolute;
-    top: 90px;
-    left: 40px;
-    margin: 0;
-    font-size: 16px;
-    line-height: 1.1;
-}
-
-#affinityInfo {
+.catalogTabs {
     position: absolute;
     top: 60px;
-    left: 200px;
-    width: 330px;
+    left: 40px;
+    display: flex;
+    gap: 5px;
 }
 
-#affinityInfo p {
-    margin: 4px 0;
-}
-
-#affinityInfo button {
-    display: block;
-    margin-top: 5px;
-    padding: 4px;
+.catalogTabs button {
+    padding: 4px 10px;
     cursor: pointer;
 }
 
-#affinityClose {
-    position: absolute;
-    right: 0;
+.catalogTabs .activeTab {
     background-color: black;
     color: white;
-    padding: 10px;
-    cursor: pointer;
 }
 
-#resonanceDisplay,
-#ichthyologistDisplay {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: white;
-    width: 540px;
-    height: 460px;
-    display: none;
+.fishSlots {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+}
+
+.fishSlot {
     border: 1px solid black;
-    z-index: 20;
+    padding: 5px;
+    font-size: 11px;
+    min-height: 70px;
 }
 
-#resonanceDisplay h1,
-#ichthyologistDisplay h1 {
-    position: absolute;
-    left: 40px;
+.fishSlotName {
+    font-weight: bold;
+    margin-bottom: 3px;
 }
 
-#resonanceDisplay h4,
-#ichthyologistDisplay h4 {
-    position: absolute;
-    top: 40px;
-    left: 40px;
-    text-decoration: underline;
+.unknownFish {
+    border-style: dashed;
+    color: gray;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
+
+/* Resonance altar and ichthyologist: */
 #resonanceItem,
 #ichthyologistItem {
     position: absolute;
@@ -576,6 +488,7 @@ button {
     position: relative;
 }
 
+/* The arrows on the fishing rod, to see your enchantment */
 .pageArrows {
     display: none;
     position: absolute;
@@ -592,4 +505,163 @@ button {
     font-size: 8px;
     padding: 0 2px;
     cursor: pointer;
+}
+
+/* Box for the fishing event and dialogue */
+#fishingPopup {
+    display: none;
+    position: absolute;
+    bottom: 10px;
+    left: 125px;
+    width: 420px;
+    max-height: 170px;
+    overflow-y: auto;
+    font-size: 14px;
+    text-align: center;
+    background-color: white;
+    z-index: 15;
+}
+
+#fishingText {
+    margin: 0 0 8px 0;
+    white-space: pre-wrap;
+}
+
+#fishingButtons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+}
+
+#fishingButtons button {
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+/* Items list */
+#itemBag {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 0 10px;
+}
+
+#itemBag button {
+    font-size: 12px;
+    padding: 3px;
+}
+
+.bagCategory {
+    margin-top: 4px;
+    text-decoration: underline;
+}
+
+.fishRow {
+    width: 227px;
+}
+
+/* Marketplace */
+.marketCategory {
+    margin: 8px 0 0 0;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.marketNote {
+    margin: 0;
+}
+
+.supplyRow {
+    margin-bottom: 4px;
+}
+
+.supplyControls {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    margin-top: 2px;
+}
+
+.supplyControls button {
+    padding: 2px 6px !important;
+}
+
+/* Islands without events */
+.emptyEvents {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* World map: it has a gradient */
+#mapPaper {
+    --square: 44px;
+    position: absolute;
+    top: 75px;
+    left: 100px;
+    width: calc(var(--size) * var(--square));
+    height: calc(var(--size) * var(--square));
+}
+
+#mapGrid {
+    display: grid;
+    grid-template-columns: repeat(var(--size), var(--square));
+    grid-template-rows: repeat(var(--size), var(--square));
+    border: 1px solid black;
+}
+
+.mapSquare {
+    position: relative;
+    border: 1px dotted #bbb;
+}
+
+.mapPiece {
+    margin: 0;
+    font-size: 7px;
+    line-height: 7px;
+    font-weight: bold;
+    animation: mapPieceAppear 0.6s ease-out;
+}
+
+.mapName {
+    position: absolute;
+    left: calc(var(--x) * 4.2px);
+    top: calc(var(--y) * 7px - 2px);
+    font-size: 8px;
+    white-space: nowrap;
+    z-index: 1;
+}
+
+@keyframes mapPieceAppear {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* coordinates */
+.mapCoordinate {
+    position: absolute;
+    font-size: 9px;
+    width: 30px;
+    text-align: center;
+}
+
+.mapTop {
+    top: -15px;
+    left: calc(var(--column) * var(--square) - 15px);
+}
+
+.mapLeft {
+    left: -35px;
+    top: calc(var(--row) * var(--square) - 6px);
+    text-align: right;
+}
+
+#mapEmpty {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    margin: 0 0 4px 0;
+    text-align: center;
+    font-size: 12px;
 }

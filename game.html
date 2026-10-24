@@ -12,15 +12,14 @@
             <div id="dayContainer"></div>
 
             <div id="time">Morning</div>
-            <button class="settings" onclick="settingsPopup.style.display = 'flex'">Settings:</button>
+            <button class="settings" data-open="settingsPopup">Settings:</button>
 
             <div id="inventory">
-                 <div class="inventoryOutline" id="inventoryAffinity">
-                    <p id="affinityLocked">Affinity</p>
-                    <pre class="ASCII" id="ASCIIAffinity"></pre>
-                     <div class="name" id="nameAffinity"></div>
-                     <div class="effect" id="effectAffinity"></div>
-                 </div>
+                 <div class="inventoryOutline" id="inventoryMap">
+                    <pre class="ASCII" id="ASCIIMap"></pre>
+                    <div class="name" id="nameMap"></div>
+                    <div class="effect" id="effectMap"></div>
+                </div>
 
                  <div class="inventoryOutline" id="inventoryHat">
                     <pre class="ASCII" id="ASCIIHat"></pre>
@@ -40,10 +39,10 @@
                      <div class="effect" id="effectRod"></div>
                  </div>
 
-                 <button id="backpackButton" onclick="inventoryBackpack.style.display = 'flex'">Backpack</button>
+                 <button id="backpackButton" data-open="inventoryBackpack">Backpack</button>
 
-                <div id="inventoryBackpack">
-                    <button id="backpackClose" onclick="inventoryBackpack.style.display = 'none'">Close backpack</button>
+                <div id="inventoryBackpack" class="popup" data-display="flex">
+                    <button id="backpackClose" data-close="inventoryBackpack">Close backpack</button>
                     <div id="inventoryItems"></div>
                 </div>
             </div>
@@ -52,22 +51,23 @@
             <div class="item-list">
                 <div id="coinAmount">Coins: 0</div><br>
                 <div>Items:</div>
-                <div id="affinityItem"><button id="useStone">[*] Use Affinity Stone</button></div>
+                <div id="itemBag"></div>
             </div>
+
             <div class="fish-list">
                 <div id="fishAmount">You got 0 fish</div>
                 <div id="fishTypes"></div>
             </div>
 
             <div class="xp-list">
-                <div class="resonance">Resonance: <br>0</div>
-                <div id="affinityXp"></div>
+                <div class="resonance">Resonance: 0</div>
              </div>
 
             <div class="list">
-                <button onclick="catalogDisplay.style.display = 'flex'">Catalogue</button>
-                <button id="nextDay">Sleeping</button>
+                <button data-open="catalogDisplay">Catalogue</button>
                 <button id="nextFish">Fishing</button>
+                <button id="nextDay">Sleeping</button>
+                <button id="rest">Rest</button>
             </div>
 
             <div id="fishingPopup" style="display: none;">
@@ -80,84 +80,99 @@
                 <h1 class="center">Freshwater haven</h1>
 
                 <div class="event-list">
-                    <button id="marketplace" onclick="marketplaceDisplay.style.display = 'block'">Marketplace</button>
+                    <button id="ritual">The annual ritual</button>
+                    <button id="marketplace">Marketplace</button>
                     <button id="ichthyologist">Ichthyologist</button>
                     <button id="sellFish">Sell fish to the<br>local Fishmonger</button>
                     <button id="resonance">Resonance altar</button>
+                    <button id="merchant">Merchant</button>
+                    <button id="ramlaris">The Ramlaris<br>(at the dock)</button>
                 </div>
 
-                <div id="marketplaceDisplay">
+                <div id="marketplaceDisplay" class="popup bigPopup">
                     <h1>Marketplace</h1>
-                    <h4> Opens once every 5 days, for a 2 day period. Only in the morning, afternoon & evening.</h4>
-                    <button class="marketplaceDisplay-close" onclick="marketplaceDisplay.style.display = 'none'">Close marketplace</button>
+                    <h4>Opens once every 7 days, for a 2 day period. Only in the morning, afternoon & evening.</h4>
+                    <button class="popupClose" data-close="marketplaceDisplay">Close marketplace</button>
                     <div id="marketplaceItem"></div>
                 </div>
 
-                <div id="resonanceDisplay">
+                <div id="resonanceDisplay" class="popup bigPopup">
                     <h1>Resonance altar</h1>
                     <h4>Open 4 days, then closed for 1 day. Only in the morning, afternoon & night.</h4>
-                    <button class="marketplaceDisplay-close" onclick="resonanceDisplay.style.display = 'none'">Close resonance altar</button>
+                    <button class="popupClose" data-close="resonanceDisplay">Close resonance altar</button>
                     <div id="resonanceItem"></div>
                 </div>
 
-                <div id="ichthyologistDisplay">
+                <div id="merchantDisplay" class="popup bigPopup">
+                    <h1>Merchant</h1>
+                    <h4>Shows up once every 13 days. Not at night.</h4>
+                    <button class="popupClose" data-close="merchantDisplay">Close merchant</button>
+                    <div id="merchantItem"></div>
+                </div>
+
+                <div id="ichthyologistDisplay" class="popup bigPopup">
                     <h1>Ichthyologist</h1>
-                    <h4>A fish researcher wants to study some fish. She is up 24/7</h4>
-                    <button class="marketplaceDisplay-close" onclick="ichthyologistDisplay.style.display = 'none'">Close ichthyologist</button>
+                    <h4>A fish researcher who talks a lot. She is up 24/7.</h4>
+                    <button class="popupClose" data-close="ichthyologistDisplay">Close ichthyologist</button>
                     <div id="ichthyologistItem"></div>
+                </div>
+            </div>
+
+            <!-- Point Driftt -->
+            <div class="island" id="pointDriftt">
+                <h1 class="center">Point Driftt</h1>
+
+                <div class="event-list">
+                    <button id="backToHaven">Sail back to<br>Freshwater Haven</button>
+                    <p class="emptyEvents">It's quiet here...<br>for now.</p>
                 </div>
             </div>
         </div>
 
-        <div id="settingsPopup">
-            <button id="settingsClose" onclick="settingsPopup.style.display = 'none'">Close settings</button>
+        <div id="settingsPopup" class="popup bigPopup">
+            <button class="popupClose" data-close="settingsPopup">Close settings</button>
             <h1>Settings:</h1>
             <h4>Yes → Alex ← you can maximize your settings to speedrun fishing....</h4>
             <div class="settings-wrap">
                 <label for="dayDisplayToggle">Enable day animation: <input type="checkbox" id="dayDisplayToggle" checked></label>
                 <label class="switch">Invert colors:<input type="checkbox" id="invert-toggle"></label>
+                <label for="volumeSlider">OST Volume:<input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.5"></label>
+                <label>Audio acting up? <button id="audioRefreshBtn" class="settings-btn">Refresh OST</button></label>
+                <label>Reset progress: <button id="resetProgress" class="settings-btn">Remove localStorage</button></label>
             </div>
         </div>
 
-        <div id="affinityDisplay">
-            <button id="affinityClose">Close affinity</button>
-            <h1>Affinity</h1>
-            <pre id="affinityArt"></pre>
-            <div id="affinityInfo"></div>
+        <div id="mapDisplay" class="popup bigPopup">
+            <button class="popupClose" data-close="mapDisplay">Close map</button>
+            <h1>World map</h1>
+            <div id="mapPaper"></div>
+            <p id="mapEmpty">You don't have any map pieces yet.</p>
         </div>
 
-        <div id="catalogDisplay">
-            <button id="catalogClose" onclick="catalogDisplay.style.display = 'none'">Close catalogue</button>
+        <div id="catalogDisplay" class="popup bigPopup">
+            <button class="popupClose" data-close="catalogDisplay">Close catalogue</button>
             <h1>Catalogue</h1>
-            <div class="catalogInfo">
-                <h3>Fishing:</h3>
-                <h4>To catch a fish, press SPACE (or click the button) when your line | is on the fish (===). The fish moves as well.</h4>
-                <h4>Every fish is different: its speed, the size, the length and its value on the market. You need a certain amount of hits in a certain amount of rounds.</h4>
-                <h4>Some fish can only be caught in a certain habitat, so you need to have the correct fishing rod to be able to catch them. Every habitat has its own lootpool. (NOTE: The habitat automatically changes depending on the fishing rod you currently have equipped)</h4>
-                <h4>You can sell your fish to The Fishmonger for coins. You can choose the amount you want to sell by using the "+" and "-" icons.</h4>
 
-                <br><h3>Marketplace:</h3>
-                <h4>Over here you can buy new gear and sell your old gear.</h4>
+            <div class="catalogTabs">
+                <button data-page="catalogFish">Fish species</button>
+                <button data-page="catalogBuildings">Buildings</button>
+                <button data-page="catalogMechanics">Game mechanics</button>
+            </div>
+            
+            <div class="catalogInfo catalogPage" id="catalogFish"></div>
 
-                <br><h3>Resonance:</h3>
-                <h4>At the resonance altar you can "resonate" your fishing rod to make it better. The resonance you get are random. A higher rank costs more, but gives a bigger chance on stronger and multiple resonances.</h4>
-                <h4>Currently available:</h4>
-                <h4> - FOCUS: By focusing, your fishing line moves slower, which makes it easier to time.</h4>
-                <h4> - LUCK: You're more likely to hook more valuable fish.</h4>
-                <h4> - HITBOX: The fish becomes easier to hit. Every level makes its zone 1 bigger.</h4>
-                <h4> - REWIND: Rewind after a miss and try again (except the last round!). Every level gives you 1 rewind per fish.</h4>
-                <h4>A rod with upgrades can't be resonated again. Use DISSONANCE to remove all its upgrades first, if you want to reroll them.</h4>
-
-                <br><h3>Affinity:</h3>
-                <h4>???</h4>
+            <div class="catalogInfo catalogPage" id="catalogBuildings">
+                <!-- <h5 style="text-decoration: underline;">The buildings you can visit, and when they are open.</h5> -->
+                <h4>Coming soon</h4>
             </div>
 
+            <div class="catalogInfo catalogPage" id="catalogMechanics">
+                <!-- <h5 style="text-decoration: underline;">Some explanation of how different mechanics work.</h5> -->
+                <h4>Coming soon</h4>
+            </div>
         </div>
     </div>
-    <script type="module" src="js/events.js"></script>
-    <script type="module" src="js/user.js"></script>
-    <script type="module" src="js/time.js"></script>
-    <script type="module" src="js/affinity.js"></script>
-    <script type="module" src="js/FreshwaterHaven.js"></script>
+    <!-- main.js loads all the other files -->
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
