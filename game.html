@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <div class="container">
     <div id="container">
             <div id="dayPopupHidden"></div>
             <div id="dayContainer"></div>
@@ -50,7 +51,6 @@
         <div class="event-container">
             <div class="item-list">
                 <div id="coinAmount">Coins: 0</div><br>
-                <div>Items:</div>
                 <div id="itemBag"></div>
             </div>
 
@@ -134,11 +134,12 @@
             <h1>Settings:</h1>
             <h4>Yes → Alex ← you can maximize your settings to speedrun fishing....</h4>
             <div class="settings-wrap">
+                <br>
                 <label for="dayDisplayToggle">Enable day animation: <input type="checkbox" id="dayDisplayToggle" checked></label>
                 <label class="switch">Invert colors:<input type="checkbox" id="invert-toggle"></label>
-                <label for="volumeSlider">OST Volume:<input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.5"></label>
                 <label>Audio acting up? <button id="audioRefreshBtn" class="settings-btn">Refresh OST</button></label>
-                <label>Reset progress: <button id="resetProgress" class="settings-btn">Remove localStorage</button></label>
+                <label for="volumeSlider">OST Volume:<input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.5"></label>
+                <label>Reset progress: <button id="resetProgress" class="settings-btn">Remove progress</button></label>
             </div>
         </div>
 
@@ -171,6 +172,7 @@
                 <h4>Coming soon</h4>
             </div>
         </div>
+    </div>
     </div>
     <!-- main.js loads all the other files -->
     <script type="module" src="js/main.js"></script>

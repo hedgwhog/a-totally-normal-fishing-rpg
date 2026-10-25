@@ -11,16 +11,19 @@
 export const items = [
     { id: "luckCharm", name: "Luck trinket", category: "Trinkets", boost: "luck", catches: 5, fishChance: 2, price: 35 },
     { id: "resonanceCharm", name: "Resonance trinket", category: "Trinkets", boost: "resonance", catches: 5, fishChance: 2, price: 35 },
+    { id: "focusCharm", name: "Focus trinket", category: "Trinkets", boost: "focus", catches: 5, fishChance: 2, price: 35 },
+    { id: "slowCharm", name: "Slow trinket", category: "Trinkets", boost: "slow-fish", catches: 5, fishChance: 2, price: 35 },
 
     { id: "resonanceBottle", name: "Bottle of resonance", category: "Bottles", resonance: 10, price: 15 },
 
-    { id: "fishCan", name: "Cans of processed fish", category: "Supplies", price: 4 },
-    { id: "waterBottle", name: "Bottles of fresh water", category: "Supplies", price: 1 },
+    { id: "fishCan", name: "Cans of processed fish", category: "Supplies", price: 6 },
+    { id: "waterBottle", name: "Bottles of fresh water", category: "Supplies", price: 2 },
+    { id: "beer", name: "Beer", category: "Supplies", price: 5 },
 
     { id: "theCharm", name: "The charm", category: "Special" },
 ];
 
-export const itemCategories = ["Trinkets", "Bottles", "Supplies", "Special"];
+export const itemCategories = ["Trinkets", "Bottles", "Supplies", "Special", "Fossils"];
 
 export function findItem(id) {
     return items.find(item => item.id === id);

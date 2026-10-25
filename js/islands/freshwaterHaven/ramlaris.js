@@ -8,7 +8,7 @@ import { loadObject, save } from "../../save.js";
 
 const sailor = "Old sailor"; // the name above his dialogue
 const daysToArrive = 11; // days between the phone call and the ship arriving
-const payment = { fishCan: 12, waterBottle: 20 }; // the price for the 
+const payment = { fishCan: 8, waterBottle: 12, beer: 4 }; // the price for the 
 
 let ship = { arrivalDay: null, announced: false, metSailor: false, ...loadObject("saveRamlaris") };
 

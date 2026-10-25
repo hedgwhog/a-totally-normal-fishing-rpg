@@ -42,9 +42,11 @@ function fishSlot(type) {
     name.textContent = type.name;
     slot.appendChild(name);
     addLine(slot, "Water: " + type.waters.join(", "));
-    addLine(slot, "Bites: " + timeText(type));
+    addLine(slot, "Time: " + timeText(type));
     addLine(slot, "Worth: " + type.price + (type.price === 1 ? " coin" : " coins"));
     addLine(slot, "Caught: " + timesCaught(type.id));
+    addLine(slot, "Chance: " + type.chance + "%");
+    addLine(slot, "Rarity: " + type.rarity);
     return slot;
 }
 

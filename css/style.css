@@ -9,6 +9,17 @@ body {
     background-color: white;
 }
 
+.container {
+    display: grid;
+    grid-template-rows: 100vh;
+    grid-template-columns: 100vw;
+}
+
+#container {
+    justify-self: center;
+    align-self: center;
+}
+
 /* The setting to invert the color sontrast*/
 .inverted-theme {
   filter: invert(100%);
@@ -584,19 +595,11 @@ button {
     margin-top: 2px;
 }
 
-.supplyControls button {
-    padding: 2px 6px !important;
-}
-
-/* Islands without events */
-.emptyEvents {
-    text-align: center;
-    margin-top: 20px;
-}
-
-/* World map: it has a gradient */
+/* world map */
 #mapPaper {
     --square: 44px;
+    --grid: #1f3b4d;
+    --numbers: black;
     position: absolute;
     top: 75px;
     left: 100px;
@@ -608,19 +611,22 @@ button {
     display: grid;
     grid-template-columns: repeat(var(--size), var(--square));
     grid-template-rows: repeat(var(--size), var(--square));
-    border: 1px solid black;
+    border-top: 1px solid var(--grid);
+    border-left: 1px solid var(--grid);
 }
 
 .mapSquare {
     position: relative;
-    border: 1px dotted #bbb;
+    box-sizing: border-box;
+    border-right: 1px solid var(--grid);
+    border-bottom: 1px solid var(--grid);
 }
 
 .mapPiece {
     margin: 0;
     font-size: 7px;
     line-height: 7px;
-    font-weight: bold;
+    background-color: white;
     animation: mapPieceAppear 0.6s ease-out;
 }
 
@@ -630,7 +636,7 @@ button {
     top: calc(var(--y) * 7px - 2px);
     font-size: 8px;
     white-space: nowrap;
-    z-index: 1;
+    z-index: 3;
 }
 
 @keyframes mapPieceAppear {
@@ -638,30 +644,106 @@ button {
     to { opacity: 1; }
 }
 
-/* coordinates */
-.mapCoordinate {
+.mapAxis {
+    --axis: 1px;
     position: absolute;
-    font-size: 9px;
+    background-color: rgb(26, 26, 26);
+    z-index: 2;
+}
+
+.mapAxisX {
+    left: -12px;
+    top: calc(var(--half) * var(--square) + 0.5px - var(--axis) / 2);
+    width: calc(var(--size) * var(--square) + 25px);
+    height: var(--axis);
+}
+
+.mapAxisY {
+    top: -12px;
+    left: calc(var(--half) * var(--square) + 0.5px - var(--axis) / 2);
+    height: calc(var(--size) * var(--square) + 25px);
+    width: var(--axis);
+}
+
+.mapAxis::before,
+.mapAxis::after {
+    content: "";
+    position: absolute;
+    border: 4px solid transparent;
+}
+
+.mapAxisX::before { left: -6px; top: calc(var(--axis) / 2 - 4px); border-right: 6px solid black; border-left-width: 0; }
+.mapAxisX::after { right: -6px; top: calc(var(--axis) / 2 - 4px); border-left: 6px solid black; border-right-width: 0; }
+.mapAxisY::before { top: -6px; left: calc(var(--axis) / 2 - 4px); border-bottom: 6px solid black; border-top-width: 0; }
+.mapAxisY::after { bottom: -6px; left: calc(var(--axis) / 2 - 4px); border-top: 6px solid black; border-bottom-width: 0; }
+
+.mapCompass {
+    position: absolute;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--numbers);
+}
+
+.mapCompassN {
+    top: -32px;
+    left: calc(var(--half) * var(--square) - 4px);
+}
+
+.mapCompassS {
+    top: calc(var(--size) * var(--square) + 18px);
+    left: calc(var(--half) * var(--square) - 4px);
+}
+
+.mapCompassE {
+    top: calc(var(--half) * var(--square) - 8px);
+    left: calc(var(--size) * var(--square) + 22px);
+}
+
+.mapCompassW {
+    top: calc(var(--half) * var(--square) - 8px);
+    left: -32px;
+}
+
+
+.mapTick {
+    position: absolute;
+    font-size: 8px;
+    color: var(--numbers);
+}
+
+.mapTickX {
     width: 30px;
-    text-align: center;
+    top: calc(var(--half) * var(--square) + 3px);
 }
 
-.mapTop {
-    top: -15px;
-    left: calc(var(--column) * var(--square) - 15px);
+.mapTickWest {
+    left: calc(var(--column) * var(--square) + 3px);
+    text-align: left;
 }
 
-.mapLeft {
-    left: -35px;
-    top: calc(var(--row) * var(--square) - 6px);
+.mapTickEast {
+    left: calc(var(--column) * var(--square) - 32px);
     text-align: right;
+}
+
+.mapTickY {
+    width: 28px;
+    text-align: right;
+    left: calc(var(--half) * var(--square) - 31px);
+}
+
+.mapTickNorth {
+    top: calc(var(--row) * var(--square) + 2px);
+}
+
+.mapTickSouth {
+    top: calc(var(--row) * var(--square) - 11px);
 }
 
 #mapEmpty {
     position: absolute;
-    bottom: 0;
-    width: 100%;
-    margin: 0 0 4px 0;
-    text-align: center;
-    font-size: 12px;
+    top: 48px;
+    right: 15px;
+    margin: 0;
+    font-size: 11px;
 }

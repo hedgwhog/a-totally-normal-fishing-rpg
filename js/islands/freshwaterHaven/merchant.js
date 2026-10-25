@@ -117,8 +117,10 @@ function showMerchant() {
         const stock = visit.stock[id] || 0;
         if (stock === 0) continue;
         anythingInStock = true;
-        const effect = item.boost ? "x2 " + item.boost + " for " + item.catches + " catches" : "+" + item.resonance + " resonance";
-        addButton(shop, item.name + " (" + effect + ") | " + coinsText(item.price) + " | " + stock + " in stock", () => buyItem(item));
+        let effect = "";
+        if (item.boost) effect = " (x2 " + item.boost + " for " + item.catches + " catches)";
+        if (item.resonance) effect = " (+" + item.resonance + " resonance)";
+        addButton(shop, item.name + effect + " | " + coinsText(item.price) + " | " + stock + " in stock", () => buyItem(item));
     }
     if (!anythingInStock) addText(shop, "\"Sold out! Come back next time. Bring more coins.\"");
 
