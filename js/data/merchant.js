@@ -1,5 +1,5 @@
 // The merchant shows up once every 13 days. The code for it to work are in a different file, here are the numbers
-export const merchantEvery = 1;
+export const merchantEvery = 13;
 
 // backpack upgrades:
 export const backpackUpgrades = [
@@ -15,8 +15,13 @@ export const backpackUpgrades = [
 export const merchantStock = {
     luckCharm: [0, 5],
     resonanceCharm: [0, 5],
+    focusCharm: [0, 5],
+    slowCharm: [0, 5],
     resonanceBottle: [1, 9],
+    fishCan: [0, 3],
+    waterBottle: [0, 3],
+    beer: [0, 3],
 };
 
 // hes greedy lmao
-export const merchantBuyPercent = 20;
+export const merchantBuyPercent = 50;

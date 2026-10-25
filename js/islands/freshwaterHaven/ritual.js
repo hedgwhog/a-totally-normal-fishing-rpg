@@ -10,9 +10,9 @@ import { say, ask } from "../../dialogue.js";
 import { loadObject, save } from "../../save.js";
 
 const keeper = "Ritual keeper"; // the name above their dialogue
-const ritualEvery = 21;
+const ritualEvery = 19;
 
-const theCharm = { name: "The charm", zone: 2, speed: 28, rounds: 12, hits: 12, barWidth: [16, 12, 14], fishSpeed: 120 };
+const theCharm = { name: "The charm", zone: 2, speed: 28, rounds: 12, hits: 12, barWidth: [17, 13, 15], fishSpeed: 115 };
 const mapPiece = mapPieces.find(piece => piece.source === "ritual" && piece.island === "freshwaterHaven");
 
 // if the ritual got beaten, no more ritual and announcement.
@@ -39,7 +39,7 @@ onTimeChange((time, day) => {
 async function attemptRitual() {
     await say([
         { who: "", text: "The whole island has gathered at the dock." },
-        { who: keeper, text: "Every 29 days we cast for The charm. Nobody has ever pulled it up. Not once." },
+        { who: keeper, text: "Every 19 days we cast for The charm. Nobody has ever pulled it up. Not once." },
         { who: keeper, text: "Every fisher gets ONE attempt. No second tries, no excuses." },
     ]);
 
@@ -68,7 +68,7 @@ async function attemptRitual() {
     } else {
         await say([
             { who: "", text: "Your line comes back up. Empty." },
-            { who: keeper, text: "Nobody catches it. That's why it's a ritual. See you in 29 days." },
+            { who: keeper, text: "Nobody catches it. That's why it's a ritual. See you in 19 days." },
         ]);
     }
     nextTime();
