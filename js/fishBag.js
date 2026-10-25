@@ -68,7 +68,7 @@ function showFish() {
             document.createElement("br"),
             type.name + ": " + amount,
             document.createElement("br"),
-            "(selling " + (selected[type.id] || 0) + ") ",
+            "Picked to sell: " + (selected[type.id] || 0) + " ",
             minus, plus
         );
         fishTypes.appendChild(row);

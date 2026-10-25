@@ -1,7 +1,8 @@
 import { openEvent, setEventText, closeEvent } from "./dialogue.js";
 import { setIsland } from "./islands.js";
+import { nextDay } from "./time.js";
 
-const travelTime = 4000; // ms
+const travelTime = 42000; // ms
 const barWidth = 30;
 
 export function travelTo(islandId, text) {
@@ -13,9 +14,9 @@ export function travelTo(islandId, text) {
             const progress = Math.min(1, (Date.now() - start) / travelTime);
             const line = Math.round(progress * (barWidth - 1));
             let bar = "";
-            for (let n = 0; n < barWidth; n++) {
-                if (n === line) bar += "|";
-                else if (n < line) bar += "=";
+            for (let index = 0; index < barWidth; index++) {
+                if (index === line) bar += "|";
+                else if (index < line) bar += "=";
                 else bar += "-";
             }
             const waves = (Math.floor(Date.now() / 300) % 2 === 0) ? " ~  ~   ~  ~ " : "  ~  ~   ~  ~";
@@ -30,6 +31,7 @@ export function travelTo(islandId, text) {
             }
         }
         draw();
+        nextDay(8);
     });
 }
 

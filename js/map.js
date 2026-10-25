@@ -3,9 +3,7 @@ import { loadList, save } from "./save.js";
 import { showArt } from "./ascii.js";
 import { openPopup } from "./ui.js";
 
-let found = loadList("saveMap")
-    .map(id => id)
-    .filter(id => mapPieces.some(piece => piece.id === id));
+let found = loadList("saveMap").filter(id => mapPieces.some(piece => piece.id === id));
 save("saveMap", found);
 
 const slot = document.getElementById("inventoryMap");
@@ -18,7 +16,6 @@ export function hasMapPiece(id) {
     return found.includes(id);
 }
 
-// a piece goes straight into your map
 export function addMapPiece(id) {
     if (hasMapPiece(id)) return;
     found.push(id);
@@ -26,12 +23,10 @@ export function addMapPiece(id) {
     showMap();
 }
 
-// the pieces you can still get in a certain way, like getMissingPieces("fishing", "freshwaterHaven")
 export function getMissingPieces(source, island) {
     return mapPieces.filter(piece => piece.source === source && piece.island === island && !hasMapPiece(piece.id));
 }
 
-// Building the map
 const half = gridSize / 2;
 
 function coordinate(n, negative, positive) {
@@ -39,22 +34,37 @@ function coordinate(n, negative, positive) {
     return Math.abs(n) + (n < 0 ? negative : positive);
 }
 
-function addLabel(className, text, column, row) {
-    const label = document.createElement("div");
-    label.className = className;
-    label.textContent = text;
-    label.style.setProperty("--column", column);
-    label.style.setProperty("--row", row);
-    mapBox.appendChild(label);
+function addToMap(className, text = "", column = 0, row = 0) {
+    const element = document.createElement("div");
+    element.className = className;
+    element.textContent = text;
+    element.style.setProperty("--column", column);
+    element.style.setProperty("--row", row);
+    mapBox.appendChild(element);
+    return element;
 }
 
 function buildMap() {
     mapBox.innerHTML = "";
     mapBox.style.setProperty("--size", gridSize);
+    mapBox.style.setProperty("--half", half);
+
+    addToMap("mapAxis mapAxisX");
+    addToMap("mapAxis mapAxisY");
+    addToMap("mapCompass mapCompassN", "N");
+    addToMap("mapCompass mapCompassE", "E");
+    addToMap("mapCompass mapCompassS", "S");
+    addToMap("mapCompass mapCompassW", "W");
 
     for (let n = 0; n <= gridSize; n++) {
-        addLabel("mapCoordinate mapTop", coordinate(n - half, "W", "E"), n, 0);
-        addLabel("mapCoordinate mapLeft", coordinate(n - half, "N", "S"), 0, n);
+        const value = n - half;
+        if (value === 0) continue;
+
+        const tickX = addToMap("mapTick mapTickX " + (value < 0 ? "mapTickWest" : "mapTickEast"), coordinate(value, "W", "E"), n, 0);
+        tickX.dataset.covers = (value < 0 ? value : value - 1) + ",0";
+
+        const tickY = addToMap("mapTick mapTickY " + (value < 0 ? "mapTickNorth" : "mapTickSouth"), coordinate(value, "N", "S"), 0, n);
+        tickY.dataset.covers = "-1," + (value < 0 ? value : value - 1);
     }
 
     const grid = document.createElement("div");
@@ -79,7 +89,7 @@ function showMap() {
     for (const piece of mapPieces) {
         if (!hasMapPiece(piece.id)) continue;
         const square = document.querySelector('.mapSquare[data-square="' + piece.column + "," + piece.row + '"]');
-        if (!square) continue; 
+        if (!square) continue;
 
         const art = document.createElement("pre");
         art.className = "mapPiece";
@@ -95,6 +105,12 @@ function showMap() {
             square.appendChild(name);
         }
     }
+
+    const foundSquares = mapPieces.filter(piece => hasMapPiece(piece.id)).map(piece => piece.column + "," + piece.row);
+    document.querySelectorAll(".mapTick").forEach(tick => {
+                const covered = tick.dataset.covers.split(" ").some(square => foundSquares.includes(square));
+        tick.style.display = covered ? "none" : "block";
+    });
 
     document.getElementById("mapEmpty").style.display = found.length === 0 ? "block" : "none";
 }

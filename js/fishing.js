@@ -1,5 +1,6 @@
 import { openEvent, setEventText, closeEvent } from "./dialogue.js";
 import { getStat } from "./gear.js";
+import { boostMultiplier } from "./itemBag.js";
 
 export function startFishing(type) {
     return new Promise(resolve => {
@@ -20,6 +21,8 @@ export function startFishing(type) {
         let direction = 1;
         let finished = false;
         let rewinds = getStat("rewind", 0);
+        const lineSpeed = type.speed + getStat("slowBar", 0) * boostMultiplier("focus");
+        const fishDelay = type.fishSpeed * boostMultiplier("slow-fish");
         const pastRounds = [];
         let lineTimer;
         let fishTimer;
@@ -62,7 +65,7 @@ export function startFishing(type) {
                 direction = -1;
             }
             draw();
-            lineTimer = setTimeout(moveLine, type.speed + getStat("slowBar", 0));
+            lineTimer = setTimeout(moveLine, lineSpeed);
         }
 
         // the fish (===) moves too
@@ -73,7 +76,7 @@ export function startFishing(type) {
                 bar.zoneStart += bar.fishDirection;
             });
             draw();
-            fishTimer = setTimeout(moveFish, type.fishSpeed);
+            fishTimer = setTimeout(moveFish, fishDelay);
         }
 
         function stop() {
@@ -128,7 +131,7 @@ export function startFishing(type) {
         window.addEventListener("keydown", spacebarReel);
         draw();
 
-        lineTimer = setTimeout(moveLine, type.speed + getStat("slowBar", 0));
-        if (type.fishSpeed > 0) fishTimer = setTimeout(moveFish, type.fishSpeed);
+        lineTimer = setTimeout(moveLine, lineSpeed);
+        if (type.fishSpeed > 0) fishTimer = setTimeout(moveFish, fishDelay);
     });
 }

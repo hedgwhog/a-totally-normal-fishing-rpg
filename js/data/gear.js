@@ -25,7 +25,9 @@ export const marketplaceGear = [
     { id: "rodSimple", name: "Simple fishing rod (Coastal)", price: 45, slot: "Rod", effect: "Focus: 5%", stats: { slowBar: 5 }, waters: ["coastal"] },
     { id: "rodCombined", name: "Combined fishing rod (Shallow & Coastal)", price: 75, slot: "Rod", effect: "Focus: 2.5% + Luck: +0.5", stats: { slowBar: 2.5, luck: 0.5 }, waters: ["shallow", "coastal"] },
     { id: "rodCracked", name: "Cracked fishing rod (Abyssal)", price: 160, slot: "Rod", effect: "", stats: {}, waters: ["abyssal"] },
-    { id: "fishingHat", name: "Cozy fishing hat", price: 25, slot: "Hat", effect: "Luck: +1", stats: { luck: 1 } },
+    { id: "cozyFishingHat", name: "Cozy fishing hat", price: 25, slot: "Hat", effect: "Luck: +1", stats: { luck: 1 } },
+    { id: "relaxingFishingHat", name: "Relaxing fishing hat", price: 25, slot: "Hat", effect: "focus: +5", stats: { focus: 1 } },
+    { id: "simpleCloak", name: "Simple Cloak", price: 40, slot: "Cloak", effect: "Focus: 0.5%", stats: { slowBar: 0.5 } },
 ];
 
 export const charmCloak = {

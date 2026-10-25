@@ -14,6 +14,4 @@ import "./islands/freshwaterHaven/index.js";
 import "./islands/pointDriftt/index.js";
 import { refreshTime } from "./time.js";
 
-localStorage.removeItem("saveAffinity"); // affinity was removed in update 0.8
-
 refreshTime(); 

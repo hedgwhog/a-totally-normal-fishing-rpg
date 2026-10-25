@@ -40,6 +40,9 @@ const freshwaterHaven = [
     { id: "lakeTrout", name: "Lake Trout", price: 6, waters: ["abyssal"], zone: 3, speed: 35, chance: 20, rarity: 2, resonance: 3, rounds: 4, hits: 4, barWidth: [16, 14], fishSpeed: 160, times: ["night"] },
     { id: "sturgeon", name: "Lake Sturgeon", price: 12, waters: ["abyssal"], zone: 3, speed: 25, chance: 5, rarity: 5, resonance: 6, rounds: 5, hits: 5, barWidth: [14, 12], fishSpeed: 130, times: ["night"] },
     { id: "golomyanka", name: "Golomyanka", price: 30, waters: ["abyssal"], zone: 2, speed: 20, chance: 0.5, rarity: 8, resonance: 15, rounds: 6, hits: 6, barWidth: [14, 10, 12], fishSpeed: 110, times: ["night"] },
+
+    //fossil (for later)
+    // { id: "fossilPannoniasaurus", name: "Pannoniasaurus", price: 100, waters: ["shallow", "coastal", "abyssal"], zone: 9, speed: 40, chance: 100, rarity: 0, resonance: 0, rounds: 30, hits: 30, barWidth: 40, fishSpeed: 400, category: "Fossils"},
 ];
 
 export const fishByIsland = {

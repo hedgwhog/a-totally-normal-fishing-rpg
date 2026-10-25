@@ -42,13 +42,13 @@ export function nextTime() {
     refreshTime();
 }
 
-export function nextDay() {
-    day++;
-    timeIndex = 0; // a new day always starts in the morning
+export function nextDay(amount = 1) { // standard 1 day if just nextDay()
+    day += amount; // Now I can increase the day amount
+    timeIndex = 0; // A new day always starts in the morning
     localStorage.setItem("gameDay", day);
     localStorage.setItem("gameTimeIndex", timeIndex);
 
-    // the big "Day" popup, it disappears after 2000 ms
+    // De grote "Day" popup
     if (dayAnimationEnabled()) {
         dayPopup.textContent = "Day " + day;
         dayPopup.style.display = "flex";
