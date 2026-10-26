@@ -7,6 +7,8 @@ import { resonanceAltar } from "./resonanceAltar.js";
 import { ramlaris } from "./ramlaris.js";
 import { travelingMerchant } from "./merchant.js";
 import { annualRitual, isRitualDay } from "./ritual.js";
+import { tavern } from "./tavern.js";
+import { fortuneTeller } from "./fortuneTeller.js";
 
 const island = "freshwaterHaven";
 
@@ -25,3 +27,5 @@ addEvent(island, closedOnRitualDay(fishmonger));
 addEvent(island, closedOnRitualDay(resonanceAltar));
 addEvent(island, closedOnRitualDay(travelingMerchant));
 addEvent(island, closedOnRitualDay(ramlaris));
+addEvent(island, closedOnRitualDay(tavern));
+addEvent(island, closedOnRitualDay(fortuneTeller));

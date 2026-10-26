@@ -3,13 +3,14 @@ import { getTime } from "../../time.js";
 import { getFishAmount, removeFish } from "../../fishBag.js";
 import { addCoins } from "../../wallet.js";
 import { addResonance } from "../../resonance.js";
-import { say } from "../../dialogue.js";
+import { say, pick } from "../../dialogue.js";
+import { lines } from "../../data/dialogue.js";
 import { openPopup } from "../../ui.js";
 import { loadObject, save } from "../../save.js";
 import { addText, addButton } from "../../helpers.js";
 import { shipCalled, callShip } from "./ramlaris.js";
 
-const researcher = "Ichthyologist"; // the name above her dialogue
+const researcher = "researcher"; // her character in data/dialogue.js (name and portrait)
 const fishList = fishByIsland.freshwaterHaven;
 const rareFish = ["catfish", "muskie"]; // the rare shallow and coastal fish
 
@@ -19,27 +20,7 @@ const rounds = [
     { waters: ["shallow", "coastal"], extra: rareFish, coins: 25, resonance: 20 },
 ];
 
-// what she says when you finish a round, it goes down in an array
-const thanks = [
-    [
-        "OH! You actually brought them.",
-        "Here, take this! And come back soon, I already have a new list.",
-    ],
-    [
-        "You're back! Was I asleep? I don't think I was asleep. Here is your reward:",
-    ],
-    [
-        "You brought me a Catfish and a Muskie!? Thank you so much!"
-    ],
-];
-
-// her greeting changes with the time of the day
-const greetings = {
-    morning: "Is it morning already? I haven't slept yet. Again. Who cares, I have fish to study!",
-    afternoon: "Afternoon? I took a nap at six. In the morning. Or was it yesterday? Anyway, hi!",
-    evening: "Finally evening. My brain only really wakes up now. Coffee number nine, let's go.",
-    night: "Oh, you're up too?! Nights are the best for research. Nobody interrupts me. I love it.",
-};
+// What she says is in data/dialogue.js (lines.researcher).
 
 function newQuest(round) {
     const quest = rounds[round - 1];
@@ -69,16 +50,16 @@ const page = document.getElementById("ichthyologistItem");
 
 function showResearcher() {
     page.innerHTML = "";
-    addText(page, "\"" + greetings[getTime()] + "\"");
+    addText(page, "\"" + pick(lines.researcher.greeting[getTime()]) + "\"");
     addText(page, "");
 
     if (finishedResearch()) {
-        addText(page, "\"I'm still studying your fish!\"");
+        addText(page, "\"" + pick(lines.researcher.stillStudying) + "\"");
         return;
     }
 
     const quest = rounds[progress.round - 1];
-    addText(page, "\"Could you bring me one of each of these? Pretty please? It's for science! Everything is for science!\"");
+    addText(page, "\"" + pick(lines.researcher.questIntro) + "\"");
     progress.wanted.forEach(id => {
         const type = fishList.find(fish => fish.id === id);
         addText(page, "- " + type.name + " (you have " + getFishAmount(id) + ")");
@@ -90,15 +71,12 @@ function showResearcher() {
 
 async function giveFish() {
     if (progress.wanted.some(id => getFishAmount(id) === 0)) {
-        await say([
-            "Hmm, hmm, hmm... nope! You're missing some.",
-            "I need ALL of them. One of each. Did I mention it's for science? It's for science.",
-        ], researcher);
+        await say(lines.researcher.missingFish, researcher);
         return;
     }
 
     const quest = rounds[progress.round - 1];
-    const lines = thanks[progress.round - 1];
+    const thanks = lines.researcher.thanks[progress.round - 1] || [];
     progress.wanted.forEach(id => removeFish(id, 1));
     addCoins(quest.coins);
     addResonance(quest.resonance);
@@ -107,22 +85,14 @@ async function giveFish() {
     saveProgress();
     showResearcher();
 
-    await say(lines, researcher);
+    if (thanks.length > 0) await say(thanks, researcher);
     await say("You got " + quest.coins + " coins & " + quest.resonance + " resonance!");
 
     if (finishedResearch()) await phoneCall();
 }
 
 async function phoneCall() {
-    await say([
-        { who: "", text: "Somewhere under a mountain of notes, a phone starts ringing." },
-        { who: researcher, text: "Hellooo? Oh, hi Gramps! ...You need help with your research at Point Driftt?" },
-        { who: researcher, text: "I can't come, I'm busy with these fish! But I know someone who can help you..." },
-        { who: "", text: "She points at you. Nobody asked you." },
-        { who: researcher, text: "Great! See you in 11 days! Well, not me, them! Bye!" },
-        { who: "", text: "She hangs up." },
-        { who: researcher, text: "Gramps will pick you up with his ship, the Ramlaris. It will be at the dock in 11 days. He'll wait until you're ready." },
-    ]);
+    await say(lines.researcher.phoneCall);
     callShip();
 }
 

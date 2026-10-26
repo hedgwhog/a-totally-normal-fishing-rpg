@@ -1,4 +1,6 @@
 import { closeAllPopups } from "./ui.js";
+import { characters } from "./data/dialogue.js";
+import { isKey, keyHint, isListening } from "./keybinds.js";
 
 const box = document.getElementById("fishingPopup");
 const boxText = document.getElementById("fishingText");
@@ -87,43 +89,71 @@ function inLine(task) {
     return run;
 }
 
-function formatLine(line, speaker) {
-    const who = (typeof line === "object") ? line.who : speaker;
-    const text = (typeof line === "object") ? line.text : line;
-    return who ? who + ":\n\n" + text : text;
+// Lines
+export function pick(list) {
+    return Array.isArray(list) ? list[Math.floor(Math.random() * list.length)] : list;
 }
 
-function showLine(text) {
+export function fill(text, values = {}) {
+    return text.replace(/\{(\w+)\}/g, (match, word) => (word in values ? values[word] : match));
+}
+
+function speakerName(who) {
+    if (!who) return "";
+    return characters[who] ? characters[who].name : who;
+}
+
+function prepareLine(line, speaker, values) {
+    const isObject = typeof line === "object";
+    const name = speakerName(isObject ? line.who : speaker);
+    const text = fill(isObject ? line.text : line, values);
+    return name ? name + ":\n\n" + text : text;
+}
+
+function showLine(text, canGoBack) {
     return new Promise(resolve => {
-        function next() {
+        function done(result) {
             window.removeEventListener("keydown", onKey);
-            resolve();
+            resolve(result);
         }
         function onKey(event) {
-            if ((event.code !== "Enter" && event.code !== "NumpadEnter") || event.repeat) return;
-            event.preventDefault();
-            next();
+            if (event.repeat || isListening()) return;
+            if (isKey(event, "continue")) {
+                event.preventDefault();
+                done("next");
+            } else if (canGoBack && isKey(event, "back")) {
+                event.preventDefault();
+                done("back");
+            }
         }
-        showBox(text, [["Continue [Enter]", next]]);
+        const buttons = [];
+        if (canGoBack) buttons.push(["Back" + keyHint("back"), () => done("back")]);
+        buttons.push(["Continue" + keyHint("continue"), () => done("next")]);
+        showBox(text, buttons);
         dialogueOpen = true;
         window.addEventListener("keydown", onKey);
     });
 }
 
-export function say(lines, speaker = "") {
-    const list = Array.isArray(lines) ? lines : [lines];
+export function say(lines, speaker = "", values = {}) {
+    const list = (Array.isArray(lines) ? lines : [lines]).map(line => prepareLine(line, speaker, values));
     return inLine(async () => {
-        for (const line of list) await showLine(formatLine(line, speaker));
+        let n = 0;
+        while (n < list.length) {
+            const result = await showLine(list[n], n > 0);
+            n += (result === "back") ? -1 : 1;
+        }
     });
 }
 
-export function ask(text, choices, speaker = "") {
+export function ask(text, choices, speaker = "", values = {}) {
+    const question = prepareLine(text, speaker, values);
     return inLine(() => new Promise(resolve => {
-        showBox(formatLine(text, speaker), choices.map(choice => [choice, () => resolve(choice)]));
+        showBox(question, choices.map(choice => [choice, () => resolve(choice)]));
         dialogueOpen = true;
     }));
 }
 
-export async function askYesNo(text, speaker = "", yes = "Yes", no = "No") {
-    return (await ask(text, [yes, no], speaker)) === yes;
+export async function askYesNo(text, speaker = "", yes = "Yes", no = "No", values = {}) {
+    return (await ask(text, [yes, no], speaker, values)) === yes;
 }

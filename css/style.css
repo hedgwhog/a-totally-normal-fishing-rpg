@@ -334,7 +334,7 @@ button {
     position: relative;
     font-size: 14px;
     width: auto;
-    height: 30px;
+    height: 26px;
     padding: 5px;
     cursor: pointer;
 }
@@ -363,7 +363,6 @@ button {
     border: 1px dashed black;
 }
 
-/* List of event that show up depending per area*/
 .event-list {
     position: absolute;
     display: flex;
@@ -390,7 +389,6 @@ button {
     cursor: pointer;
 }
 
-/* List to enable scrolling in the list */
 #marketplaceItem,
 #merchantItem {
     position: absolute;
@@ -474,7 +472,8 @@ button {
 
 /* Resonance altar and ichthyologist: */
 #resonanceItem,
-#ichthyologistItem {
+#ichthyologistItem,
+#tavernItem {
     position: absolute;
     top: 90px;
     left: 40px;
@@ -499,13 +498,18 @@ button {
     position: relative;
 }
 
-/* The arrows on the fishing rod, to see your enchantment */
 .pageArrows {
     display: none;
     position: absolute;
     bottom: 1px;
+    left: 1px;
     right: 1px;
-    gap: 1px;
+    justify-content: space-between;
+}
+
+.inventoryOutline.hasPages:hover {
+    box-sizing: border-box;
+    padding-bottom: 14px;
 }
 
 .inventoryOutline:hover .pageArrows {
@@ -518,7 +522,6 @@ button {
     cursor: pointer;
 }
 
-/* Box for the fishing event and dialogue */
 #fishingPopup {
     display: none;
     position: absolute;
@@ -746,4 +749,56 @@ button {
     right: 15px;
     margin: 0;
     font-size: 11px;
+}
+
+/* Keybinds */
+#keybindWrap {
+    position: absolute;
+    top: 80px;
+    left: 300px;
+    width: 225px;
+    font-size: 11px;
+}
+
+#keybindWrap h3 {
+    margin: 0 0 2px 0;
+}
+
+.keybindHelp {
+    margin: 0 0 6px 0;
+}
+
+#keybindList {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+#keybindList label {
+    justify-content: space-between;
+    align-items: center;
+}
+
+.keybindButton {
+    min-width: 70px;
+}
+
+/* Milestones */
+#milestoneItem {
+    position: absolute;
+    top: 70px;
+    left: 40px;
+    width: 450px;
+}
+
+#milestoneItem h3 {
+    margin: 12px 0 4px 0;
+    text-decoration: underline;
+}
+
+.milestoneRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 0;
+    border-bottom: 1px dotted #bbb;
 }

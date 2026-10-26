@@ -26,14 +26,21 @@ export const marketplaceGear = [
     { id: "rodCombined", name: "Combined fishing rod (Shallow & Coastal)", price: 75, slot: "Rod", effect: "Focus: 2.5% + Luck: +0.5", stats: { slowBar: 2.5, luck: 0.5 }, waters: ["shallow", "coastal"] },
     { id: "rodCracked", name: "Cracked fishing rod (Abyssal)", price: 160, slot: "Rod", effect: "", stats: {}, waters: ["abyssal"] },
     { id: "cozyFishingHat", name: "Cozy fishing hat", price: 25, slot: "Hat", effect: "Luck: +1", stats: { luck: 1 } },
-    { id: "relaxingFishingHat", name: "Relaxing fishing hat", price: 25, slot: "Hat", effect: "focus: +5", stats: { focus: 1 } },
+    { id: "relaxingFishingHat", name: "Relaxing fishing hat", price: 25, slot: "Hat", effect: "Focus: 5%", stats: { slowBar: 5 } }, // focus is the "slowBar" stat
     { id: "simpleCloak", name: "Simple Cloak", price: 40, slot: "Cloak", effect: "Focus: 0.5%", stats: { slowBar: 0.5 } },
 ];
 
+// reward from the fortune teller
+export const luckRod = {
+    id: "rodLuck", name: "Luck fishing rod (Coastal)", slot: "Rod", effect: "Luck: +1",
+    stats: { luck: 1 }, waters: ["coastal"], sellValue: 40,
+};
+
+// reward from the annual ritual
 export const charmCloak = {
     id: "charmCloak", name: "Charm cloak", slot: "Cloak", effect: "Luck: +0.5 (abyssal)",
     stats: {}, waterStats: { abyssal: { luck: 0.5 } }, sellValue: 80,
 };
 
 // every piece of gear in the game. New gear must be in here, or it can't be loaded from a save.
-export const allGear = [...Object.values(starterGear), ...marketplaceGear, charmCloak];
+export const allGear = [...Object.values(starterGear), ...marketplaceGear, charmCloak, luckRod];

@@ -1,4 +1,5 @@
 import "./ui.js";
+import "./keybinds.js";
 import "./settings.js";
 import "./audio.js";
 import "./wallet.js";
@@ -10,6 +11,8 @@ import "./map.js";
 import "./fishLog.js";
 import "./catalogue.js";
 import "./actions.js";
+import "./controls.js";
+import "./milestones.js";
 import "./islands/freshwaterHaven/index.js";
 import "./islands/pointDriftt/index.js";
 import { refreshTime } from "./time.js";

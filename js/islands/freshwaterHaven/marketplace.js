@@ -6,6 +6,8 @@ import { getItemAmount, addItems } from "../../itemBag.js";
 import { hasMapPiece, addMapPiece } from "../../map.js";
 import { getCoins, addCoins } from "../../wallet.js";
 import { say, askYesNo } from "../../dialogue.js";
+import { lines } from "../../data/dialogue.js";
+import { round1, coinsText } from "../../helpers.js";
 import { openPopup } from "../../ui.js";
 
 const sellPercent = 70; // price you sell your own items
@@ -123,15 +125,15 @@ async function buyMapPiece(piece) {
     await say("You bought a map piece!\n\nIt goes straight into your world map. Click the map in your inventory to look at it.");
 }
 
-// Sell the gear from your backpack
+// Sell the gear from your backpack (with 1 decimal: 70% of 25 coins = 17.5 coins)
 function sellPrice(item) {
     if (item.sellValue) return item.sellValue;
-    return Math.floor((item.price || 0) * sellPercent / 100);
+    return round1((item.price || 0) * sellPercent / 100);
 }
 
 async function sellGear(item) {
     const price = sellPrice(item);
-    if (!await askYesNo("looks at your " + item.name + "\nI'll give you " + price + " coins for it.\n\nDo you want to sell it?", "Trader")) return;
+    if (!await askYesNo(lines.trader.sellOffer, "trader", "Yes", "No", { item: item.name, price: coinsText(price) })) return;
     if (removeGear(item.id)) addCoins(price);
     showMarketplace();
 }
@@ -156,7 +158,7 @@ function showMarketplace() {
     const backpack = getBackpack();
     if (backpack.length === 0) addNote("You have nothing to sell. Only gear in your backpack can be sold.");
     backpack.forEach(item => {
-        addShopButton(shop, "Sell: " + item.name + " | " + sellPrice(item) + " coins", () => sellGear(item));
+        addShopButton(shop, "Sell: " + item.name + " | " + coinsText(sellPrice(item)), () => sellGear(item));
     });
 }
 

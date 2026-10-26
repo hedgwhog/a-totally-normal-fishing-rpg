@@ -5,12 +5,13 @@ import { getItemAmount, addItems, removeItems } from "../../itemBag.js";
 import { getCoins, addCoins } from "../../wallet.js";
 import { getDay, onTimeChange } from "../../time.js";
 import { getIsland } from "../../islands.js";
-import { say } from "../../dialogue.js";
+import { say, pick } from "../../dialogue.js";
+import { lines } from "../../data/dialogue.js";
 import { openPopup } from "../../ui.js";
 import { loadObject, save } from "../../save.js";
-import { addText, addButton } from "../../helpers.js";
+import { addText, addButton, round1, coinsText } from "../../helpers.js";
 
-const merchant = "Merchant";
+const merchant = "merchant"; // his character in data/dialogue.js (name and portrait). His lines are there too.
 const shop = document.getElementById("merchantItem");
 let visit = { day: null, stock: {}, announcedDay: null, ...loadObject("saveMerchant") };
 
@@ -42,7 +43,7 @@ onTimeChange((time, day) => {
     if (time !== "morning" || !isMerchantDay(day) || visit.announcedDay === day || getIsland() !== "freshwaterHaven") return;
     visit.announcedDay = day;
     saveVisit();
-    say("A merchant's has arrived in Freshwater Haven. He is staying until the evening.");
+    say(lines.merchant.arrival);
 });
 
 // helpers for the page
@@ -53,12 +54,9 @@ function addCategory(title) {
     shop.appendChild(header);
 }
 
-function coinsText(amount) {
-    return amount + (amount === 1 ? " coin" : " coins");
-}
-
+// what he pays you, with 1 decimal (50% of 5 coins = 2.5 coins)
 function sellPrice(item) {
-    return Math.floor(item.price * merchantBuyPercent / 100);
+    return round1(item.price * merchantBuyPercent / 100);
 }
 
 // Backpack upgrades
@@ -69,18 +67,19 @@ function nextUpgrade() {
 async function buyUpgrade() {
     const upgrade = nextUpgrade();
     if (getCoins() < upgrade.price) {
-        await say("No coins, no upgrade. That one's " + coinsText(upgrade.price) + ", friend.", merchant);
+        await say(pick(lines.merchant.noCoinsUpgrade), merchant, { price: coinsText(upgrade.price) });
         return;
     }
     addCoins(-upgrade.price);
     setBackpackSize(upgrade.slots);
     showMerchant();
-    await say("Your backpack now has " + upgrade.slots + " slots!", merchant);
+    await say(pick(lines.merchant.upgraded), merchant, { slots: upgrade.slots });
 }
 
 // Buying and selling items
 async function buyItem(item) {
     if (getCoins() < item.price) {
+        await say(pick(lines.merchant.noCoinsItem), merchant, { price: coinsText(item.price) });
         return;
     }
     addCoins(-item.price);
@@ -100,7 +99,7 @@ function sellItem(item) {
 function showMerchant() {
     checkStock();
     shop.innerHTML = "";
-    addText(shop, "\"Welcome, welcome my friend! Check out my items and prices!\"");
+    addText(shop, "\"" + pick(lines.merchant.welcome) + "\"");
 
     addCategory("Backpack upgrade");
     const upgrade = nextUpgrade();
@@ -117,12 +116,13 @@ function showMerchant() {
         const stock = visit.stock[id] || 0;
         if (stock === 0) continue;
         anythingInStock = true;
+        // what it does: the effect from data/items.js, or the resonance of a bottle
         let effect = "";
-        if (item.boost) effect = " (x2 " + item.boost + " for " + item.catches + " catches)";
-        if (item.resonance) effect = " (+" + item.resonance + " resonance)";
+        if (item.effect) effect = " (" + item.effect + (item.catches ? " for " + item.catches + " catches" : "") + ")";
+        else if (item.resonance) effect = " (+" + item.resonance + " resonance)";
         addButton(shop, item.name + effect + " | " + coinsText(item.price) + " | " + stock + " in stock", () => buyItem(item));
     }
-    if (!anythingInStock) addText(shop, "\"Sold out! Come back next time. Bring more coins.\"");
+    if (!anythingInStock) addText(shop, "\"" + pick(lines.merchant.soldOut) + "\"");
 
     addCategory("Sell to the merchant (" + merchantBuyPercent + "% of the price)");
     let anythingToSell = false;
@@ -132,7 +132,7 @@ function showMerchant() {
         anythingToSell = true;
         addButton(shop, "Sell: " + item.name + " (you have " + getItemAmount(id) + ") | " + coinsText(sellPrice(item)), () => sellItem(item));
     }
-    if (!anythingToSell) addText(shop, "He only buys trinkets and bottles. You have none.");
+    if (!anythingToSell) addText(shop, "\"" + pick(lines.merchant.nothingToSell) + "\"");
 }
 
 export const travelingMerchant = {

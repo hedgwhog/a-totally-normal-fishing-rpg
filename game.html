@@ -68,6 +68,7 @@
                 <button id="nextFish">Fishing</button>
                 <button id="nextDay">Sleeping</button>
                 <button id="rest">Rest</button>
+                <button id="milestones">Milestones</button>
             </div>
 
             <div id="fishingPopup" style="display: none;">
@@ -87,6 +88,8 @@
                     <button id="resonance">Resonance altar</button>
                     <button id="merchant">Merchant</button>
                     <button id="ramlaris">The Ramlaris<br>(at the dock)</button>
+                    <button id="tavern">Tavern</button>
+                    <button id="fortuneTeller">Fortune teller</button>
                 </div>
 
                 <div id="marketplaceDisplay" class="popup bigPopup">
@@ -108,6 +111,13 @@
                     <h4>Shows up once every 13 days. Not at night.</h4>
                     <button class="popupClose" data-close="merchantDisplay">Close merchant</button>
                     <div id="merchantItem"></div>
+                </div>
+
+                <div id="tavernDisplay" class="popup bigPopup">
+                    <h1>Tavern</h1>
+                    <h4>A new order every 3 days. Closed in the morning.</h4>
+                    <button class="popupClose" data-close="tavernDisplay">Close tavern</button>
+                    <div id="tavernItem"></div>
                 </div>
 
                 <div id="ichthyologistDisplay" class="popup bigPopup">
@@ -141,6 +151,18 @@
                 <label for="volumeSlider">OST Volume:<input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.5"></label>
                 <label>Reset progress: <button id="resetProgress" class="settings-btn">Remove progress</button></label>
             </div>
+
+            <div id="keybindWrap">
+                <br><h3>Keybinds</h3>
+                <p class="keybindHelp">Click a key, then press the new key (Esc cancels).</p>
+                <div id="keybindList"></div>
+            </div>
+        </div>
+
+        <div id="milestoneDisplay" class="popup bigPopup">
+            <button class="popupClose" data-close="milestoneDisplay">Close milestones</button>
+            <h1>Milestones</h1>
+            <div id="milestoneItem"></div>
         </div>
 
         <div id="mapDisplay" class="popup bigPopup">
@@ -174,7 +196,6 @@
         </div>
     </div>
     </div>
-    <!-- main.js loads all the other files -->
     <script type="module" src="js/main.js"></script>
 </body>
 </html>

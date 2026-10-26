@@ -1,4 +1,5 @@
 import { openEvent, setEventText, closeEvent } from "./dialogue.js";
+import { isKey, keyHint, isListening } from "./keybinds.js";
 import { getStat } from "./gear.js";
 import { boostMultiplier } from "./itemBag.js";
 
@@ -21,8 +22,12 @@ export function startFishing(type) {
         let direction = 1;
         let finished = false;
         let rewinds = getStat("rewind", 0);
-        const lineSpeed = type.speed + getStat("slowBar", 0) * boostMultiplier("focus");
+        const focus = getStat("slowBar", 0);
+        const focusWithTrinket = boostMultiplier("focus") > 1 ? Math.max(focus * 2, focus + 5) : focus;
+        const lineSpeed = type.speed + focusWithTrinket;
+
         const fishDelay = type.fishSpeed * boostMultiplier("slow-fish");
+        const temptation = Math.min(50, getStat("temptation", 0));
         const pastRounds = [];
         let lineTimer;
         let fishTimer;
@@ -37,7 +42,7 @@ export function startFishing(type) {
         }
 
         function draw() {
-            let text = "Click the button or press space to reel.\n\nYou'll catch the fish after " + type.hits + " hits in " + type.rounds + " rounds.\n\n";
+            let text = "Click the button or press" + keyHint("reel") + " to reel.\n\nYou'll catch the fish after " + type.hits + " hits in " + type.rounds + " rounds.\n\n";
             bars.forEach((bar, n) => {
                 let line = "";
                 for (let x = 0; x < bar.width; x++) {
@@ -76,7 +81,19 @@ export function startFishing(type) {
                 bar.zoneStart += bar.fishDirection;
             });
             draw();
-            fishTimer = setTimeout(moveFish, fishDelay);
+            fishTimer = setTimeout(moveFish, nextFishDelay());
+        }
+
+        // is your line on the fish (===) right now?
+        function touchingFish() {
+            const bar = bars[activeBar];
+            return position >= bar.zoneStart && position < bar.zoneStart + bar.catchZone;
+        }
+
+        // how long until the fish moves again. Slower while your line touches it (Temptation).
+        function nextFishDelay() {
+            if (temptation > 0 && touchingFish()) return fishDelay / (1 - temptation / 100);
+            return fishDelay;
         }
 
         function stop() {
@@ -119,7 +136,7 @@ export function startFishing(type) {
         }
 
         function spacebarReel(event) {
-            if (event.code !== "Space" || event.repeat) return;
+            if (!isKey(event, "reel") || event.repeat || isListening()) return;
             event.preventDefault();
             if (document.activeElement) document.activeElement.blur();
             reel();
@@ -132,6 +149,6 @@ export function startFishing(type) {
         draw();
 
         lineTimer = setTimeout(moveLine, lineSpeed);
-        if (type.fishSpeed > 0) fishTimer = setTimeout(moveFish, fishDelay);
+        if (type.fishSpeed > 0) fishTimer = setTimeout(moveFish, nextFishDelay());
     });
 }

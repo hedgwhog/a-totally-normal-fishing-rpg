@@ -1,4 +1,6 @@
 import { askYesNo } from "./dialogue.js";
+import { keyNames, getKey, setKey, resetKeys, keyLabel, setListening } from "./keybinds.js";
+
 
 const dayDisplayToggle = document.getElementById("dayDisplayToggle");
 const invertCheckbox = document.getElementById("invert-toggle");
@@ -54,6 +56,49 @@ resetButton.addEventListener("click", async () => {
         "", "Yes, delete everything", "No, keep my save"
     );
     if (!sure) return;
+    document.dispatchEvent(new Event("resetProgress"));
     localStorage.clear();
     location.reload();
 });
+
+// Keybinds
+const keybindList = document.getElementById("keybindList");
+
+function showKeybinds() {
+    keybindList.innerHTML = "";
+    for (const action of Object.keys(keyNames)) {
+        const row = document.createElement("label");
+        row.textContent = keyNames[action] + ": ";
+        const button = document.createElement("button");
+        button.className = "settings-btn keybindButton";
+        button.textContent = keyLabel(getKey(action));
+        button.addEventListener("click", () => waitForKey(action, button));
+        row.appendChild(button);
+        keybindList.appendChild(row);
+    }
+    const reset = document.createElement("button");
+    reset.className = "settings-btn";
+    reset.textContent = "Reset keybinds";
+    reset.addEventListener("click", () => {
+        resetKeys();
+        showKeybinds();
+    });
+    keybindList.appendChild(reset);
+}
+
+function waitForKey(action, button) {
+    button.textContent = "press a key...";
+    setListening(true);
+
+    function onKey(event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        window.removeEventListener("keydown", onKey, true);
+        if (event.code !== "Escape") setKey(action, event.code);
+        setTimeout(() => setListening(false), 0);
+        showKeybinds();
+    }
+    window.addEventListener("keydown", onKey, true); 
+}
+
+showKeybinds();

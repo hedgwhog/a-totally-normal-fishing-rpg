@@ -85,10 +85,10 @@ function showBag() {
         }
     }
 
+    // active trinkets, like "Luck trinket: 4 catches left"
     for (const boost of Object.keys(boosts)) {
-        if (boosts[boost] > 0 && items.some(item => item.boost === boost)) {
-            addLine(boost + " x2: " + boosts[boost] + " catches left");
-        }
+        const trinket = items.find(item => item.boost === boost);
+        if (boosts[boost] > 0 && trinket) addLine(trinket.name + ": " + boosts[boost] + " catches left");
     }
 }
 

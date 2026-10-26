@@ -11,3 +11,15 @@ export function addButton(box, label, action) {
     box.appendChild(button);
     return button;
 }
+
+export function round1(number) {
+    return Math.round(number * 10) / 10;
+}
+
+export function formatNumber(number) {
+    return String(round1(number));
+}
+
+export function coinsText(amount) {
+    return formatNumber(amount) + (round1(amount) === 1 ? " coin" : " coins");
+}
