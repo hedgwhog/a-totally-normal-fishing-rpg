@@ -11,12 +11,20 @@ import { addResonance } from "./resonance.js";
 import { logCatch } from "./fishLog.js";
 import { say } from "./dialogue.js";
 import { closeAllPopups } from "./ui.js";
+import { round1, formatNumber } from "./helpers.js";
 
 // Fishing
-// picks a random fish. Luck makes rarer fish show up more often
+// Picks a random fish. Every fish has a weight: a bigger weight = more likely.
+// Luck makes rarer fish (rarity above 0) heavier: weight = chance * (1 + luck * rarity).
+// A Luck trinket doubles the weight of every rare fish, so they really show up about 2x as often,
+// even if you have no luck at all. (Before, it doubled your luck stat, which did nothing with 0 luck.)
 function pickFish(canCatch, waters) {
-    const luck = getStat("luck", 0, waters) * boostMultiplier("luck");
-    const weights = canCatch.map(type => Math.max(0, type.chance * (1 + luck * type.rarity)));
+    const luck = getStat("luck", 0, waters);
+    const trinket = boostMultiplier("luck");
+    const weights = canCatch.map(type => {
+        const weight = type.chance * (1 + luck * type.rarity);
+        return Math.max(0, type.rarity > 0 ? weight * trinket : weight);
+    });
     let roll = Math.random() * weights.reduce((sum, weight) => sum + weight, 0);
     for (let n = 0; n < canCatch.length; n++) {
         roll -= weights[n];
@@ -42,9 +50,10 @@ function nothingToCatch(rod, fishHere, reachable) {
 function catchRewards(type) {
     const lines = [];
 
-    const resonance = type.resonance * boostMultiplier("resonance");
+    // the fish's resonance (x2 with a Resonance trinket), plus 0.1 per level of the Resonity enchant
+    const resonance = round1(type.resonance * boostMultiplier("resonance") + getStat("resonity", 0));
     addResonance(resonance);
-    lines.push("+" + resonance + " Resonance");
+    lines.push("+" + formatNumber(resonance) + " Resonance");
     useBoostCatch();
 
     for (const item of items) {

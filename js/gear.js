@@ -87,6 +87,7 @@ function showPages(box, item) {
     }
     arrows.innerHTML = "";
     if (pages.length > 1) arrows.append(makeArrow("<", -1), makeArrow(">", 1));
+    box.classList.toggle("hasPages", pages.length > 1);
     showPage();
 }
 
@@ -122,6 +123,10 @@ function equip(n) {
     if (oldItem) backpack.push(oldItem);
     saveGear();
     showGear();
+}
+
+export function equipSlot(n) {
+    if (backpack[n]) equip(n);
 }
 
 export function getEquipped(slot) {

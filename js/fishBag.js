@@ -1,6 +1,8 @@
 import { allFish } from "./data/fish.js";
 import { addCoins } from "./wallet.js";
-import { ask, say } from "./dialogue.js";
+import { ask, say, pick } from "./dialogue.js";
+import { lines } from "./data/dialogue.js";
+import { round1, coinsText } from "./helpers.js";
 import { loadObject, save } from "./save.js";
 
 const savedFish = loadObject("saveFish");
@@ -64,7 +66,7 @@ function showFish() {
         row.className = "fishRow";
         row.append(
             document.createElement("br"),
-            " Worth " + type.price + (type.price === 1 ? " coin" : " coins") + " each.",
+            " Worth " + coinsText(type.price) + " each.",
             document.createElement("br"),
             type.name + ": " + amount,
             document.createElement("br"),
@@ -82,17 +84,17 @@ export async function sellFish() {
     allFish.forEach(type => {
         const amount = selected[type.id] || 0;
         if (amount > 0) {
-            total += amount * type.price;
+            total = round1(total + amount * type.price);
             list += amount + " " + type.name + "\n";
         }
     });
 
     if (total === 0) {
-        await say("Select the fish you want to sell with + and - first.");
+        await say(pick(lines.fishmonger.nothingSelected), "fishmonger");
         return;
     }
 
-    const answer = await ask("*checks your fish*\n" + list + "\nI'll give you " + total + " coins for those.", ["Sell", "No thanks"], "Fishmonger");
+    const answer = await ask(lines.fishmonger.sellOffer, ["Sell", "No thanks"], "fishmonger", { list: list, price: coinsText(total) });
     if (answer !== "Sell") return;
 
     allFish.forEach(type => {

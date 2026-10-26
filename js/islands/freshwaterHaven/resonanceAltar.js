@@ -4,7 +4,7 @@ import { getResonance, addResonance } from "../../resonance.js";
 import { getCoins, addCoins } from "../../wallet.js";
 import { say, askYesNo } from "../../dialogue.js";
 import { openPopup } from "../../ui.js";
-import { addText, addButton } from "../../helpers.js";
+import { addText, addButton, formatNumber, coinsText } from "../../helpers.js";
 
 // cost = resonance.
 // extraChance: chance for a 2nd enchant, everything after that is 0.5
@@ -30,7 +30,7 @@ function randomEnchant(randomEnchantIds) {
 
 function showResonanceShop() {
     altar.innerHTML = "";
-    addText(altar, "You have " + getResonance() + " resonance and " + getCoins() + " coins.");
+    addText(altar, "You have " + formatNumber(getResonance()) + " resonance and " + coinsText(getCoins()) + ".");
 
     if (!enchantRod) {
         addText(altar, "Choose the rod you want to resonate:");

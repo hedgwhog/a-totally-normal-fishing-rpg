@@ -7,9 +7,10 @@ import { addItems } from "../../itemBag.js";
 import { addMapPiece } from "../../map.js";
 import { startFishing } from "../../fishing.js";
 import { say, ask } from "../../dialogue.js";
+import { lines } from "../../data/dialogue.js";
 import { loadObject, save } from "../../save.js";
 
-const keeper = "Ritual keeper"; // the name above their dialogue
+const keeper = "keeper"; 
 const ritualEvery = 19;
 
 const theCharm = { name: "The charm", zone: 2, speed: 28, rounds: 12, hits: 12, barWidth: [17, 13, 15], fishSpeed: 115 };
@@ -22,6 +23,10 @@ function saveRitual() {
     save("saveRitual", ritual);
 }
 
+export function ritualAttended() {
+    return ritual.attemptedDay !== null || ritual.beaten;
+}
+
 export function isRitualDay(day) {
     return !ritual.beaten && day % ritualEvery === 0;
 }
@@ -30,22 +35,16 @@ onTimeChange((time, day) => {
     if (time !== "morning" || !isRitualDay(day) || ritual.announcedDay === day || getIsland() !== "freshwaterHaven") return;
     ritual.announcedDay = day;
     saveRitual();
-    say([
-        "Bells ring all over Freshwater Haven. Today is the annual ritual!",
-        "Everyone is heading to the dock, so everything else on the island is closed today.",
-    ]);
+    say(lines.keeper.announcement);
 });
 
 async function attemptRitual() {
-    await say([
-        { who: "", text: "The whole island has gathered at the dock." },
-        { who: keeper, text: "Every 19 days we cast for The charm. Nobody has ever pulled it up. Not once." },
-        { who: keeper, text: "Every fisher gets ONE attempt. No second tries, no excuses." },
-    ]);
+    const values = { every: ritualEvery };
+    await say(lines.keeper.intro, keeper, values);
 
-    const answer = await ask("Will you take your one attempt?", ["Cast your line", "Not yet"], keeper);
+    const answer = await ask(lines.keeper.askAttempt, ["Cast your line", "Not yet"], keeper, values);
     if (answer !== "Cast your line") {
-        await say("The ritual lasts all day. Come back when you're ready.", keeper);
+        await say(lines.keeper.notReady, keeper, values);
         return;
     }
 
@@ -59,17 +58,10 @@ async function attemptRitual() {
         saveRitual();
         addItems("theCharm");
         addMapPiece(mapPiece.id);
-        await say([
-            { who: "", text: "The charm, you managed to actually get it." },
-            { who: keeper, text: "After all these years someone finally did it!" },
-            { who: "", text: "You got the charm, a Charm cloak and a piece of a map!" },
-        ]);
+        await say(lines.keeper.win, keeper, values);
         await giveGear(charmCloak); // if your backpack is full, you choose what to drop
     } else {
-        await say([
-            { who: "", text: "Your line comes back up. Empty." },
-            { who: keeper, text: "Nobody catches it. That's why it's a ritual. See you in 19 days." },
-        ]);
+        await say(lines.keeper.lose, keeper, values);
     }
     nextTime();
 }

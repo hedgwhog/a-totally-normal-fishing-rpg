@@ -4,11 +4,14 @@ import { totalFish } from "../../fishBag.js";
 import { getItemAmount, removeItems } from "../../itemBag.js";
 import { travelTo } from "../../travel.js";
 import { say, ask } from "../../dialogue.js";
+import { lines } from "../../data/dialogue.js";
+import { findItem } from "../../data/items.js";
 import { loadObject, save } from "../../save.js";
 
-const sailor = "Old sailor"; // the name above his dialogue
+const sailor = "sailor"; // his character in data/dialogue.js (name and portrait). His lines are there too.
 const daysToArrive = 11; // days between the phone call and the ship arriving
-const payment = { fishCan: 8, waterBottle: 12, beer: 4 }; // the price for the 
+// the price for the trip: item id: how many. Add or remove items here, the rest of the code follows.
+const payment = { fishCan: 8, waterBottle: 12, beer: 4 };
 
 let ship = { arrivalDay: null, announced: false, metSailor: false, ...loadObject("saveRamlaris") };
 
@@ -29,64 +32,55 @@ function shipArrived(day) {
     return shipCalled() && day >= ship.arrivalDay;
 }
 
-// when the ships arrives, it gives a message in the worning
+// "8 Cans of processed fish, 12 Bottles of fresh water and 4 Beer"
+function listText(amounts) {
+    const parts = Object.entries(amounts).map(([id, amount]) => amount + " " + findItem(id).name);
+    return parts.length > 1 ? parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1] : parts.join("");
+}
+
+function hasPayment() {
+    return Object.entries(payment).every(([id, amount]) => getItemAmount(id) >= amount);
+}
+
+// when the ship arrives, it gives a message in the morning
 onTimeChange((time, day) => {
     if (ship.announced || !shipArrived(day) || getIsland() !== "freshwaterHaven") return;
     ship.announced = true;
     saveShip();
-    say([
-        "A deep ship horn sounds over Freshwater Haven.",
-        "An old ship is waiting at the dock. Its name is painted on the side: Ramlaris.",
-    ]);
+    say(lines.sailor.arrival);
 });
 
 async function talkToSailor() {
+    const have = {};
+    for (const id of Object.keys(payment)) have[id] = getItemAmount(id);
+    const values = { payment: listText(payment), have: listText(have) };
+
     if (!ship.metSailor) {
         ship.metSailor = true;
         saveShip();
-        await say([
-            "So you're the one she volunteered.",
-            "Welcome to the Ramlaris. Oldest ship on these waters, and she still floats. Most of the days.",
-            "We're sailing to Point Driftt. The price for the trip: " + payment.fishCan + " cans of processed fish and " + payment.waterBottle + " bottles of fresh water. We need food and water for the crossing.",
-            "And no fish on board. They rot, so we can't bring it with us.",
-            "No rush, the Ramlaris waits at the dock until you're ready.",
-        ], sailor);
+        await say(lines.sailor.firstMeeting, sailor, values);
     }
 
     if (totalFish() > 0) {
-        await say("I can smell the fish. You can't board with fish.\n\nSell every last one of them first.", sailor);
+        await say(lines.sailor.hasFish, sailor, values);
         return;
     }
 
-    const cans = getItemAmount("fishCan");
-    const bottles = getItemAmount("waterBottle");
-    if (cans < payment.fishCan || bottles < payment.waterBottle) {
-        await say(
-            "You're short on supplies. I need " + payment.fishCan + " cans of processed fish and " + payment.waterBottle + " bottles of fresh water.\n\n" +
-            "You've got " + cans + " cans and " + bottles + " bottles.",
-            sailor
-        );
+    if (!hasPayment()) {
+        await say(lines.sailor.shortSupplies, sailor, values);
         return;
     }
 
-    const answer = await ask(
-        "Ready to sail? Once we leave, there's no ship back to Freshwater Haven.",
-        ["Board the Ramlaris", "Not yet"],
-        sailor
-    );
+    const answer = await ask(lines.sailor.askBoard, ["Board the Ramlaris", "Not yet"], sailor, values);
     if (answer !== "Board the Ramlaris") {
-        await say("The Ramlaris isn't going anywhere without you. Take your time.", sailor);
+        await say(lines.sailor.notYet, sailor, values);
         return;
     }
 
-    removeItems("fishCan", payment.fishCan);
-    removeItems("waterBottle", payment.waterBottle);
-    await say("You hand over the supplies. The old sailor looks satified.");
+    for (const [id, amount] of Object.entries(payment)) removeItems(id, amount);
+    await say(lines.sailor.paid, sailor, values);
     await travelTo("pointDriftt", "Sailing on the Ramlaris to Point Driftt");
-    await say([
-        { who: "", text: "After a long trip, the Ramlaris arrives at its destination, point Driftt." },
-        { who: sailor, text: "That's it for now, off you go. Thanks for your help." },
-    ]);
+    await say(lines.sailor.arrived, sailor, values);
 }
 
 export const ramlaris = {
@@ -94,4 +88,3 @@ export const ramlaris = {
     isOpen: (time, day) => shipArrived(day),
     open: talkToSailor,
 };
-

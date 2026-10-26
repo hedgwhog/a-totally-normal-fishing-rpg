@@ -4,15 +4,17 @@
 // "Supplies" are only for trading
 //  Special" are rare items with no use (yet)
 
-// boost/catches: (trinkets) what it doubles, and for how many catches
+// boost/catches: (trinkets) what it doubles, and for how many catches.
+//   The boosts the game knows: "luck" (actions.js), "resonance" (actions.js), "focus" and "slow-fish" (fishing.js)
+// effect: what players see it does (in the merchant and your items list)
 // resonance: (bottles) how much resonance you get when you use it
 // fishChance: % chance to fish it up with a catch
 // price: what it costs to buy
 export const items = [
-    { id: "luckCharm", name: "Luck trinket", category: "Trinkets", boost: "luck", catches: 5, fishChance: 2, price: 35 },
-    { id: "resonanceCharm", name: "Resonance trinket", category: "Trinkets", boost: "resonance", catches: 5, fishChance: 2, price: 35 },
-    { id: "focusCharm", name: "Focus trinket", category: "Trinkets", boost: "focus", catches: 5, fishChance: 2, price: 35 },
-    { id: "slowCharm", name: "Slow trinket", category: "Trinkets", boost: "slow-fish", catches: 5, fishChance: 2, price: 35 },
+    { id: "luckCharm", name: "Luck trinket", category: "Trinkets", boost: "luck", catches: 5, fishChance: 2, price: 35, effect: "rare fish 2x as often" },
+    { id: "resonanceCharm", name: "Resonance trinket", category: "Trinkets", boost: "resonance", catches: 5, fishChance: 2, price: 35, effect: "2x resonance per fish" },
+    { id: "focusCharm", name: "Focus trinket", category: "Trinkets", boost: "focus", catches: 5, fishChance: 2, price: 35, effect: "2x focus (at least +5)" },
+    { id: "slowCharm", name: "Slow trinket", category: "Trinkets", boost: "slow-fish", catches: 5, fishChance: 2, price: 35, effect: "fish move 2x slower" },
 
     { id: "resonanceBottle", name: "Bottle of resonance", category: "Bottles", resonance: 10, price: 15 },
 
