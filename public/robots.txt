@@ -1,0 +1,9 @@
+# Search engines may show the homepage. The game windows themselves aren't pages to search for.
+User-agent: *
+Allow: /
+Disallow: /chat.html
+Disallow: /trade.html
+Disallow: /duel.html
+Disallow: /api/
+
+Sitemap: https://a-totally-normal-fishing-rpg.hedgwhog.com/sitemap.xml

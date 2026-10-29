@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex">
+    <title>Trade</title>
+    <link rel="stylesheet" href="css/windows.css">
+</head>
+<body>
+    <header>
+        <h2 id="title">Trade</h2>
+        <p class="error" id="tradeError"></p>
+    </header>
+
+    <main class="columns">
+        <section class="column">
+            <h3>Your offer</h3>
+            <div class="scroll box" id="myOfferForm"></div>
+            <p class="summary">You offer: <span id="myOffer"></span></p>
+        </section>
+        <section class="column">
+            <h3 id="theirTitle">Their offer</h3>
+            <div class="scroll box"><span id="theirOffer"></span></div>
+        </section>
+    </main>
+
+    <footer>
+        <p id="status"></p>
+        <div class="row">
+            <button id="confirm">Confirm trade</button>
+            <button id="cancel">Cancel</button>
+        </div>
+    </footer>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="module" src="js/trade.js"></script>
+</body>
+</html>
