@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex">
+    <title>Duel</title>
+    <link rel="stylesheet" href="css/windows.css">
+</head>
+<body>
+    <header>
+        <h2 id="title">Duel</h2>
+        <p class="error" id="duelError"></p>
+    </header>
+
+    <main class="columns" id="setup">
+        <section class="column">
+            <h3>Settings (both players can change them)</h3>
+            <div class="scroll box" id="settingsForm"></div>
+        </section>
+
+        <section class="column">
+            <h3>Your fishing rod</h3>
+            <div class="box">
+                <select id="rodSelect"></select>
+                <p id="theirRod" class="muted"></p>
+            </div>
+            <h3>Your stake</h3>
+            <div class="scroll box" id="myStakeForm"></div>
+            <p class="summary">You put in: <span id="myStake"></span></p>
+            <p class="summary" id="theirStakeLine"></p>
+        </section>
+    </main>
+
+    <main id="playing" style="display: none;">
+        <p id="timer"></p>
+        <p id="lives"></p>
+        <div id="duelBar"></div>
+        <p id="roundStatus"></p>
+        <button id="reel">Reel</button>
+        <p class="muted">Closing this window during the duel means you lose.</p>
+    </main>
+
+    <footer id="setupFooter">
+        <p id="readyStatus"></p>
+        <div class="row">
+            <button id="ready">Ready</button>
+            <button id="cancel">Cancel</button>
+        </div>
+    </footer>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="module" src="js/duel.js"></script>
+</body>
+</html>

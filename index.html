@@ -3,7 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome</title>
+    
+    <!-- for search engines -->
+    <title>A Totally Normal Fishing RPG – Free Online Fishing Game in Your Browser</title>
+    <meta name="description" content="A totally normal fishing rpg (and its free). Go explore, catch fish and more. You can also talk to others with (voice) chat.">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="hedgwhog">
+    <link rel="canonical" href="https://a-totally-normal-fishing-rpg.hedgwhog.com/">
+
+    <!-- sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="A totally normal fishing rpg">
+    <meta property="og:title" content="A totally normal fishing rpg">
+    <meta property="og:description" content="A totally normal fishing rpg (and its free). Go explore, catch fish and more. You can also talk to others with (voice) chat.">
+    <meta property="og:url" content="https://a-totally-normal-fishing-rpg.hedgwhog.com/">
+    <!-- image you see with sharing. For in the future
+    <meta property="og:image" content="">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="A totally normal fishing rpg, an ASCII fishing game"> -->
+    <meta property="og:locale" content="en_US">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="A totally normal fishing rpg">
+    <meta name="twitter:description" content="A totally normal fishing rpg (and its free). Go explore, catch fish and more. You can also talk to others with (voice) chat.">
+    <!-- <meta name="twitter:image" content=""> -->
+
+    <!-- icon for browser. For in the future-->
+    <!-- <link rel="icon" href="" type="image/svg+xml">
+    <link rel="icon" href="">
+    <link rel="apple-touch-icon" href=""> -->
+
+    <!-- so google knows this page is a free browser game -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "VideoGame",
+        "name": "A Totally Normal Fishing RPG",
+        "url": "https://a-totally-normal-fishing-rpg.hedgwhog.com/",
+        "image": "https://a-totally-normal-fishing-rpg.hedgwhog.com/og-image.png",
+        "description": "A totally normal fishing rpg (and its free). Go explore, catch fish and more. You can also talk to others with (voice) chat.",
+        "genre": ["Fishing", "RPG", "Multiplayer"],
+        "gamePlatform": "Web browser",
+        "applicationCategory": "Game",
+        "operatingSystem": "Any",
+        "inLanguage": "en",
+        "author": { "@type": "Person", "name": "hedgwhog" },
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+    }
+    </script>
+
     <style>
         .contain {
             text-align: center;
@@ -27,7 +75,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background-color: white;
-            width: 500px;
+            width: 550px;
             height: 200px;
             display: none;
             border: 1px solid black;
@@ -37,8 +85,8 @@
 
         #updateDisplay pre {
             position: absolute;
-            width: 500px;
-            text-align: center;
+            width: 550px;
+            text-align: left;
             display: flex;
             flex-direction: column;
             /* flex-wrap: nowrap; */
@@ -48,8 +96,8 @@
         #updateClose {
             position: absolute;
             top: 0;
-            left: 240px;
-            padding: 4px;
+            right: 0;
+            padding: 6px;
             cursor: pointer;
         }
     </style>
@@ -59,18 +107,13 @@
         <div class="border">
             <h1>Welcome to:</h1>
             <h2>A totally normal fishing rpg (trust)</h2>
-            <h3>Update 0.9 - Milestone, Quests, Hotkeys & Resonance - 26/10/26</h3>
+            <h3>Update 1.0 - OFFICIAL RELEASE & VoIP - 28/10/26 </h3>
             <p>Please click here to launch the game:</p>
             <button onclick="launchGame()">Launch game</button>
-            <p>Please refresh files on every page due to updates:</p>
-            <p>MacOS: Command + Shift + R</p>
-            <p>Windows: Ctrl + Shift + R</p>
-            <h5>WARNING: By pressing to launch the game, you will open a new window.<br><br><br><br>I will kindly ask you not to resize the window, since it isn't designed for that.<br><br><br><br>The game is still in alpha. If your save stops working,<br><br><br><br>you can reset your progress in the game: Settings → Remove localStorage.</h5>
+            <h5>WARNING: By pressing to launch the game, you will open a new window.<br><br><br><br>I will kindly ask you not to resize the window, since it isn't designed for that.</h5>
             <button id="update" onclick="updateDisplay.style.display = 'flex'">Old update list</button>
 
-            <div id="updateDisplay">
-                <pre>
-                    
+            <div id="updateDisplay"><pre>  
 Old update list:
 Update 0.1 - UI & Fishing - 17/10/26
 Update 0.2 - Settings & Catalog - 19/10/26
@@ -79,7 +122,8 @@ Update 0.4 - Selling & Fishing controls - 19/10/26
 Update 0.5 - Affinity & UI - 20/10/26
 Update 0.6 - Resonance atelier & Ichthyologist - 20/10/26
 Update 0.7 - Resonance changes & Fishing update - 21/10/26
-Update 0.8 - Interactions, Collectables, OST & Map - 24/10/26
+Update 0.8 - Interactions, Collectables, OST & Map - 24/20/26
+Update 0.9 - Milestone, Quests, Hotkeys & Resonance - 26/20/26
             </pre>
                 <button id="updateClose" onclick="updateDisplay.style.display = 'none'">Close</button>
             </div>
@@ -91,7 +135,7 @@ Update 0.8 - Interactions, Collectables, OST & Map - 24/10/26
             const height = 510;
             
             window.open(
-                "introduction.html", 
+                "game.html", 
                 "TextRPG", 
                 `width=${width},height=${height},top=0,left=0,menubar=no,toolbar=no,location=no,status=no,resizable=no`
             );

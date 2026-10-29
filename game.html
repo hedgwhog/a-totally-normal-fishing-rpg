@@ -3,23 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game</title>
+    <meta name="robots" content="noindex">
+    <title>A Totally Normal Fishing RPG</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
     <div id="container">
+        <!-- login/signup/hero screen -->
+            <div id="startScreen">
+                <h1>A totally normal fishing rpg</h1>
+
+                <!-- log in -->
+                <div class="startPanel" id="loginPanel">
+                    <h3>Log in</h3>
+                    <form id="loginForm">
+                        <label>Username <input id="loginUsername" autocomplete="username" required></label>
+                        <label>Password <input id="loginPassword" type="password" autocomplete="current-password" required></label>
+                        <button type="submit">Log in</button>
+                    </form>
+                    <p class="startMessage"></p>
+                    <button class="startLink" id="toSignup" type="button">No account yet? Sign up</button>
+                </div>
+
+                <!-- sign up -->
+                <div class="startPanel" id="signupPanel">
+                    <h3>Sign up</h3>
+                    <form id="signupForm">
+                        <label>Username <input id="signupUsername" autocomplete="username" required></label>
+                        <label>Display name <input id="signupDisplayName" required></label>
+                        <label>Password <input id="signupPassword" type="password" autocomplete="new-password" required></label>
+                        <label>Repeat password <input id="signupPassword2" type="password" autocomplete="new-password" required></label>
+                        <button type="submit">Sign up</button>
+                    </form>
+                    <p class="startMessage"></p>
+                    <button class="startLink" id="toLogin" type="button">Already have an account? Log in</button>
+                </div>
+
+                <div class="startPanel" id="savePanel">
+                    <div class="startColumns">
+                        <!-- friends -->
+                        <div class="startSide">
+                            <h3>Friends</h3>
+                            <div class="startList" id="friendList"></div>
+                        </div>
+
+                        <!-- hero content -->
+                        <div class="startMiddle">
+                            <p id="loggedInAs"></p>
+                            <p class="startNote" id="totalOnline"></p>
+                            <p class="startNote">Pick a save, and then press "Cast in"<br>Everyone plays on the same server.</p>
+                            <button id="playButton" type="button">Cast in</button>
+                            <p class="startMessage"></p>
+                            <button class="startLink" id="logout" type="button">Log out</button>
+                        </div>
+
+                        <!-- saves -->
+                        <div class="startSide">
+                            <h3>Saves</h3>
+                            <div class="startList" id="saveList"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- privacy policy -->
+                <div class="privacyBox">
+                    <b>Privacy policy</b> (last updated: 28 October 2026)
+
+                    <h4>General Ownership:</h4>
+                    <p>This game is run by hedgwhog, who is responsible for your data. Have any questions? Or want something changed or deleted? Email hedgwhog@gmail.com.</p>
+
+                    <h4>Requirements:</h4>
+                    <p>You must be at least 13 years old to make an account. By making an account, you automatically agree on the fact that you are above 13.</p>
+
+                    <h4>What is stored, and why</h4>
+                    <p><u>Your account:</u> <br> 
+                    In your account, your username, display name, the date you signed up, and your password are saved. The password is only stored as a scrambled hash with a unique salt. That means that nobody can read it including the owner. Your username and display name are stored as normal text. You need an account to play. Without a username, display name and password the game can't save your progress.</p><br>
+
+                    <p><u>Your progress:</u> <br> 
+                    Every account has 3 saves. Every save has: your items, fish, coins, resonance, gear, map, quests, the name of your carrier pigeon, how long you played, which town you're in, and which areas you've been to.</p><br>
+
+                    <p><u>Friends and letters:</u><br> 
+                    Your friend list (it belongs to your account, not to a specific save.), and the letters your friends have/are sending you (the message, who sent it, from which town, and the gifts that came with it). The town you're in is used to calculate how long a pigeon flies.</p><br>
+
+                    <p><u>Chat:</u><br>
+                    Your messages, with your display name, the time and the area. Players in the same area can read them, except players who blocked you.</p><br>
+
+                    <p><u>Blocked players:</u><br> 
+                    The players you block are saved in your account, until you unblock them. This is used to keep their messages, invites, letters and voice away from you. Blocked players are not told that you blocked them.</p><br>
+
+                    <p><u>Voice chat:</u> 
+                    Voice is never recorded or stored. It goes directly between the players in your voice room. Players make their own rooms. A closed room has a password: it is only kept in the server's memory while the room exists, and is never shown to anyone. The game doesn't show your IP address, but the players in your room receive it to connect to eachother. Which means someone with technical knowledge can find it. To connect to a room, your browser also contacts a Google server (stun.l.google.com), which sees your IP address. This only happens when you join a voice room, and the game warns you before you join.</p><br>
+
+                    <p><u>Filters:</u></p>
+                    There are no chat filters, so interact on your own advice.<br>
+
+                    <p><u>IP address:</u> 
+                    To slow down password guessing, your IP address is kept in the server's memory for 1 minute after you log in or sign up. The hosting provider "CPanel" may also keep standard server logs.</p><br>
+
+                    <p><u>Your browser:</u> 
+                    The game stores your login and your settings (volume, colors, keybinds and day animation) in your browser's local storage. This is only needed to make the game work. There are no tracking cookies, no ads and no analytics. Which means, there is no cookie banner.</p><br>
+
+                    <p>All of this is used to only run the game you signed up to play. That is the legal basis: it's needed to provide the game to you (GDPR article 6(1)(b)). Nothing is sold, and nothing is used to decide things about you automatically.</p>
+
+                    <h4>Who else can see it</h4>
+                    <p>Other players see your display name, your chat messages, and the letters you send them. Players in your voice room receive your IP address. The start screen shows how many players are online: only the number, never who. Your friends see on their start screen if you are online. The hosting provider "CPanel" stores the game's data on its servers. Google sees your IP address when you use voice chat.</p>
+
+                    <h4>How long it's kept</h4>
+                    <p>Chat messages: deleted after 18 hours.<br>
+                    Logins: expire after 30 days.<br>
+                    Letters: until the person who got them throws them away. Every player keeps at most 30, the oldest are deleted first.<br>
+                    Your progress in a save: until you reset it (Settings in the game) or ask for your account to be deleted.<br>
+                    Your block list: until you unblock someone or ask for your account to be deleted.<br>
+                    Your account: until you ask for it to be deleted. During new updates, all in game attributes you might've owned could be deleted if the developer decides so.</p>
+
+                    <h4>Your rights</h4>
+                    <p>You can ask for a copy of your data. You can ask to have it corrected or deleted, and to ask for it in a file format, so you can take with you. You also may object to how it's used.<br><br>Email hedgwhog@gmail.com. You'll get an answer within 1 month. Not happy with the answer? You can complain to the data protection authority in your country.</p>
+
+                    <h4>Changes</h4>
+                    <p>If this policy changes, the date at the top changes too. Big changes are announced in atleast one of the following places: <br>
+                    - Introduction page (The webpage before you open the game window) <br>
+                    - GitHub: github.com/hedgwhog/a-totally-normal-fishing-rpg </p>
+                    <p>For detailed changes, check the GitHub.</p>
+                </div>
+            </div>
+
             <div id="dayPopupHidden"></div>
-            <div id="dayContainer"></div>
 
-            <div id="time">Morning</div>
-            <button class="settings" data-open="settingsPopup">Settings:</button>
+            <!-- introduction -->
+            <div id="introPopup">
+                <div id="introBox">
+                    <div id="introText"></div>
+                    <button id="introStart">Start fishing</button>
+                </div>
+            </div>
 
+            <!-- Day information and buttons that arent event based -->
+            <div id="topBar">
+                <div id="dayContainer">Day 1 - morning</div>
+                <nav class="topButtons">
+                    <button id="openChat">Chat</button>
+                    <button data-open="catalogDisplay">Catalogue</button>
+                    <button id="milestones">Milestones</button>
+                    <button id="openMap">Map</button>
+                    <button id="openMail">Mail</button>
+                    <button class="settings" data-open="settingsPopup">Settings</button>
+                    <button id="switchSave">Cast out</button>
+                </nav>
+            </div>
+
+            <!-- bird, gear, backpack -->
             <div id="inventory">
-                 <div class="inventoryOutline" id="inventoryMap">
-                    <pre class="ASCII" id="ASCIIMap"></pre>
-                    <div class="name" id="nameMap"></div>
-                    <div class="effect" id="effectMap"></div>
+                 <div class="inventoryOutline" id="inventoryBird">
+                    <pre class="ASCII" id="ASCIIBird"></pre>
+                    <div class="name" id="nameBird"></div>
+                    <div class="effect" id="effectBird"></div>
                 </div>
 
                  <div class="inventoryOutline" id="inventoryHat">
@@ -48,38 +186,57 @@
                 </div>
             </div>
 
+            <!-- showcase effect and resonated rod-->
+            <div id="statsBox">
+                <div class="statsTitle">Rod Resonance</div>
+                <div id="statsResonances"></div>
+                <div class="statsTitle">Base Effects</div>
+                <div id="statsEffects"></div>
+            </div>
+
         <div class="event-container">
-            <div class="item-list">
-                <div id="coinAmount">Coins: 0</div><br>
-                <div id="itemBag"></div>
+            <!-- Fish and item list buttons -->
+            <div class="bagTabs">
+                <button id="fishAmount" class="activeTab" data-bag="fishPane">Fish (0)</button>
+                <button id="itemAmount" data-bag="itemPane">Items (0)</button>
             </div>
 
-            <div class="fish-list">
-                <div id="fishAmount">You got 0 fish</div>
-                <div id="fishTypes"></div>
+            <!-- Resonance and coins -->
+            <div id="coinAmount">Coins: 0</div>
+            <div class="resonance">Resonance: 0</div>
+
+            <!-- fish and item list -->
+            <div id="middleBox">
+                <div class="bagPane" id="fishPane">
+                    <div id="fishTypes"></div>
+                </div>
+                <div class="bagPane" id="itemPane">
+                    <div id="itemBag"></div>
+                </div>
             </div>
 
-            <div class="xp-list">
-                <div class="resonance">Resonance: 0</div>
-             </div>
+            <!-- Dialogue and fishing -->
+            <div id="bottomBox">
+                <button id="nextFish">Fish (reel)</button>
+                <div id="fishingPopup" style="display: none;">
+                    <pre id="fishingText"></pre>
+                    <pre id="fishingBars"></pre>
+                    <div id="fishingButtons"></div>
+                </div>
+            </div>
 
+            <!-- Sleeping and resting -->
             <div class="list">
-                <button data-open="catalogDisplay">Catalogue</button>
-                <button id="nextFish">Fishing</button>
-                <button id="nextDay">Sleeping</button>
+                <button id="nextDay">Sleep</button>
                 <button id="rest">Rest</button>
-                <button id="milestones">Milestones</button>
             </div>
 
-            <div id="fishingPopup" style="display: none;">
-                <pre id="fishingText"></pre>
-                <div id="fishingButtons"></div>
-            </div>
-
-            <!-- Freshwater haven -->
             <div class="island" id="freshwaterHaven">
+
+                <!-- title area -->
                 <h1 class="center">Freshwater haven</h1>
 
+                <!-- All possible events -->
                 <div class="event-list">
                     <button id="ritual">The annual ritual</button>
                     <button id="marketplace">Marketplace</button>
@@ -90,112 +247,201 @@
                     <button id="ramlaris">The Ramlaris<br>(at the dock)</button>
                     <button id="tavern">Tavern</button>
                     <button id="fortuneTeller">Fortune teller</button>
+                    <button id="mayor">Town hall</button>
+                    <button id="ferryHaven">Finka Ferry<br>Cooperation</button>
                 </div>
 
+                <!-- mayor -->
+                <div id="mayorDisplay" class="popup bigPopup">
+                    <h1>Town hall</h1>
+                    <h4>The mayor is always working in his office. Except on ritual days.</h4>
+                    <button class="popupClose" data-close="mayorDisplay">Close town hall</button>
+                    <div id="mayorItem" class="popupBody"></div>
+                </div>
+
+                <!-- marketplace -->
                 <div id="marketplaceDisplay" class="popup bigPopup">
                     <h1>Marketplace</h1>
                     <h4>Opens once every 7 days, for a 2 day period. Only in the morning, afternoon & evening.</h4>
                     <button class="popupClose" data-close="marketplaceDisplay">Close marketplace</button>
-                    <div id="marketplaceItem"></div>
+                    <div id="marketplaceItem" class="popupBody"></div>
                 </div>
 
+                <!-- Resonance altar -->
                 <div id="resonanceDisplay" class="popup bigPopup">
                     <h1>Resonance altar</h1>
                     <h4>Open 4 days, then closed for 1 day. Only in the morning, afternoon & night.</h4>
                     <button class="popupClose" data-close="resonanceDisplay">Close resonance altar</button>
-                    <div id="resonanceItem"></div>
+                    <div id="resonanceItem" class="popupBody"></div>
                 </div>
 
+                <!-- Marchant -->
                 <div id="merchantDisplay" class="popup bigPopup">
                     <h1>Merchant</h1>
-                    <h4>Shows up once every 13 days. Not at night.</h4>
+                    <h4>Shows up once every 13 days. Leaves before night.</h4>
                     <button class="popupClose" data-close="merchantDisplay">Close merchant</button>
-                    <div id="merchantItem"></div>
+                    <div id="merchantItem" class="popupBody"></div>
                 </div>
 
                 <div id="tavernDisplay" class="popup bigPopup">
                     <h1>Tavern</h1>
-                    <h4>A new order every 3 days. Closed in the morning.</h4>
+                    <h4>Wants a new fish every 3 days. Closed in the morning.</h4>
                     <button class="popupClose" data-close="tavernDisplay">Close tavern</button>
-                    <div id="tavernItem"></div>
+                    <div id="tavernItem" class="popupBody"></div>
                 </div>
 
+                <!-- Fish researcher -->
                 <div id="ichthyologistDisplay" class="popup bigPopup">
                     <h1>Ichthyologist</h1>
                     <h4>A fish researcher who talks a lot. She is up 24/7.</h4>
                     <button class="popupClose" data-close="ichthyologistDisplay">Close ichthyologist</button>
-                    <div id="ichthyologistItem"></div>
+                    <div id="ichthyologistItem" class="popupBody"></div>
                 </div>
             </div>
 
-            <!-- Point Driftt -->
             <div class="island" id="pointDriftt">
                 <h1 class="center">Point Driftt</h1>
 
+                <!-- All possible events -->
                 <div class="event-list">
-                    <button id="backToHaven">Sail back to<br>Freshwater Haven</button>
-                    <p class="emptyEvents">It's quiet here...<br>for now.</p>
+                    <button id="researchFacility">Research facility</button>
+                    <button id="boatman">The boatman<br>(trips to the deep)</button>
+                    <button id="storageLockers">Storage lockers</button>
+                    <button id="resonanceStation">Resonance station</button>
+                    <button id="inconvenienceStore">Inconvenience store</button>
+                    <button id="sellFishStore">Sell fish to the<br>inconvenience store</button>
+                    <button id="ferryPointDriftt">Finka Ferry<br>Cooperation</button>
+                </div>
+
+                <!-- Research facility -->
+                <div id="researchDisplay" class="popup bigPopup">
+                    <h1>Research facility</h1>
+                    <h4>Always open. They study the deep sea, and they want hadal fish.</h4>
+                    <button class="popupClose" data-close="researchDisplay">Close facility</button>
+                    <div id="researchItem" class="popupBody"></div>
+                </div>
+
+                <!-- Lockers -->
+                <div id="lockerDisplay" class="popup bigPopup">
+                    <h1>Storage lockers</h1>
+                    <h4>Always open. Every locker holds 1 piece of gear. You can leave it there forever</h4>
+                    <button class="popupClose" data-close="lockerDisplay">Close lockers</button>
+                    <div id="lockerItem" class="popupBody"></div>
+                </div>
+
+                <!-- Resonance station -->
+                <div id="stationDisplay" class="popup bigPopup">
+                    <h1>Resonance station</h1>
+                    <h4>Open every day. Closed at night.</h4>
+                    <button class="popupClose" data-close="stationDisplay">Close station</button>
+                    <div id="stationItem" class="popupBody"></div>
+                </div>
+
+                <!-- inconvenience store -->
+                <div id="storeDisplay" class="popup bigPopup">
+                    <h1>Inconvenience store</h1>
+                    <h4>Only in the evening, once every 2 days.</h4>
+                    <button class="popupClose" data-close="storeDisplay">Close store</button>
+                    <div id="storeItem" class="popupBody"></div>
+                </div>
+            </div>
+
+            <!-- The Hadal Deep -->
+            <div class="island" id="hadalDeep">
+                <h1 class="center">The Hadal Deep</h1>
+
+                <div class="event-list">
+                    <p class="emptyEvents">The boatman waits.<br>One cast, then he<br>takes you back.<br><br>Press Fish.</p>
+                    <button id="hadalReturn">Head back<br>without casting</button>
                 </div>
             </div>
         </div>
 
+        <!-- settings -->
         <div id="settingsPopup" class="popup bigPopup">
             <button class="popupClose" data-close="settingsPopup">Close settings</button>
-            <h1>Settings:</h1>
+            <h1>Settings</h1>
             <h4>Yes → Alex ← you can maximize your settings to speedrun fishing....</h4>
-            <div class="settings-wrap">
-                <br>
-                <label for="dayDisplayToggle">Enable day animation: <input type="checkbox" id="dayDisplayToggle" checked></label>
-                <label class="switch">Invert colors:<input type="checkbox" id="invert-toggle"></label>
-                <label>Audio acting up? <button id="audioRefreshBtn" class="settings-btn">Refresh OST</button></label>
-                <label for="volumeSlider">OST Volume:<input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.5"></label>
-                <label>Reset progress: <button id="resetProgress" class="settings-btn">Remove progress</button></label>
-            </div>
-
-            <div id="keybindWrap">
-                <br><h3>Keybinds</h3>
-                <p class="keybindHelp">Click a key, then press the new key (Esc cancels).</p>
-                <div id="keybindList"></div>
+            <div class="settingsBody popupBody">
+                <div class="settings-wrap">
+                    <h3>General</h3>
+                    <label>Enable day animation: <input type="checkbox" id="dayDisplayToggle" checked></label>
+                    <label>Invert colors: <input type="checkbox" id="invert-toggle"></label>
+                    <label>OST volume: <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.5"></label>
+                    <label>Audio acting up? <button id="audioRefreshBtn" class="settings-btn">Refresh OST</button></label>
+                    <h3>This save</h3>
+                    <label>Start over: <button id="resetProgress" class="settings-btn">Reset progress</button></label>
+                </div>
+                <!-- Keybinds (js/keybinds.js) -->
+                <div id="keybindWrap">
+                    <h3>Keybinds</h3>
+                    <p class="keybindHelp">Click a key, then press the new key (Esc cancels).</p>
+                    <div id="keybindList"></div>
+                </div>
             </div>
         </div>
 
+        <!-- Milestones (js/milestones.js) -->
         <div id="milestoneDisplay" class="popup bigPopup">
             <button class="popupClose" data-close="milestoneDisplay">Close milestones</button>
             <h1>Milestones</h1>
-            <div id="milestoneItem"></div>
+            <div id="milestoneItem" class="popupBody"></div>
         </div>
 
+        <!-- World map (js/map.js) -->
         <div id="mapDisplay" class="popup bigPopup">
             <button class="popupClose" data-close="mapDisplay">Close map</button>
             <h1>World map</h1>
-            <div id="mapPaper"></div>
-            <p id="mapEmpty">You don't have any map pieces yet.</p>
+            <div class="catalogTabs mapZoom">
+                <button data-zoom="world">World</button>
+                <button data-zoom="nearby">Nearby</button>
+            </div>
+            <div id="mapView">
+                <div id="mapWorld"></div>
+            </div>
+            <p id="mapStatus"></p>
         </div>
 
+        <!-- bird (js/bird.js) -->
+        <div id="birdDisplay" class="popup bigPopup">
+            <button class="popupClose" data-close="birdDisplay">Close pigeon</button>
+            <h1 id="birdTitle">Carrier pigeon</h1>
+            <div id="birdItem" class="popupBody"></div>
+        </div>
+
+        <!-- Mail (js/mail.js) -->
+        <div id="mailDisplay" class="popup bigPopup">
+            <button class="popupClose" data-close="mailDisplay">Close mail</button>
+            <h1>Mail</h1>
+            <div class="catalogTabs mailTabs">
+                <button data-mail="mailInbox">Letters</button>
+                <button data-mail="mailWrite">Write a letter</button>
+                <button data-mail="mailFriends">Friends</button>
+            </div>
+            <div class="mailPage popupBody" id="mailInbox"></div>
+            <div class="mailPage popupBody" id="mailWrite"></div>
+            <div class="mailPage popupBody" id="mailFriends"></div>
+        </div>
+
+        <!-- Catalogue -->
         <div id="catalogDisplay" class="popup bigPopup">
             <button class="popupClose" data-close="catalogDisplay">Close catalogue</button>
             <h1>Catalogue</h1>
 
             <div class="catalogTabs">
                 <button data-page="catalogFish">Fish species</button>
-                <button data-page="catalogBuildings">Buildings</button>
                 <button data-page="catalogMechanics">Game mechanics</button>
             </div>
             
-            <div class="catalogInfo catalogPage" id="catalogFish"></div>
+            <!-- Shows all the fish you have catched -->
+            <div class="catalogInfo catalogPage popupBody" id="catalogFish"></div>
 
-            <div class="catalogInfo catalogPage" id="catalogBuildings">
-                <!-- <h5 style="text-decoration: underline;">The buildings you can visit, and when they are open.</h5> -->
-                <h4>Coming soon</h4>
-            </div>
-
-            <div class="catalogInfo catalogPage" id="catalogMechanics">
-                <!-- <h5 style="text-decoration: underline;">Some explanation of how different mechanics work.</h5> -->
-                <h4>Coming soon</h4>
-            </div>
+            <!-- it shows in js/catalogue.js, the text is in js/data/catalogue.js -->
+            <div class="catalogInfo catalogPage popupBody" id="catalogMechanics"></div>
         </div>
     </div>
     </div>
+    <script src="/socket.io/socket.io.js"></script>
     <script type="module" src="js/main.js"></script>
 </body>
 </html>

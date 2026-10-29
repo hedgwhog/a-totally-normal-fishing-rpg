@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex">
+    <title>Chat</title>
+    <link rel="stylesheet" href="css/windows.css">
+</head>
+<body>
+    <header>
+        <h2 id="area">Chat</h2>
+        <p class="error" id="chatError"></p>
+    </header>
+
+    <nav class="tabs">
+        <button data-tab="tabChat">Chat</button>
+        <button data-tab="tabPlayers">Players</button>
+        <button data-tab="tabVoice">Voice</button>
+        <button data-tab="tabBlocked">Blocked</button>
+    </nav>
+
+    <div id="invites"></div>
+
+    <main>
+        <section class="tab" id="tabChat">
+            <div class="scroll box" id="messages"></div>
+            <form id="chatForm" class="row">
+                <input id="chatInput" maxlength="200" placeholder="Say something..." autocomplete="off">
+                <button type="submit" id="sendButton">Send</button>
+            </form>
+        </section>
+
+        <section class="tab" id="tabPlayers">
+            <p class="muted">You can trade, duel or add friends. You can do that to a player that was active in the last 15 minutes, or are in voice.</p>
+            <div class="scroll box" id="players"></div>
+        </section>
+
+        <section class="tab" id="tabVoice">
+            <div class="box row" id="voiceControls">
+                <span id="voiceStatus"></span>
+                <span>
+                    <button id="muteButton" type="button">Mute</button>
+                    <button id="leaveVoice" type="button">Leave</button>
+                </span>
+            </div>
+            <div class="scroll box" id="voiceRooms"></div>
+            <form class="box" id="voiceCreate">
+                <b>Make a room</b>
+                <label class="row">Name room <input id="roomName" placeholder="(your name)'s room"></label>
+                <label class="row">Max players <input id="roomSize" type="number" min="2" value="4"></label>
+                <label class="row">Closed (password) <input id="roomClosed" type="checkbox"></label>
+                <label class="row" id="roomPasswordRow">Password <input id="roomPassword" type="password" autocomplete="off"></label>
+                <button type="submit">Make room and join</button>
+            </form>
+            <div id="voiceAudio"></div>
+        </section>
+
+        <section class="tab" id="tabBlocked">
+            <p class="muted">Blocked players can't see your messages, invite you, send letters to you and join your voice room. They aren't told.</p>
+            <div class="scroll box" id="blockedList"></div>
+        </section>
+    </main>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="module" src="js/chat.js"></script>
+</body>
+</html>
