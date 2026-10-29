@@ -1,0 +1,210 @@
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 8px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow: hidden;
+    font-family: monospace;
+    font-size: 12px;
+    background-color: white;
+}
+
+h2 {
+    margin: 0;
+    font-size: 16px;
+}
+
+h3 {
+    margin: 0 0 4px 0;
+    font-size: 13px;
+    text-decoration: underline;
+}
+
+p {
+    margin: 0;
+}
+
+button,
+input,
+select {
+    font-family: monospace;
+    font-size: 12px;
+}
+
+button {
+    cursor: pointer;
+    padding: 2px 6px;
+    background-color: #EFEFEF;
+}
+
+header,
+footer {
+    flex-shrink: 0;
+}
+
+main {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+footer {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border-top: 1px dashed black;
+    padding-top: 6px;
+}
+
+.box {
+    border: 1px dashed black;
+    padding: 6px;
+}
+
+.scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+}
+
+.line {
+    padding: 3px 0;
+    border-bottom: 1px dotted #bbb;
+}
+
+.muted {
+    color: gray;
+}
+
+.error {
+    font-weight: bold;
+    min-height: 14px;
+}
+
+.summary {
+    margin-top: 4px;
+}
+
+.columns {
+    flex-direction: row;
+}
+
+.column {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.tabs {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.tabs button.active {
+    background-color: black;
+    color: white;
+}
+
+.tab {
+    display: none;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.tab.active {
+    display: flex;
+}
+
+#invites {
+    flex-shrink: 0;
+    max-height: 70px;
+    overflow-y: auto;
+}
+
+.invite {
+    border: 1px solid black;
+    padding: 3px 5px;
+    margin-bottom: 3px;
+}
+
+.message {
+    word-wrap: break-word;
+    margin-bottom: 2px;
+}
+
+.message b {
+    margin-right: 4px;
+}
+
+#chatForm {
+    flex-shrink: 0;
+}
+
+#chatInput {
+    flex: 1;
+}
+
+#voiceControls {
+    display: none;
+    flex-shrink: 0;
+}
+
+#voiceCreate {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#voiceCreate input:not([type="checkbox"]) {
+    width: 150px;
+}
+
+#roomPasswordRow {
+    display: none;
+}
+
+.box label.row {
+    margin-bottom: 3px;
+}
+
+#playing {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+#duelBar {
+    font-size: 16px;
+    margin: 10px 0;
+    white-space: pre;
+}
+
+#reel {
+    padding: 6px 24px;
+    font-size: 14px;
+}
+
+#rodSelect {
+    width: 100%;
+}

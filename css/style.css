@@ -1,0 +1,1196 @@
+body {
+    margin: 0;
+    font-family: monospace;
+    cursor: crosshair;
+    user-select: none;
+    -webkit-user-select: none;
+    overflow: hidden;
+    background-color: white;
+    transition: filter 0.3s ease;
+}
+
+/* So typing can be allowed */
+input,
+textarea,
+select {
+    font-family: monospace;
+    font-size: 12px;
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+button {
+    background-color: #EFEFEF;
+    cursor: pointer;
+}
+
+.inverted-theme {
+    filter: invert(100%);
+}
+
+.container {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+}
+
+#container {
+    position: relative;
+    z-index: 19;
+    width: 720px;
+    height: 480px;
+    border: 2px dashed black;
+}
+
+.note,
+.catalogNote {
+    font-size: 11px;
+    color: #555;
+}
+
+.catalogNote {
+    font-style: italic;
+}
+
+.activeTab,
+.selected {
+    background-color: black;
+    color: white;
+}
+
+
+/* login/signup/hero screen*/
+#startScreen {
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    box-sizing: border-box;
+    padding: 0 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    text-align: center;
+}
+
+#startScreen h1 {
+    margin: 12px 0 8px 0;
+    font-size: 26px;
+}
+
+.startPanel {
+    display: none;
+    width: 420px;
+}
+
+#savePanel {
+    width: 100%;
+}
+
+.startPanel h3 {
+    margin: 0 0 8px 0;
+    text-decoration: underline;
+}
+
+.startPanel form {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.startPanel label {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.startPanel input {
+    width: 220px;
+}
+
+.startPanel button {
+    padding: 4px;
+}
+
+.startMessage {
+    min-height: 14px;
+    margin: 6px 0;
+    font-weight: bold;
+}
+
+.startLink {
+    border: none;
+    background: none;
+    text-decoration: underline;
+}
+
+.startNote {
+    margin: 0 0 8px 0;
+    font-size: 11px;
+}
+
+.startColumns {
+    display: grid;
+    grid-template-columns: 190px 1fr 190px;
+    gap: 14px;
+    align-items: start;
+}
+
+.startSide {
+    height: 236px;
+    box-sizing: border-box;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    border: 1px dashed black;
+    text-align: left;
+}
+
+.startList {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.friendLine {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+}
+
+.friendLine .online {
+    font-weight: bold;
+}
+
+.friendLine .offline {
+    color: gray;
+}
+
+.startMiddle {
+    padding-top: 20px;
+}
+
+#playButton {
+    width: 140px;
+    padding: 8px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.saveButton {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 3px 8px !important;
+    font-size: 11px;
+    text-align: left;
+}
+
+.saveName {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.privacyBox {
+    width: 100%;
+    max-width: 692px;
+    max-height: 170px;
+    margin: 10px 0;
+    padding: 6px 8px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    border: 1px dashed black;
+    font-size: 10px;
+    line-height: 1.35;
+    text-align: left;
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+.privacyBox h4 {
+    margin: 8px 0 2px 0;
+    font-size: 10px;
+    text-decoration: underline;
+}
+
+.privacyBox p {
+    margin: 0 0 4px 0;
+}
+
+
+#dayPopupHidden {
+    display: none;
+    position: absolute;
+    inset: 0;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+    color: white;
+    font-size: 50px;
+    text-align: center;
+    z-index: 100;
+    opacity: 1;
+    transition: ease-in-out 1s;
+}
+
+@starting-style {
+    #dayPopupHidden {
+        opacity: 0;
+    }
+}
+
+#introPopup {
+    display: none;
+    position: absolute;
+    inset: 0;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.85);
+    z-index: 90;
+}
+
+#introBox {
+    width: 552px;
+    height: 412px;
+    box-sizing: border-box;
+    padding: 24px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    background-color: white;
+    border: 4px double black;
+    outline: 1px dashed black;
+    outline-offset: 6px;
+}
+
+#introText {
+    flex: 1;
+    overflow-y: auto;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+#introText h2 {
+    margin: 0 0 10px 0;
+    font-size: 20px;
+    text-align: center;
+}
+
+#introText p {
+    margin: 0 0 10px 0;
+}
+
+#introStart {
+    align-self: center;
+    padding: 6px 18px;
+    font-size: 14px;
+}
+
+
+#topBar {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 700px;
+    height: 38px;
+    box-sizing: border-box;
+    padding: 0 8px 0 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px dashed black;
+    z-index: 21;
+}
+
+#dayContainer {
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.topButtons {
+    display: flex;
+    gap: 4px;
+}
+
+.topButtons button {
+    font-size: 12px;
+    padding: 3px 6px;
+}
+
+
+#inventory {
+    position: absolute;
+    top: 58px;
+    left: 10px;
+    width: 118px;
+    height: 340px;
+    box-sizing: border-box;
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    border: 1px dashed black;
+    z-index: 20;
+}
+
+.inventoryOutline {
+    position: relative;
+    width: 88px;
+    height: 64px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px dashed black;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.ASCII {
+    margin: 0;
+    font-size: 10px;
+    line-height: 1.1;
+}
+
+.inventoryOutline .name,
+.inventoryOutline .effect {
+    display: none;
+    padding: 3px;
+    font-size: 8px;
+    text-align: center;
+}
+
+.inventoryOutline .name {
+    font-weight: bold;
+}
+
+.inventoryOutline:hover .ASCII {
+    display: none;
+}
+
+.inventoryOutline:hover .name,
+.inventoryOutline:hover .effect {
+    display: block;
+}
+
+.pageArrows {
+    display: none;
+    position: absolute;
+    bottom: 1px;
+    left: 1px;
+    right: 1px;
+    justify-content: space-between;
+}
+
+.inventoryOutline.hasPages:hover {
+    box-sizing: border-box;
+    padding-bottom: 14px;
+}
+
+.inventoryOutline:hover .pageArrows {
+    display: flex;
+}
+
+.pageArrows button {
+    font-size: 8px;
+    padding: 0 2px;
+}
+
+#inventoryBird.noBird .ASCII {
+    font-size: 16px;
+    letter-spacing: 2px;
+}
+
+#inventoryBird.birdAway .ASCII {
+    color: #777;
+}
+
+#backpackButton,
+#backpackClose {
+    width: 88px;
+    flex-shrink: 0;
+}
+
+#inventoryBackpack {
+    display: none;
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
+    padding-top: 10px;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: white;
+    overflow-y: auto;
+}
+
+#inventoryItems {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0 4px;
+    overflow-y: auto;
+}
+
+
+#statsBox {
+    position: absolute;
+    top: 406px;
+    left: 10px;
+    width: 118px;
+    height: 64px;
+    box-sizing: border-box;
+    padding: 3px 6px;
+    border: 1px dashed black;
+    font-size: 9px;
+    line-height: 1.3;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+}
+
+#statsBox div {
+    overflow-wrap: anywhere;
+}
+
+.statsTitle {
+    margin-top: 2px;
+    font-weight: bold;
+    border-bottom: 1px dotted black;
+}
+
+.statsTitle:first-child {
+    margin-top: 0;
+}
+
+#statsResonances div,
+#statsEffects div {
+    padding-left: 4px;
+}
+
+
+.bagTabs {
+    position: absolute;
+    top: 58px;
+    left: 138px;
+    display: flex;
+    gap: 4px;
+}
+
+.bagTabs button {
+    width: 96px;
+    height: 22px;
+    padding: 0 5px;
+    font-size: 12px;
+}
+
+#coinAmount,
+.resonance {
+    position: absolute;
+    top: 58px;
+    height: 22px;
+    box-sizing: border-box;
+    padding: 0 3px;
+    line-height: 20px;
+    font-size: 11px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: 1px dashed black;
+    cursor: default;
+}
+
+#coinAmount {
+    left: 340px;
+    width: 104px;
+}
+
+.resonance {
+    left: 448px;
+    width: 114px;
+}
+
+#middleBox {
+    position: absolute;
+    top: 84px;
+    left: 138px;
+    width: 424px;
+    height: 222px;
+    box-sizing: border-box;
+    border: 1px dashed black;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 10;
+}
+
+.bagPane {
+    display: none;
+    padding: 6px 8px;
+}
+
+.bagPane.activePane {
+    display: block;
+}
+
+.bagEmpty {
+    margin-top: 80px;
+    color: #666;
+    text-align: center;
+}
+
+.fishHint {
+    margin: 0 0 4px 0;
+    font-size: 10px;
+    color: #555;
+}
+
+.fishRow {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 0;
+    font-size: 12px;
+    border-bottom: 1px dotted #bbb;
+}
+
+.fishPrice,
+.fishSell {
+    font-size: 11px;
+}
+
+.fishSell {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    white-space: nowrap;
+}
+
+.fishSell button {
+    width: 20px;
+    padding: 0;
+}
+
+#itemBag {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 12px;
+}
+
+.bagCategory {
+    margin-top: 4px;
+    text-decoration: underline;
+}
+
+.bagCategory:first-child {
+    margin-top: 0;
+}
+
+.itemRow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.itemRow button {
+    font-size: 11px;
+    padding: 2px 4px;
+}
+
+.itemRow .infoButton {
+    width: 18px;
+    padding: 2px 0;
+    font-weight: bold;
+}
+
+.itemNote {
+    font-size: 11px;
+    color: #555;
+}
+
+
+#bottomBox {
+    position: absolute;
+    top: 316px;
+    left: 138px;
+    width: 424px;
+    height: 154px;
+    box-sizing: border-box;
+    border: 1px dashed black;
+}
+
+#nextFish {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 124px;
+    padding: 3px 0;
+    font-size: 13px;
+}
+
+#fishingPopup {
+    display: none;
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
+    padding: 6px;
+    overflow-y: auto;
+    font-size: 11px;
+    line-height: 1.3;
+    text-align: center;
+    background-color: white;
+    z-index: 15;
+}
+
+#fishingText {
+    margin: 0 0 6px 0;
+    font-family: monospace;
+    white-space: pre-wrap;
+}
+
+#fishingBars {
+    margin: 0 0 8px 0;
+    font-family: monospace;
+    font-size: 17px;
+    line-height: 1.2;
+    white-space: pre;
+}
+
+#fishingBars:empty {
+    display: none;
+}
+
+#fishingButtons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+}
+
+#fishingButtons button {
+    padding: 3px 7px;
+    font-size: 11px;
+}
+
+
+.list {
+    position: absolute;
+    top: 404px;
+    left: 572px;
+    width: 138px;
+    height: 66px;
+    box-sizing: border-box;
+    padding: 6px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    border: 1px dashed black;
+}
+
+.list button {
+    height: 22px;
+    padding: 0 5px;
+    font-size: 13px;
+}
+
+
+.island > h1.center {
+    position: absolute;
+    top: 58px;
+    left: 572px;
+    width: 138px;
+    height: 22px;
+    box-sizing: border-box;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: normal;
+    white-space: nowrap;
+    border: 1px dashed black;
+    z-index: 10;
+}
+
+.event-list {
+    position: absolute;
+    top: 84px;
+    left: 572px;
+    width: 138px;
+    height: 312px;
+    box-sizing: border-box;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    border: 1px dashed black;
+    overflow-y: auto;
+    z-index: 14;
+}
+
+.event-list button {
+    flex-shrink: 0;
+    height: 40px;
+    padding: 4px;
+    font-size: 12px;
+}
+
+.emptyEvents {
+    font-size: 12px;
+    text-align: center;
+}
+
+
+.bigPopup {
+    display: none;
+    position: absolute;
+    top: 58px;
+    left: 10px;
+    width: 552px;
+    height: 412px;
+    box-sizing: border-box;
+    padding: 14px 24px 12px 40px;
+    flex-direction: column;
+    gap: 8px;
+    background-color: white;
+    border: 1px solid black;
+    z-index: 25;
+}
+
+.bigPopup > h1 {
+    margin: 0;
+    padding-right: 150px;
+    font-size: 26px;
+}
+
+.bigPopup > h4 {
+    margin: 0;
+    font-size: 12px;
+    text-decoration: underline;
+}
+
+.popupClose {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 10px;
+    background-color: black;
+    color: white;
+    z-index: 1;
+}
+
+.popupBody {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 8px;
+    font-size: 12px;
+}
+
+#mayorItem,
+#marketplaceItem,
+#resonanceItem,
+#merchantItem,
+#tavernItem,
+#ichthyologistItem,
+#researchItem,
+#lockerItem,
+#stationItem,
+#storeItem {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+}
+
+.popupBody p {
+    margin: 2px 0;
+}
+
+.popupBody button {
+    padding: 4px;
+    text-align: left;
+}
+
+.catalogTabs {
+    display: flex;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+.catalogTabs button {
+    padding: 4px 10px;
+}
+
+
+.marketCategory {
+    margin: 8px 0 0 0;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.marketNote {
+    margin: 0;
+}
+
+.supplyRow {
+    margin-bottom: 4px;
+}
+
+.supplyControls {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    margin-top: 2px;
+}
+
+.lockerSlot {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border: 1px dashed black;
+}
+
+
+.settingsBody {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    overflow: hidden;
+}
+
+.settings-wrap,
+#keybindWrap {
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.settingsBody h3 {
+    margin: 0;
+    font-size: 13px;
+}
+
+.settings-wrap h3:not(:first-child) {
+    margin-top: 8px;
+}
+
+.settingsBody label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.keybindHelp {
+    margin: 0;
+    font-size: 11px;
+}
+
+#keybindList {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 11px;
+}
+
+#keybindList label {
+    justify-content: space-between;
+}
+
+.keybindButton {
+    min-width: 70px;
+}
+
+
+#milestoneItem h3 {
+    margin: 12px 0 4px 0;
+    text-decoration: underline;
+}
+
+.milestoneTotal {
+    padding: 6px 8px;
+    font-size: 13px;
+    border: 1px dashed black;
+}
+
+.milestoneBar {
+    margin-top: 3px;
+    font-size: 14px;
+    font-weight: bold;
+    white-space: pre;
+}
+
+.milestoneValue {
+    white-space: pre;
+}
+
+.milestoneRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 0;
+    border-bottom: 1px dotted #bbb;
+}
+
+
+#mapView {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    border: 1px dashed black;
+    overflow: hidden;
+    cursor: grab;
+    touch-action: none;
+}
+
+#mapView.dragging {
+    cursor: grabbing;
+}
+
+#mapWorld {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+}
+
+#mapWorld.smooth {
+    transition: transform 0.35s ease;
+}
+
+#mapStatus {
+    margin: 0;
+    font-size: 11px;
+}
+
+.mapTile {
+    position: absolute;
+    margin: 0;
+    font-size: 12px;
+    line-height: 13px;
+    background-color: white;
+}
+
+.mapFog {
+    color: #b3b3b3;
+}
+
+.mapFound {
+    animation: mapTileAppear 0.8s ease-out;
+}
+
+@keyframes mapTileAppear {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.mapTown {
+    position: absolute;
+    padding: 0 3px;
+    font-size: 11px;
+    line-height: 13px;
+    white-space: nowrap;
+    background-color: white;
+    border: 1px solid black;
+    transform-origin: 0 50%;
+    transform: translateY(-50%) scale(calc(1 / var(--zoom, 1)));
+    z-index: 2;
+}
+
+.mapTown.here {
+    font-weight: bold;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mapFound { animation: none; }
+    #mapWorld.smooth { transition: none; }
+}
+
+
+#birdItem {
+    font-size: 13px;
+}
+
+#birdItem p {
+    margin: 0 0 8px 0;
+}
+
+#birdItem .note {
+    margin-top: 10px;
+}
+
+.birdTop {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 10px;
+}
+
+.birdTop pre {
+    margin: 0;
+    font-size: 13px;
+}
+
+.birdName {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 6px;
+}
+
+.birdActions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+
+.mailPage {
+    display: none;
+}
+
+.mailPage.activePage {
+    display: block;
+}
+
+.letter {
+    margin-bottom: 8px;
+    padding: 6px 8px;
+    border: 1px dashed black;
+}
+
+.letterHead {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 4px;
+    font-size: 11px;
+}
+
+.letterText {
+    margin: 0 0 4px 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.letterGifts {
+    font-size: 11px;
+}
+
+.mailForm {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mailForm > button {
+    align-self: flex-start;
+}
+
+.mailForm label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mailForm textarea {
+    width: 100%;
+    height: 72px;
+    box-sizing: border-box;
+    resize: none;
+}
+
+.mailForm input[type="number"] {
+    width: 70px;
+}
+
+.giftRow {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.giftRow button {
+    width: 22px;
+    padding: 0;
+    text-align: center;
+}
+
+.friendRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 0;
+    border-bottom: 1px dotted #bbb;
+}
+
+
+.catalogPage {
+    display: none;
+}
+
+.fishSlots {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+}
+
+.fishSlot {
+    min-height: 70px;
+    padding: 5px;
+    font-size: 11px;
+    border: 1px solid black;
+}
+
+.fishSlotName {
+    margin-bottom: 3px;
+    font-weight: bold;
+}
+
+.unknownFish {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: gray;
+    text-align: center;
+    border-style: dashed;
+}
+
+.catalogSection {
+    margin-bottom: 12px;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.catalogSection h3 {
+    margin: 4px 0;
+    font-size: 15px;
+}
+
+.catalogSection h5 {
+    margin: 6px 0 2px 0;
+    font-size: 12px;
+    text-decoration: underline;
+}
+
+.catalogSection p {
+    margin: 0 0 4px 0;
+}
