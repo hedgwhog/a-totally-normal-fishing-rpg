@@ -15,4 +15,4 @@ export const duelLimits = {
 };
 
 export const duelZone = 3;
-export const stakeCategories = ["Trinkets", "Supplies"];
+export const stakeCategories = ["Trinkets", "Bottles", "Supplies"];

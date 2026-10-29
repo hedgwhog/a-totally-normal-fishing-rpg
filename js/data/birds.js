@@ -8,5 +8,5 @@ export const birds = {
     maxNameLength: 20,
     maxLetterLength: 300, // characters per letter
     inboxSize: 30, // letters you can keep. When it's full, the oldest letter is thrown away
-    giftCategories: ["Trinkets"], // items the pigeon can carry (and coins and resonance)
+    giftCategories: ["Trinkets", "Bottles", "Supplies"], // items the pigeon can carry (and coins and resonance)
 };

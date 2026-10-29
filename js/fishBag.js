@@ -70,6 +70,19 @@ function showFish() {
         row.append(name, price, sell);
         fishTypes.appendChild(row);
     });
+
+    const selectAll = document.createElement("button");
+    selectAll.className = "selectAllFish"
+    selectAll.textContent = "Select all fish";
+    selectAll.addEventListener("click", () => {
+        allFish.forEach(type => {
+            if (isSellable(type)) {
+                selected[type.id] = getFishAmount(type.id);
+            }
+        });
+        showFish();
+    });
+    fishTypes.appendChild(selectAll);
 }
 
 export function sellFish() {

@@ -28,7 +28,7 @@ export const items = [
       info: "Food for long trips. Sailors want these, and you can trade them with other players." },
     { id: "waterBottle", name: "Bottles of fresh water", category: "Supplies", price: 1,
       info: "Water for long trips. Sailors want these, and you can trade them with other players." },
-    { id: "beer", name: "Beer", category: "Supplies", price: 3.5,
+    { id: "beer", name: "Pint of beer", category: "Supplies", price: 3.5,
       info: "For a sailor who needs a drink. You can also trade it with other players." },
     { id: "birdFood", name: "Birdfood", category: "Supplies", price: 3, effect: "for your carrier pigeon",
       info: "Your carrier pigeon eats this before every flight. They need it to explore new waters or to bring a letter to a friend." },

@@ -771,7 +771,8 @@ export const actions = {
         inDriftt(save);
         if (!schedule.isStoreOpen(time(save), save.day)) fail("The inconvenience store is closed.");
         const item = findItem(data.id);
-        if (!item || !store.supplies.includes(item.id)) fail("That's not for sale.");
+        const forSale = [...store.supplies, ...store.bottles];
+        if (!item || !forSale.includes(item.id)) fail("That's not for sale.");
         const amount = wholeNumber(data.amount, 999);
         if (amount === 0) fail("Choose how many you want to buy with + and - first.");
         pay(save, round1(item.price * store.supplyMultiplier * amount));

@@ -208,3 +208,12 @@ footer {
 #rodSelect {
     width: 100%;
 }
+
+.voiceMember {
+    padding: 1px 0 1px 10px;
+}
+
+.voiceIcon {
+    font-weight: bold;
+    white-space: pre;
+}

@@ -15,6 +15,7 @@ import { addText, addButton, round1, coinsText } from "../../helpers.js";
 const shopkeeper = "shopkeeper";
 const shop = document.getElementById("storeItem");
 const popup = document.getElementById("storeDisplay");
+const bottles = numbers.bottles.map(findItem);
 const supplies = numbers.supplies.map(findItem);
 let supplyAmounts = {};
 let greeting = "";
@@ -104,6 +105,9 @@ function showStore() {
 
     addCategory("Clothing");
     stock.filter(item => item.slot !== "Rod").forEach(addGearRow);
+
+    // addCategory("Bottles of resonance (" + numbers.supplyMultiplier + "x the price, it's a long way)");
+    // bot.forEach(addSupplyRow);
 
     addCategory("Supplies (" + numbers.supplyMultiplier + "x the price, it's a long way)");
     supplies.forEach(addSupplyRow);
