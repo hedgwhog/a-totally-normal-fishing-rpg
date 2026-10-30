@@ -1,19 +1,19 @@
-import { fishByIsland, allFish, fishTimes, isSellable } from "../js/data/fish.js";
-import { items, findItem } from "../js/data/items.js";
-import { charmCloak, luckRod, allGear, deepRod, findGear, isStarterGear } from "../js/data/gear.js";
-import { resonances, roman } from "../js/data/resonances.js";
-import { mapTiles, findTile, towns } from "../js/data/world.js";
-import { birds } from "../js/data/birds.js";
-import { tileDistance, townOf, flightMs, discoverableTiles } from "../js/rules/birds.js";
-import { backpackUpgrades, merchantStock, merchantBuyPercent } from "../js/data/merchant.js";
-import { researcherRounds, rareFish, tavern, ritual, ramlaris, altar, marketplace, fortuneTeller, mayor } from "../js/data/quests.js";
-import { contract, boatman, lockers, station, store } from "../js/data/pointDriftt.js";
-import * as schedule from "../js/rules/schedule.js";
-import { shopStock, buyPrice, hasOwnShop, lostGearPrice } from "../js/rules/shops.js";
-import { ferry } from "../js/data/ferry.js";
-import { ferryOpen, otherPort, nextDeparture } from "../js/rules/ferry.js";
-import { cleanText, isReservedName } from "../js/rules/text.js";
-import { equippedGear, resolveGear, getStat, getResonances, boostMultiplier, hasGear, round1, slots } from "../js/rules/stats.js";
+import { fishByIsland, allFish, fishTimes, isSellable } from "../js/shared/data/fish.js";
+import { items, findItem } from "../js/shared/data/items.js";
+import { charmCloak, luckRod, allGear, deepRod, findGear, isStarterGear } from "../js/shared/data/gear.js";
+import { resonances, roman } from "../js/shared/data/resonances.js";
+import { mapTiles, findTile, towns } from "../js/shared/data/world.js";
+import { birds } from "../js/shared/data/birds.js";
+import { tileDistance, townOf, flightMs, discoverableTiles } from "../js/shared/rules/birds.js";
+import { backpackUpgrades, merchantStock, merchantBuyPercent } from "../js/shared/data/merchant.js";
+import { researcherRounds, rareFish, tavern, ritual, ramlaris, altar, marketplace, fortuneTeller, mayor } from "../js/shared/data/quests.js";
+import { contract, boatman, lockers, station, store } from "../js/shared/data/areas/pointDriftt.js";
+import * as schedule from "../js/shared/rules/schedule.js";
+import { shopStock, buyPrice, hasOwnShop, lostGearPrice } from "../js/shared/rules/shops.js";
+import { findLine, routeChartPrice } from "../js/shared/data/transport.js";
+import { isRunning, destinations } from "../js/shared/rules/transport.js";
+import { cleanText, isReservedName } from "../js/shared/rules/text.js";
+import { equippedGear, resolveGear, getStat, getResonances, boostMultiplier, hasGear, round1, slots } from "../js/shared/rules/stats.js";
 
 // This is what I call the file of straight doom
 // Just for clarity, i got really no clue how this really works. I just know it runs the game on CPanel.
@@ -41,6 +41,7 @@ export function newSave() {
         friends: [],
         blocked: [],
         visited: ["freshwaterHaven"],
+        charts: [],        // route charts you own (transport line ids)
         inbox: [],
         news: [],
         mayor: { met: false, donated: false },
@@ -84,6 +85,7 @@ function updateOldSave(save) {
     save.friends ??= [];
     save.blocked ??= [];
     save.visited ??= ["freshwaterHaven"];
+    save.charts ??= [];
     save.inbox ??= [];
     save.news ??= [];
     save.mayor ??= { met: false, donated: false };
@@ -143,7 +145,7 @@ function giveGifts(save, gifts) {
 }
 
 function needBird(save) {
-    if (!save.bird) fail("You don't have a carrier pigeon yet. The mayor might know something about that.");
+    if (!save.bird) fail("You don't have a carrier pigeon yet. Mayor Navi might know something about that.");
 }
 
 function needIdleBird(save) {
@@ -306,7 +308,7 @@ function inDriftt(save) {
 }
 
 function notOnTrip(save) {
-    if (save.island === "hadalDeep") fail("You're on the boatman's boat. Cast your line, he won't wait forever.");
+    if (save.island === "hadalDeep") fail("You're on Kaya's boat. Cast your line, he won't wait forever.");
 }
 
 const canFishHadal = save => (equippedGear(save, "Rod").waters || []).includes("hadal");
@@ -485,13 +487,13 @@ export const actions = {
 
     "fishmonger.sell"(save, data) {
         inHaven(save);
-        if (!schedule.isFishmongerOpen(time(save))) fail("The fishmonger is only there in the morning.");
+        if (!schedule.isFishmongerOpen(time(save))) fail("Fishmonger Finn is only there in the morning.");
         return { price: sellFish(save, data.selected) };
     },
 
     "merchant.buyUpgrade"(save) {
         inHaven(save);
-        if (!schedule.isMerchantHere(time(save), save.day)) fail("The merchant isn't here.");
+        if (!schedule.isMerchantHere(time(save), save.day)) fail("Monty isn't here.");
         const upgrade = backpackUpgrades.find(option => option.slots > save.backpackSize);
         if (!upgrade) fail("Your backpack can't get any bigger.");
         pay(save, upgrade.price);
@@ -501,9 +503,9 @@ export const actions = {
 
     "merchant.buyLostGear"(save, data) {
         inHaven(save);
-        if (!schedule.isMerchantHere(time(save), save.day)) fail("The merchant isn't here.");
+        if (!schedule.isMerchantHere(time(save), save.day)) fail("Monty isn't here.");
         const id = String(data.id);
-        if (!save.lostGear.includes(id)) fail("The merchant doesn't have that.");
+        if (!save.lostGear.includes(id)) fail("Monty doesn't have that.");
         const gear = findGear(id);
         if (hasGear(save, id)) fail("You already own the " + gear.name + ".");
         if (save.backpack.length >= save.backpackSize) fail("Your backpack is full, you can't buy the " + gear.name + ".");
@@ -515,7 +517,7 @@ export const actions = {
 
     "merchant.buyItem"(save, data) {
         inHaven(save);
-        if (!schedule.isMerchantHere(time(save), save.day)) fail("The merchant isn't here.");
+        if (!schedule.isMerchantHere(time(save), save.day)) fail("Monty isn't here.");
         const item = findItem(data.id);
         if (!item || !(save.merchant.stock[item.id] > 0)) fail("That's sold out.");
         pay(save, item.price);
@@ -526,7 +528,7 @@ export const actions = {
 
     "merchant.sellItem"(save, data) {
         inHaven(save);
-        if (!schedule.isMerchantHere(time(save), save.day)) fail("The merchant isn't here.");
+        if (!schedule.isMerchantHere(time(save), save.day)) fail("Monty isn't here.");
         const item = findItem(data.id);
         if (!item || !(item.id in merchantStock)) fail("He doesn't buy that.");
         takeItem(save, item.id);
@@ -576,7 +578,7 @@ export const actions = {
     "tavern.give"(save) {
         inHaven(save);
         if (!schedule.isTavernOpen(time(save))) fail("The tavern is closed in the morning.");
-        if (save.tavern.delivered) fail("The chef already has his fish.");
+        if (save.tavern.delivered) fail("Pierre Crumble already has his fish.");
         const type = findFish(save.tavern.fishId);
         if (!(save.fish[type.id] > 0)) fail("You don't have a " + type.name + ".");
         save.fish[type.id]--;
@@ -593,7 +595,7 @@ export const actions = {
 
     "fortune.give"(save) {
         inHaven(save);
-        if (!schedule.isFortuneTellerHere(save, time(save)) || save.fortune.done) fail("The fortune teller isn't here.");
+        if (!schedule.isFortuneTellerHere(save, time(save)) || save.fortune.done) fail("Madame Crystal isn't here.");
         takeItem(save, fortuneTeller.trinket, fortuneTeller.trinketsWanted);
         giveGear(save, luckRod.id);
         save.fortune.done = true;
@@ -800,17 +802,28 @@ export const actions = {
         return {};
     },
 
-    "ferry.board"(save) {
-        const from = save.island;
-        if (from !== "pointDriftt" && from !== "freshwaterHaven") fail("There's no ferry here.");
-        if (!ferryOpen(save)) fail("The " + ferry.name + " isn't sailing yet.");
+    // data: { line, to }
+    "transport.board"(save, data) {
+        const line = findLine(data.line);
+        if (!line || !line.stops.some(stop => stop.town === save.island)) fail("That line doesn't stop here.");
+        if (!isRunning(line, save)) fail("The " + line.name + " isn't running yet.");
         if (save.pending) fail("Finish what you're doing first.");
-        if (nextDeparture(save.driftt.doneDay, save.day, from) !== save.day) fail("The ferry doesn't leave today.");
-        pay(save, ferry.price);
-        passDays(save, ferry.travelDays);
+        const trip = destinations(line, save, save.island).find(stop => stop.town === data.to);
+        if (!trip) fail("The " + line.name + " doesn't leave for there today.");
+        pay(save, line.ticket * trip.legs);
+        passDays(save, trip.days);
         save.timeIndex = 0;
-        save.island = otherPort(from);
+        save.island = trip.town;
         visitTown(save);
+        return { days: trip.days };
+    },
+
+    "transport.buyChart"(save, data) {
+        const line = findLine(data.line);
+        if (!line || !line.stops.some(stop => stop.town === save.island) || !isRunning(line, save)) fail("You can't buy that chart here.");
+        if (save.charts.includes(line.id)) fail("You already have this route chart.");
+        pay(save, routeChartPrice);
+        save.charts.push(line.id);
         return {};
     },
 
@@ -830,7 +843,7 @@ export const actions = {
     "mayor.claim"(save) {
         inHaven(save);
         if (save.bird) fail("You already have a carrier pigeon.");
-        if (save.tavernHelped < mayor.tavernHelps || !save.mayor.donated) fail("The mayor still needs your help first.");
+        if (save.tavernHelped < mayor.tavernHelps || !save.mayor.donated) fail("Mayor Navi still needs your help first.");
         save.bird = { name: birds.defaultName, job: null };
         return {};
     },

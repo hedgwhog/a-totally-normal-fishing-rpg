@@ -1,12 +1,12 @@
 import crypto from "node:crypto";
 import { config } from "./config.js";
 import * as store from "./store.js";
-import { findItem } from "../js/data/items.js";
-import { duelDefaults, duelLimits, duelZone, stakeCategories } from "../js/data/duel.js";
-import { isHit } from "../js/rules/duel.js";
-import { round1 } from "../js/rules/stats.js";
+import { findItem } from "../js/shared/data/items.js";
+import { duelDefaults, duelLimits, duelZone, stakeCategories } from "../js/shared/data/duel.js";
+import { isHit } from "../js/shared/rules/duel.js";
+import { round1 } from "../js/shared/rules/stats.js";
 import { duelStats, duelRods, addFriend, blockedBetween } from "./game.js";
-import { cleanText } from "../js/rules/text.js";
+import { cleanText } from "../js/shared/rules/text.js";
 
 // Also not really sure how this workers, surely it will be fine?
 
