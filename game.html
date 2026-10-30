@@ -102,7 +102,7 @@
                     To slow down password guessing, your IP address is kept in the server's memory for 1 minute after you log in or sign up. The hosting provider "CPanel" may also keep standard server logs.</p><br>
 
                     <p><u>Your browser:</u> 
-                    The game stores your login and your settings (volume, colors, keybinds and day animation) in your browser's local storage. This is only needed to make the game work. There are no tracking cookies, no ads and no analytics. Which means, there is no cookie banner.</p><br>
+                    The game stores your login and your settings (volume, colors, keybinds and animations) in your browser's local storage. This is only needed to make the game work. There are no tracking cookies, no ads and no analytics. Which means, there is no cookie banner.</p><br>
 
                     <p>All of this is used to only run the game you signed up to play. That is the legal basis: it's needed to provide the game to you (GDPR article 6(1)(b)). Nothing is sold, and nothing is used to decide things about you automatically.</p>
 
@@ -128,7 +128,6 @@
                 </div>
             </div>
 
-            <div id="dayPopupHidden"></div>
 
             <!-- introduction -->
             <div id="introPopup">
@@ -241,14 +240,14 @@
                     <button id="ritual">The annual ritual</button>
                     <button id="marketplace">Marketplace</button>
                     <button id="ichthyologist">Ichthyologist</button>
-                    <button id="sellFish">Sell fish to the<br>local Fishmonger</button>
+                    <button id="sellFish">Sell fish to the<br>Fishmonger</button>
                     <button id="resonance">Resonance altar</button>
                     <button id="merchant">Merchant</button>
                     <button id="ramlaris">The Ramlaris<br>(at the dock)</button>
                     <button id="tavern">Tavern</button>
                     <button id="fortuneTeller">Fortune teller</button>
                     <button id="mayor">Town hall</button>
-                    <button id="ferryHaven">Finka Ferry<br>Cooperation</button>
+                    <button id="ferryHaven">Blue line<br>Cooperation</button>
                 </div>
 
                 <!-- mayor -->
@@ -305,12 +304,12 @@
                 <!-- All possible events -->
                 <div class="event-list">
                     <button id="researchFacility">Research facility</button>
-                    <button id="boatman">The boatman<br>(trips to the deep)</button>
+                    <button id="boatman">Sail with kaya</button>
                     <button id="storageLockers">Storage lockers</button>
                     <button id="resonanceStation">Resonance station</button>
                     <button id="inconvenienceStore">Inconvenience store</button>
                     <button id="sellFishStore">Sell fish to the<br> store</button>
-                    <button id="ferryPointDriftt">Finka Ferry<br>Cooperation</button>
+                    <button id="ferryPointDriftt">Blue line<br>Cooperation</button>
                 </div>
 
                 <!-- Research facility -->
@@ -324,7 +323,7 @@
                 <!-- Lockers -->
                 <div id="lockerDisplay" class="popup bigPopup">
                     <h1>Storage lockers</h1>
-                    <h4>Always open. Every locker holds 1 piece of gear. You can leave it there forever</h4>
+                    <h4>Always open. Every locker holds 1 piece of gear. You can leave it there forever.</h4>
                     <button class="popupClose" data-close="lockerDisplay">Close lockers</button>
                     <div id="lockerItem" class="popupBody"></div>
                 </div>
@@ -351,7 +350,7 @@
                 <h1 class="center">The Hadal Deep</h1>
 
                 <div class="event-list">
-                    <p class="emptyEvents">The boatman waits.<br>One cast, then he<br>takes you back.<br><br>Press Fish.</p>
+                    <p class="emptyEvents">Kaya waits.<br>One cast, then he<br>takes you back.<br><br>Press Fish.</p>
                     <button id="hadalReturn">Head back<br>without casting</button>
                 </div>
             </div>
@@ -366,6 +365,7 @@
                 <div class="settings-wrap">
                     <h3>General</h3>
                     <label>Enable day animation: <input type="checkbox" id="dayDisplayToggle" checked></label>
+                    <label>Enable travel animation: <input type="checkbox" id="travelAnimationToggle" checked></label>
                     <label>Invert colors: <input type="checkbox" id="invert-toggle"></label>
                     <label>OST volume: <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.5"></label>
                     <label>Audio acting up? <button id="audioRefreshBtn" class="settings-btn">Refresh OST</button></label>

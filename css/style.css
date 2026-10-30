@@ -223,27 +223,6 @@ button {
 }
 
 
-#dayPopupHidden {
-    display: none;
-    position: absolute;
-    inset: 0;
-    justify-content: center;
-    align-items: center;
-    background-color: black;
-    color: white;
-    font-size: 50px;
-    text-align: center;
-    z-index: 100;
-    opacity: 1;
-    transition: ease-in-out 1s;
-}
-
-@starting-style {
-    #dayPopupHidden {
-        opacity: 0;
-    }
-}
-
 #introPopup {
     display: none;
     position: absolute;
@@ -982,6 +961,7 @@ button.selectAllFish {
 #mapStatus {
     margin: 0;
     font-size: 11px;
+    white-space: pre-line;
 }
 
 .mapTile {
@@ -1195,3 +1175,101 @@ button.selectAllFish {
 .catalogSection p {
     margin: 0 0 4px 0;
 }
+
+/* route charts on the map */
+.mapRoutes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.mapRoutes polyline {
+    fill: none;
+    stroke: black;
+    stroke-width: 1.5px;
+    stroke-dasharray: 4 4;
+    vector-effect: non-scaling-stroke;
+}
+
+.mapShip {
+    position: absolute;
+    margin: 0;
+    font-size: 12px;
+    line-height: 13px;
+    font-weight: bold;
+    white-space: pre;
+    padding: 0 2px;
+    background-color: white;
+    border: 1px solid black;
+    transform-origin: 50% 50%;
+    transform: translate(-50%, -50%) scale(calc(1 / var(--zoom, 1)));
+    z-index: 3;
+}
+
+/* full screen ASCII animations (js/screens/scene.js) */
+.scene {
+    position: absolute;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background-color: white;
+}
+
+.sceneText {
+    margin: 0;
+    font-family: monospace;
+    font-size: 12px;
+    line-height: 14px;
+    white-space: pre;
+}
+
+.sceneHint {
+    position: absolute;
+    bottom: 8px;
+    width: 100%;
+    text-align: center;
+    font-size: 11px;
+    color: #666;
+}
+
+.sceneHint {
+    left: 50%;
+    width: auto;
+    padding: 0 6px;
+    transform: translateX(-50%);
+    background-color: white;
+}
+
+/* loading a save: zooms out to the game. Cast out: zooms in from the game (js/screens/castIn.js) */
+.castScene {
+    clip-path: circle(75% at 50% 50%);
+}
+
+.castScene.closed {
+    clip-path: circle(0% at 50% 50%);
+}
+
+.castScene.zoomIn {
+    clip-path: circle(75% at 50% 50%);
+    transition: clip-path 0.6s ease-in;
+}
+
+.castScene.zoomOut {
+    clip-path: circle(0% at 50% 50%);
+    transition: clip-path 0.6s ease-in;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .castScene { clip-path: none; }
+}
+
+/* a new day: sunrise (js/screens/dayAnimation.js). Black and white, like the rest of the game. */
+.dayScene .sceneText {
+    position: relative;
+}
+
