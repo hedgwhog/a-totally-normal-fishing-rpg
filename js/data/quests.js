@@ -20,7 +20,7 @@ export const altar = {
     levels: [
         { level: 1, cost: 20, extraChance: 0.25, levelUpChance: 0.4 },
         { level: 2, cost: 50, extraChance: 0.4, levelUpChance: 0.75 },
-        { level: 3, cost: 125, extraChance: 0.65, levelUpChance: 0.95 },
+        { level: 3, cost: 125, extraChance: 0.65, levelUpChance: 1.05 },
     ],
     dissonanceCost: 20,
 };

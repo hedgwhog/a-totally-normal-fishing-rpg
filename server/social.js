@@ -66,12 +66,12 @@ export function setupSocial(io, { saveOf, storeSaveOf }) {
         const rooms = [];
         for (const room of voiceRooms.values()) {
             if (room.island !== island) continue;
-            const names = [];
+            const members = [];
             for (const id of room.members) {
                 const member = io.sockets.sockets.get(id);
-                if (member) names.push(member.data.user.displayName);
+                if (member) members.push({ id: id, name: member.data.user.displayName, muted: Boolean(member.data.muted) });
             }
-            rooms.push({ id: room.id, name: room.name, closed: room.closed, maxSize: room.maxSize, names });
+            rooms.push({ id: room.id, name: room.name, closed: room.closed, maxSize: room.maxSize, members });
         }
         return rooms;
     }
@@ -88,6 +88,7 @@ export function setupSocial(io, { saveOf, storeSaveOf }) {
     }, 60 * 1000);
 
     function leaveVoice(socket) {
+        socket.data.muted = false;
         const room = voiceRoomOf(socket);
         if (!room) return;
         room.members.delete(socket.id);
@@ -343,6 +344,11 @@ export function setupSocial(io, { saveOf, storeSaveOf }) {
             sendBlockList(user.id);
             updateArea(socket.data.island);
             answer({});
+        });
+
+        socket.on("voice:mute", muted => {
+            socket.data.muted = Boolean(muted);
+            if (voiceRoomOf(socket)) updateArea(socket.data.island);
         });
 
         socket.on("disconnect", () => {

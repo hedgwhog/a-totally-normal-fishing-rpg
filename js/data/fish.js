@@ -70,10 +70,10 @@ const pointDriftt = [
 
 const allTimes = ["morning", "afternoon", "evening", "night"];
 const hadalDeep = [
-    { id: "grenadier", name: "Pacific Grenadier", price: 0, sellable: false, waters: ["hadal"], zone: 3, speed: 25, chance: 50, rarity: 0, resonance: 10, rounds: 6, hits: 5, barWidth: [16, 14], fishSpeed: 130, times: allTimes },
-    { id: "cuskEel", name: "Abyssal Cusk-eel", price: 0, sellable: false, waters: ["hadal"], zone: 3, speed: 22, chance: 30, rarity: 2, resonance: 14, rounds: 6, hits: 5, barWidth: [14, 12], fishSpeed: 120, times: allTimes },
-    { id: "etherealSnailfish", name: "Ethereal Snailfish", price: 0, sellable: false, waters: ["hadal"], zone: 2, speed: 22, chance: 20, rarity: 4, resonance: 18, rounds: 7, hits: 6, barWidth: [14, 12, 13], fishSpeed: 115, times: allTimes },
-    { id: "marianaSnailfish", name: "Mariana Snailfish", price: 0, sellable: false, waters: ["hadal"], zone: 2, speed: 16, chance: 0.5, rarity: 12, resonance: 50, rounds: 8, hits: 8, barWidth: [12, 10, 11], fishSpeed: 95, times: allTimes },
+    { id: "grenadier", name: "Pacific Grenadier", price: 0, sellable: false, waters: ["hadal"], zone: 3, speed: 25, chance: 50, rarity: 0, resonance: 10, rounds: 11, hits: 10, barWidth: [16, 14], fishSpeed: 130, times: allTimes },
+    { id: "cuskEel", name: "Abyssal Cusk-eel", price: 0, sellable: false, waters: ["hadal"], zone: 3, speed: 22, chance: 30, rarity: 2, resonance: 14, rounds: 9, hits: 8, barWidth: [14, 12], fishSpeed: 120, times: allTimes },
+    { id: "etherealSnailfish", name: "Ethereal Snailfish", price: 0, sellable: false, waters: ["hadal"], zone: 2, speed: 22, chance: 20, rarity: 4, resonance: 18, rounds: 14, hits: 13, barWidth: [14, 12, 13], fishSpeed: 115, times: allTimes },
+    { id: "marianaSnailfish", name: "Mariana Snailfish", price: 0, sellable: false, waters: ["hadal"], zone: 2, speed: 16, chance: 0.5, rarity: 12, resonance: 50, rounds: 16, hits: 16, barWidth: [12, 10, 11], fishSpeed: 95, times: allTimes },
 ];
 
 export const fishByIsland = {

@@ -35,7 +35,24 @@ function addButton(box, label, action) {
     return button;
 }
 
-socket.on("connect_error", error => showError(error.message + " (close this window and open the chat again from the game)"));
+socket.on("connect_error", error => {
+    hangUp();
+    if (error.message === "Open the game first.") {
+        showError("Waiting for the game to connect...");
+        setTimeout(() => socket.connect(), 3000);
+        return;
+    }
+    if (socket.active) {
+        showError("Lost the connection to the server. Trying again...");
+        return;
+    }
+    showError(error.message + " (close this window and open the chat again from the game)");
+});
+
+socket.on("disconnect", () => {
+    if (myRoom || peers.size > 0) showError("The connection was lost, so you left voice.");
+    hangUp();
+});
 socket.on("game:closed", message => showError(message));
 
 function showTab(id) {
@@ -53,7 +70,14 @@ function showMessage(message) {
     const line = document.createElement("div");
     line.className = "message";
     line.dataset.user = message.userId;
-    const time = new Date(message.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    const time = new Date(message.time).toLocaleString([], {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+
     const name = document.createElement("b");
     name.textContent = message.name + ":";
     line.append(time + " ", name, message.text);
@@ -229,24 +253,66 @@ let lastRooms = [];
 let microphone = null;
 let muted = false;
 const peers = new Map();
+let audioContext = null;
+let microphoneAnalyser = null;
+
+const icons = {
+    talking: "<|))",
+    quiet: "<|  ",
+    muted: "<|x ",
+};
 
 function showVoiceRooms(rooms) {
     lastRooms = rooms;
+    checkMyRoom(rooms);
     const list = el("voiceRooms");
     list.innerHTML = "";
     if (rooms.length === 0) addText(list, "No rooms here yet. Make one below.", "muted");
 
     for (const room of rooms) {
-        const row = document.createElement("div");
-        row.className = "row line";
-        let label = room.name + " (" + room.names.length + "/" + room.maxSize + ")";
-        if (room.closed) label += " [closed]";
-        if (room.names.length > 0) label += ": " + room.names.join(", ");
-        addText(row, label);
+        const box = document.createElement("div");
+        box.className = "line";
 
+        const row = document.createElement("div");
+        row.className = "row";
+        let label = room.name + " (" + room.members.length + "/" + room.maxSize + ")";
+        if (room.closed) label += " [closed]";
+        addText(row, label);
         const isMine = myRoom && myRoom.id === room.id;
-        if (!isMine && room.names.length < room.maxSize) addButton(row, "Join", () => joinRoom(room));
-        list.appendChild(row);
+        if (!isMine && room.members.length < room.maxSize) addButton(row, "Join", () => joinRoom(room));
+        box.appendChild(row);
+
+        for (const member of room.members) {
+            const line = document.createElement("div");
+            line.className = "voiceMember";
+            const icon = document.createElement("span");
+            icon.className = "voiceIcon";
+            icon.dataset.id = member.id;
+            icon.dataset.muted = member.muted ? "yes" : "no";
+            icon.textContent = member.muted ? icons.muted : icons.quiet;
+            line.append(icon, " " + member.name);
+            if (member.id === socket.id) line.append(" (you)");
+            if (member.muted) line.append(" (muted)");
+            box.appendChild(line);
+        }
+        list.appendChild(box);
+    }
+}
+
+function checkMyRoom(rooms) {
+    if (!myRoom) {
+        for (const id of [...peers.keys()]) closePeer(id);
+        return;
+    }
+    const mine = rooms.find(room => room.id === myRoom.id);
+    const stillIn = mine && mine.members.some(member => member.id === socket.id);
+    if (!stillIn) {
+        hangUp();
+        showError("You're no longer in that voice room.");
+        return;
+    }
+    for (const id of [...peers.keys()]) {
+        if (!mine.members.some(member => member.id === id)) closePeer(id);
     }
 }
 
@@ -263,10 +329,45 @@ function voiceWarning() {
     return true;
 }
 
+function makeAnalyser(stream) {
+    if (!audioContext) audioContext = new AudioContext();
+    if (audioContext.state === "suspended") audioContext.resume();
+    const analyser = audioContext.createAnalyser();
+    analyser.fftSize = 512;
+    audioContext.createMediaStreamSource(stream).connect(analyser);
+    return analyser;
+}
+
+function isTalking(analyser) {
+    if (!analyser) return false;
+    const samples = new Uint8Array(analyser.fftSize);
+    analyser.getByteTimeDomainData(samples);
+    let total = 0;
+    for (const sample of samples) {
+        const wave = (sample - 128) / 128;
+        total += wave * wave;
+    }
+    return Math.sqrt(total / samples.length) > 0.03;
+}
+
+setInterval(() => {
+    document.querySelectorAll(".voiceIcon").forEach(icon => {
+        if (icon.dataset.muted === "yes") return;
+        let analyser = null;
+        if (icon.dataset.id === socket.id) {
+            if (!muted) analyser = microphoneAnalyser;
+        } else if (peers.has(icon.dataset.id)) {
+            analyser = peers.get(icon.dataset.id).analyser;
+        }
+        icon.textContent = isTalking(analyser) ? icons.talking : icons.quiet;
+    });
+}, 150);
+
 async function startMicrophone() {
     if (microphone) return true;
     try {
         microphone = await navigator.mediaDevices.getUserMedia({ audio: true });
+        microphoneAnalyser = makeAnalyser(microphone);
         return true;
     } catch {
         showError("No microphone access. Allow the microphone for this site to use voice.");
@@ -278,6 +379,8 @@ function enterRoom(result) {
     if (result.error) return showError(result.error);
     showError("");
     myRoom = result.room;
+    muted = false;
+    el("muteButton").textContent = "Mute";
     el("voiceControls").style.display = "flex";
     el("voiceStatus").textContent = "In: " + myRoom.name;
     showVoiceRooms(lastRooms);
@@ -322,22 +425,25 @@ function callPeer(id, startsCall) {
     const audio = document.createElement("audio");
     audio.autoplay = true;
     el("voiceAudio").appendChild(audio);
+
+    const peer = { connection, audio, analyser: null, waitingCandidates: [], queue: Promise.resolve() };
+    peers.set(id, peer);
+
     connection.ontrack = event => {
         audio.srcObject = event.streams[0];
         audio.play().catch(() => showError("Click anywhere in this window to hear the voice chat."));
+        peer.analyser = makeAnalyser(event.streams[0]);
     };
-
     connection.onicecandidate = event => {
         if (event.candidate) socket.emit("voice:signal", { to: id, data: { candidate: event.candidate } });
     };
     connection.onconnectionstatechange = () => {
         if (connection.connectionState === "failed") {
             showError("Voice couldn't connect to a player. Your networks probably block a direct connection: a TURN server is needed (see config.js).");
+            closePeer(id);
         }
+        if (connection.connectionState === "closed") closePeer(id);
     };
-
-    const peer = { connection, audio, waitingCandidates: [], queue: Promise.resolve() };
-    peers.set(id, peer);
 
     if (startsCall) {
         peer.queue = peer.queue.then(async () => {
@@ -375,15 +481,17 @@ socket.on("voice:signal", ({ from, data }) => {
 });
 
 document.addEventListener("click", () => {
+    if (audioContext && audioContext.state === "suspended") audioContext.resume();
     el("voiceAudio").querySelectorAll("audio").forEach(audio => audio.play().catch(() => {}));
 });
 
 function closePeer(id) {
     const peer = peers.get(id);
     if (!peer) return;
-    peer.connection.close();
-    peer.audio.remove();
     peers.delete(id);
+    peer.connection.close();
+    peer.audio.srcObject = null;
+    peer.audio.remove();
 }
 
 socket.on("voice:peerLeft", ({ id }) => closePeer(id));
@@ -392,17 +500,16 @@ function stopMicrophone() {
     if (!microphone) return;
     microphone.getTracks().forEach(track => track.stop());
     microphone = null;
+    microphoneAnalyser = null;
 }
 
 socket.on("voice:kicked", () => {
-    leaveVoice(false);
-    stopMicrophone();
+    hangUp();
     showError("You left the voice room, because you blocked someone in it.");
 });
 
 function leaveVoice(tellServer = true) {
-    if (!myRoom) return;
-    if (tellServer) socket.emit("voice:leave");
+    if (tellServer && myRoom) socket.emit("voice:leave");
     for (const id of [...peers.keys()]) closePeer(id);
     myRoom = null;
     muted = false;
@@ -411,9 +518,15 @@ function leaveVoice(tellServer = true) {
     if (tellServer) stopMicrophone();
 }
 
+function hangUp() {
+    leaveVoice(false);
+    stopMicrophone();
+}
+
 el("leaveVoice").addEventListener("click", () => leaveVoice());
 el("muteButton").addEventListener("click", () => {
     muted = !muted;
     if (microphone) microphone.getAudioTracks().forEach(track => track.enabled = !muted);
     el("muteButton").textContent = muted ? "Unmute" : "Mute";
+    socket.emit("voice:mute", muted);
 });
