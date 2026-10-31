@@ -8,9 +8,9 @@ import { config } from "./config.js";
 import * as store from "./store.js";
 import { actions, newSave, refresh, publicSave, deliverBirds, GameError } from "./game.js";
 import { setupSocial } from "./social.js";
-import { cleanText, isReservedName } from "../js/rules/text.js";
-import { islandNames } from "../js/data/islands.js";
-import { times } from "../js/rules/schedule.js";
+import { cleanText, isReservedName } from "../js/shared/rules/text.js";
+import { islandNames } from "../js/shared/data/islands.js";
+import { times } from "../js/shared/rules/schedule.js";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const app = express();

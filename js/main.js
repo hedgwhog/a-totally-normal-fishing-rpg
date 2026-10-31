@@ -1,5 +1,7 @@
-import { api, connect, getToken, setToken } from "./net.js";
-import { startState } from "./state.js";
+import { api, connect, getToken, setToken } from "./core/net.js";
+import { startState } from "./core/state.js";
+import { playTitle } from "./screens/titleScreen.js";
+import { startCastIn } from "./screens/castIn.js";
 
 const screen = document.getElementById("startScreen");
 const panels = {
@@ -130,9 +132,11 @@ async function showSaves(message = "") {
 
 function play() {
     const slot = selectedSlot;
+    const loading = startCastIn("Loading save " + slot);
     const socket = connect("game", { slot: slot });
 
     socket.once("connect_error", error => {
+        loading.cancel();
         socket.close();
         showSaves(error.message || "Can't connect to the server.");
     });
@@ -146,6 +150,7 @@ function play() {
         startState(socket, { username: account.username, displayName: account.displayName, slot: slot }, state);
         screen.style.display = "none";
         await import("./game.js");
+        loading.finish();
     });
 }
 
@@ -153,3 +158,4 @@ document.getElementById("playButton").addEventListener("click", play);
 
 if (getToken()) showSaves();
 else showPanel("login");
+playTitle();
