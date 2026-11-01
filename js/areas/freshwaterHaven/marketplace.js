@@ -49,9 +49,7 @@ function addNote(text) {
 
 function addGearRow(item) {
     const resold = isResold(getState(), item.id, "freshwaterHaven") ? " (you sold this here)" : "";
-    const label = hasGear(item.id)
-        ? item.name + " (owned)"
-        : item.name + resold + (item.effect ? " | Effects: " + item.effect : "") + " | " + coinsText(buyPrice(item));
+    const label = item.name + resold + (item.effect ? " | Effects: " + item.effect : "") + " | " + coinsText(buyPrice(item));
     addShopButton(shop, label, () => buyGear(item));
 }
 
@@ -123,11 +121,15 @@ function showMarketplace() {
     if (greeting) addNote("Tucker: \"" + greeting + "\"");
     const stock = shopStock(getState(), "freshwaterHaven");
 
+    const rods = stock.filter(item => item.slot === "Rod");
     addCategory("Fishing rods");
-    stock.filter(item => item.slot === "Rod").forEach(addGearRow);
+    rods.forEach(addGearRow);
+    if (rods.length === 0) addNote("Sold out. Gear you sell here shows up again.");
 
+    const clothing = stock.filter(item => item.slot !== "Rod");
     addCategory("Clothing");
-    stock.filter(item => item.slot !== "Rod").forEach(addGearRow);
+    clothing.forEach(addGearRow);
+    if (clothing.length === 0) addNote("Sold out. Gear you sell here shows up again.");
 
     addCategory("Supplies");
     supplies.forEach(addSupplyRow);

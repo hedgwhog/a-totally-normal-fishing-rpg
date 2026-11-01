@@ -34,11 +34,17 @@ function drawTitle(canvas, time) {
 }
 
 // only when the window was opened with "Launch game" (index.html adds #launch), not after a reload
+const showStartScreen = () => document.documentElement.classList.remove("launching");
+
 export function playTitle() {
-    if (location.hash !== "#launch") return Promise.resolve();
+    if (location.hash !== "#launch") {
+        showStartScreen();
+        return Promise.resolve();
+    }
     history.replaceState(null, "", location.pathname + location.search);
 
     const scene = createScene("titleScene");
+    showStartScreen(); // the title scene covers it now
     const hint = document.createElement("div");
     hint.className = "sceneHint";
     hint.textContent = "Click or press any key to skip";

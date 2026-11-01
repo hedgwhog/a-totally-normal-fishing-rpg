@@ -13,6 +13,7 @@ import "./player/statsBox.js";
 import "./systems/mail.js";
 import "./systems/bird.js";
 import "./systems/news.js";
+import "./systems/ghost.js";
 import "./player/fishLog.js";
 import "./systems/catalogue.js";
 import "./systems/actions.js";

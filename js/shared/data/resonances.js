@@ -11,6 +11,7 @@ export const resonances = {
     hitbox: { name: "Hitbox", stat: "zoneBonus", perLevel: 1, maxLevel: 2, minRank: 2, chance: 2, levelUp: 0.10 },
     rewind: { name: "Rewind", stat: "rewind", perLevel: 1, maxLevel: 3, minRank: 2, chance: 4, levelUp: 0.15 },
     resonity: { name: "Resonity", stat: "resonity", perLevel: 0.1, maxLevel: 10, chance: 32 },
+    coinity: { name: "Coinity", stat: "coinity", perLevel: 0.1, maxLevel: 10, chance: 32 },
     temptation: { name: "Temptation", stat: "temptation", perLevel: 10, maxLevel: 5, minRank: 3, chance: 3, levelUp: 0.15 },
 };
 

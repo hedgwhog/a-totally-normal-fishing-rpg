@@ -6,7 +6,7 @@ import express from "express";
 import { Server } from "socket.io";
 import { config } from "./config.js";
 import * as store from "./store.js";
-import { actions, newSave, refresh, publicSave, deliverBirds, GameError } from "./game.js";
+import { actions, newSave, refresh, publicSave, deliverBirds, GameError, ghostBlocks } from "./game.js";
 import { setupSocial } from "./social.js";
 import { cleanText, isReservedName } from "../js/shared/rules/text.js";
 import { islandNames } from "../js/shared/data/islands.js";
@@ -223,6 +223,8 @@ io.on("connection", socket => {
 
         const save = getSave(user.id, slot);
         const copy = structuredClone(save);
+        const blocked = ghostBlocks(copy, message.type);
+        if (blocked) return answer({ error: blocked });
 
         const others = new Map();
         const ctx = {

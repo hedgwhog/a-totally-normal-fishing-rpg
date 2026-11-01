@@ -1,10 +1,10 @@
 // category: where it shows up in the items list and the marketplace
-// "Trinkets" can be used, they double something for a few catches
+// "Trinkets" can be used, they double something for a few tries (a fish that gets away counts too)
 // "Bottles" can be used, they give you something right away
 // "Supplies" are only for trading
 //  Special" are rare items with no use (yet)
 
-// boost/catches: (trinkets) what it doubles, and for how many catches.
+// boost/tries: (trinkets) what it doubles, and for how many tries to catch a fish (caught or not).
 //   The boosts the game knows: "luck" (actions.js), "resonance" (actions.js), "focus" and "slow-fish" (fishing.js)
 // effect: what players see it does (in the merchant and your items list)
 // info: what the info button (i) in your items list says
@@ -12,14 +12,14 @@
 // fishChance: % chance to fish it up with a catch
 // price: what it costs to buy
 export const items = [
-    { id: "luckCharm", name: "Luck trinket", category: "Trinkets", boost: "luck", catches: 5, fishChance: 2, price: 35, effect: "rare fish 2x as often",
-      info: "Use it, and rare fish show up 2x as often for your next 5 catches." },
-    { id: "resonanceCharm", name: "Resonance trinket", category: "Trinkets", boost: "resonance", catches: 5, fishChance: 2, price: 35, effect: "2x resonance per fish",
-      info: "Use it, and you get 2x the resonance for your next 5 catches." },
-    { id: "focusCharm", name: "Focus trinket", category: "Trinkets", boost: "focus", catches: 5, fishChance: 2, price: 35, effect: "2x focus (at least +5)",
-      info: "Use it, and your focus is 2x as strong for your next 5 catches. Your line moves slower. (at least +5) " },
-    { id: "slowCharm", name: "Slow trinket", category: "Trinkets", boost: "slow-fish", catches: 5, fishChance: 2, price: 35, effect: "fish move 2x slower",
-      info: "Use it, and the fish move 2x slower for your next 5 catches." },
+    { id: "luckCharm", name: "Luck trinket", category: "Trinkets", boost: "luck", tries: 5, fishChance: 0.75, price: 60, effect: "rare fish 2x as often",
+      info: "Use it, and rare fish show up 2x as often for your next 5 tries." },
+    { id: "resonanceCharm", name: "Resonance trinket", category: "Trinkets", boost: "resonance", tries: 5, fishChance: 0.75, price: 60, effect: "2x resonance per fish",
+      info: "Use it, and you get 2x the resonance for your next 5 tries." },
+    { id: "focusCharm", name: "Focus trinket", category: "Trinkets", boost: "focus", tries: 5, fishChance: 0.75, price: 60, effect: "2x focus (at least +5)",
+      info: "Use it, and your focus is 2x as strong for your next 5 tries. Your line moves slower. (at least +5) " },
+    { id: "slowCharm", name: "Slow trinket", category: "Trinkets", boost: "slow-fish", tries: 5, fishChance: 0.75, price: 60, effect: "fish move 2x slower",
+      info: "Use it, and the fish move 2x slower for your next 5 tries." },
 
     { id: "resonanceBottle", name: "Bottle of resonance", category: "Bottles", resonance: 10, price: 15,
       info: "Use it, and you get 10 resonance right away." },

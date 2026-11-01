@@ -4,8 +4,11 @@ export const tileSize = { width: 16, height: 8 };
 export const worldBounds = { minColumn: -10, maxColumn: 10, minRow: -7, maxRow: 6 };
 
 // the id must match the island id in game.html
+// x, y: the spot of the town in its tile (the name label goes right of it)
+// dock (optional): where the ferry docks and leaves from, counted from the same tile (it may go past the tile's edge).
+//                  Without it, the ferry docks just outside the town spot. Keep it off the name label.
 export const towns = {
-    freshwaterHaven: { name: "Freshwater Haven", column: 0, row: 1, x: 8, y: 1 },
+    freshwaterHaven: { name: "Freshwater Haven", column: 0, row: 1, x: 8, y: 1, dock: { x: 19, y: 0 } },
     pointDriftt: { name: "Point Driftt", column: 5, row: 0, x: 7, y: 3 },
 };
 

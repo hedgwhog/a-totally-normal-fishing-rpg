@@ -1,7 +1,7 @@
 // The merchant shows up once every 13 days. The code for it to work are in a different file, here are the numbers
 export const merchantEvery = 13;
 
-export const lostGearPercent = 300;
+// Lost gear isn't sold by the merchant anymore: the Ghost of Noy has it (data/ghost.js)
 
 // backpack upgrades:
 export const backpackUpgrades = [
