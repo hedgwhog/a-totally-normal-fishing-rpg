@@ -180,7 +180,8 @@ function drawShip(line, legs, known) {
     if (position.docked) {
         const key = Object.keys(legs).find(leg => leg.startsWith(position.town + ">"));
         const path = legs[key];
-        point = { ...path[Math.min(path.length - 1, dockIndex(path) + 4)], dx: 1 }; // just outside the harbour
+        const atDock = towns[position.town].dock ? 0 : Math.min(path.length - 1, dockIndex(path) + 4); // at the dock, or just outside the harbour
+        point = { ...path[atDock], dx: 1 };
     } else {
         const path = legs[position.from + ">" + position.to];
         const start = dockIndex(path);

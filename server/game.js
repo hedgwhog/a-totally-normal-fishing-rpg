@@ -4,12 +4,13 @@ import { charmCloak, luckRod, allGear, deepRod, findGear, isStarterGear } from "
 import { resonances, roman } from "../js/shared/data/resonances.js";
 import { mapTiles, findTile, towns } from "../js/shared/data/world.js";
 import { birds } from "../js/shared/data/birds.js";
-import { tileDistance, townOf, flightMs, discoverableTiles } from "../js/shared/rules/birds.js";
+import { tileDistance, townOf, flightMs, discoverableTiles, compass } from "../js/shared/rules/birds.js";
 import { backpackUpgrades, merchantStock, merchantBuyPercent } from "../js/shared/data/merchant.js";
 import { researcherRounds, rareFish, tavern, ritual, ramlaris, altar, marketplace, fortuneTeller, mayor } from "../js/shared/data/quests.js";
 import { contract, boatman, lockers, station, store } from "../js/shared/data/areas/pointDriftt.js";
 import * as schedule from "../js/shared/rules/schedule.js";
-import { shopStock, buyPrice, hasOwnShop, lostGearPrice } from "../js/shared/rules/shops.js";
+import { shopStock, buyPrice, shopOf, ownsGear } from "../js/shared/rules/shops.js";
+import { ghostPrice, ghostStock, isGhostDay } from "../js/shared/rules/ghost.js";
 import { findLine, routeChartPrice } from "../js/shared/data/transport.js";
 import { isRunning, destinations } from "../js/shared/rules/transport.js";
 import { cleanText, isReservedName } from "../js/shared/rules/text.js";
@@ -60,6 +61,7 @@ export function newSave() {
         lockers: [],
         soldGear: {},
         lostGear: [],
+        ghost: null,       // { day, owed }: the Ghost of Noy is visiting, owed = days you pay when it leaves
     };
 }
 
@@ -95,6 +97,7 @@ function updateOldSave(save) {
     save.lockers ??= [];
     save.soldGear ??= {};
     save.lostGear ??= [];
+    save.ghost ??= null;
     if (save.visited.includes("pointDriftt") && !save.driftt) startDriftt(save);
     if (save.visited.includes("pointDriftt")) save.ramlaris.sailed = true;
     if (save.driftt && save.driftt.delivered >= contract.hadalFishWanted && save.driftt.doneDay === undefined) save.driftt.doneDay = save.day;
@@ -182,6 +185,22 @@ function nextDay(save) {
     save.day++;
     save.timeIndex = 0;
     refresh(save);
+    ghostVisit(save);
+}
+
+// The Ghost of Noy shows up in the night before every 101st day, wherever you are, if it has lost gear of yours.
+let payingGhost = false; // the days you pay the ghost don't bring it back
+function ghostVisit(save) {
+    if (payingGhost || save.ghost || !isGhostDay(save.day) || ghostStock(save).length === 0) return;
+    save.ghost = { day: save.day, owed: 0 };
+}
+
+// while the ghost is there, time can't move and you can't go anywhere
+const ghostAllows = ["ghost.buy", "ghost.leave", "gear.equip", "gear.resolvePending", "item.use", "fish.finish",
+    "news.seen", "mail.delete", "bird.rename", "intro.seen", "friends.remove", "mayor.met", "driftt.introduced"];
+export function ghostBlocks(save, type) {
+    if (!save || !save.ghost || ghostAllows.includes(type)) return null;
+    return "The Ghost of Noy is still floating in front of you. Finish with it first.";
 }
 
 function passDays(save, days) {
@@ -190,8 +209,9 @@ function passDays(save, days) {
     save.timeIndex = timeIndex;
 }
 
+// Dropped gear that's still sold somewhere goes back to that shop. Gear that's nowhere sold goes to the Ghost of Noy.
 function loseGear(save, saved) {
-    if (!saved || isStarterGear(saved.id) || hasOwnShop(saved.id)) return;
+    if (!saved || isStarterGear(saved.id) || shopOf(save, saved.id)) return;
     if (!save.lostGear.includes(saved.id)) save.lostGear.push(saved.id);
 }
 
@@ -266,8 +286,7 @@ const isBound = saved => Boolean(saved && findGear(saved.id) && findGear(saved.i
 
 function buyGearFrom(save, shop, id) {
     const gear = shopStock(save, shop).find(item => item.id === id);
-    if (!gear) fail("That's not for sale.");
-    if (hasGear(save, gear.id)) fail("You already own the " + gear.name + ".");
+    if (!gear) fail("That's not for sale (anymore).");
     if (save.backpack.length >= save.backpackSize) fail("Your backpack is full, you can't buy the " + gear.name + ".");
     pay(save, buyPrice(gear));
     save.backpack.push({ id: gear.id });
@@ -383,7 +402,8 @@ export const actions = {
 
             result.resonance = round1(type.resonance * boostMultiplier(save, "resonance") + getStat(save, "resonity", 0));
             save.resonance = round1(save.resonance + result.resonance);
-            for (const boost of Object.keys(save.boosts)) if (save.boosts[boost] > 0) save.boosts[boost]--;
+            result.coins = round1(getStat(save, "coinity", 0));
+            if (result.coins > 0) save.coins = round1(save.coins + result.coins);
 
             for (const item of items) {
                 if (item.fishChance && Math.random() * 100 < item.fishChance) {
@@ -398,6 +418,8 @@ export const actions = {
                 }
             }
         }
+        // trinkets count tries, so a fish that got away also uses one up
+        for (const boost of Object.keys(save.boosts)) if (save.boosts[boost] > 0) save.boosts[boost]--;
         nextTime(save);
         if (save.island === "hadalDeep") {
             passDays(save, boatman.travelDays);
@@ -412,7 +434,7 @@ export const actions = {
         const item = findItem(data.id);
         if (!item || !(item.boost || item.resonance)) fail("You can't use that.");
         takeItem(save, item.id);
-        if (item.boost) save.boosts[item.boost] = (save.boosts[item.boost] || 0) + item.catches;
+        if (item.boost) save.boosts[item.boost] = (save.boosts[item.boost] || 0) + item.tries;
         if (item.resonance) save.resonance = round1(save.resonance + item.resonance);
         return {};
     },
@@ -499,20 +521,6 @@ export const actions = {
         pay(save, upgrade.price);
         save.backpackSize = upgrade.slots;
         return { slots: upgrade.slots };
-    },
-
-    "merchant.buyLostGear"(save, data) {
-        inHaven(save);
-        if (!schedule.isMerchantHere(time(save), save.day)) fail("Monty isn't here.");
-        const id = String(data.id);
-        if (!save.lostGear.includes(id)) fail("Monty doesn't have that.");
-        const gear = findGear(id);
-        if (hasGear(save, id)) fail("You already own the " + gear.name + ".");
-        if (save.backpack.length >= save.backpackSize) fail("Your backpack is full, you can't buy the " + gear.name + ".");
-        pay(save, lostGearPrice(gear));
-        save.backpack.push({ id });
-        save.lostGear = save.lostGear.filter(lostId => lostId !== id);
-        return {};
     },
 
     "merchant.buyItem"(save, data) {
@@ -642,6 +650,40 @@ export const actions = {
         visitTown(save);
         if (!save.driftt) startDriftt(save);
         return {};
+    },
+
+    // data: { id, coins }. The rest of the price is paid with resonance.
+    "ghost.buy"(save, data) {
+        if (!save.ghost) fail("The Ghost of Noy isn't here.");
+        const id = String(data.id);
+        if (!ghostStock(save).includes(id)) fail("The ghost doesn't have that.");
+        if (save.pendingGear) fail("Make room for the gear you got first.");
+        const gear = findGear(id);
+        const price = ghostPrice(gear);
+        const coins = round1(Number(data.coins) || 0);
+        if (!(coins >= 0) || coins > price.value) fail("That's not a valid amount of coins.");
+        const resonance = round1(price.value - coins);
+        if (coins > save.coins) fail("You don't have " + coins + " coins.");
+        if (resonance > save.resonance) fail("You need " + resonance + " resonance for the rest. Pay more with coins.");
+        save.coins = round1(save.coins - coins);
+        save.resonance = round1(save.resonance - resonance);
+        save.lostGear = save.lostGear.filter(lostId => lostId !== id);
+        save.ghost.owed += price.days;
+        giveGear(save, id);
+        return { days: price.days, coins, resonance };
+    },
+
+    "ghost.leave"(save) {
+        if (!save.ghost) fail("The Ghost of Noy isn't here.");
+        const days = save.ghost.owed;
+        save.ghost = null;
+        payingGhost = true;
+        try {
+            passDays(save, days);
+        } finally {
+            payingGhost = false;
+        }
+        return { days };
     },
 
     "intro.seen"(save) {
@@ -857,12 +899,15 @@ export const actions = {
         return {};
     },
 
-    "bird.discover"(save) {
+    // data: { direction: "north" | "east" | "south" | "west" }
+    "bird.discover"(save, data) {
         needIdleBird(save);
         const town = townOf(save.island);
         if (!town) fail("Your pigeon can only fly out from a town.");
-        const options = discoverableTiles(save);
-        if (options.length === 0) fail(save.bird.name + " has found all the waters it can reach from here.");
+        const direction = String(data.direction || "");
+        if (!compass.includes(direction)) fail("Pick a direction for your pigeon: north, east, south or west.");
+        const options = discoverableTiles(save, direction);
+        if (options.length === 0) fail(save.bird.name + " can't find any new waters in the " + direction + " right now.");
         takeItem(save, birds.food, birds.discoverFood);
         const tile = random(options);
         const now = Date.now();

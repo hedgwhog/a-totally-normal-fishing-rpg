@@ -45,11 +45,13 @@ async function loadGrid(loadArt) {
     toLand = distance;
 }
 
+// where ships leave from: the town's dock if it has one, otherwise the town spot itself
 export function townSpot(id) {
     const town = towns[id];
+    const spot = town.dock || town;
     return {
-        x: (town.column - worldBounds.minColumn) * tileSize.width + town.x,
-        y: (town.row - worldBounds.minRow) * tileSize.height + town.y,
+        x: (town.column - worldBounds.minColumn) * tileSize.width + spot.x,
+        y: (town.row - worldBounds.minRow) * tileSize.height + spot.y,
     };
 }
 

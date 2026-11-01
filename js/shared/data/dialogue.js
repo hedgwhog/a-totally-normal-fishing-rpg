@@ -15,9 +15,23 @@ export const characters = {
     lockerKeeper: { name: "Mr. Bartholomew Lock" },
     stationResearcher: { name: "Dr. Sparky" },
     shopkeeper: { name: "Miss Lovett" },
+    ghost: { name: "Ghost of Noy" },
 };
 
 export const lines = {
+    // the Ghost of Noy (js/systems/ghost.js), visits in the night before every 101st day
+    ghost: {
+        arrival: [
+            { who: "", text: "The night goes cold. Something pale floats out of the dark..." },
+            { who: "ghost", text: "Noooy... I am the Ghost of Noy. I keep what the living let go of." },
+            { who: "ghost", text: "These were yours, once. Want them back? It will cost you time... and a little something more." },
+        ],
+        welcome: ["Take your time. Well... I'll take your time."],
+        bought: ["It's yours again. The days are on your tab."],
+        leaveNothing: ["Nothing? Then I'll fade away. Until the next 101st day..."],
+        leavePaid: ["The deal is done. {days} days slip away while you sleep..."],
+    },
+
     // tutorial popup
     intro: {
         title: "A totally normal fishing rpg",
@@ -29,7 +43,6 @@ export const lines = {
             "Every area also has their own chat, so feel free to be social with others by opening the chat.",
             "Good luck.",
         ],
-        lostGear: ["Look what I found! Yours? Not anymore. You can buy it back, of course. At my price."],
     },
 
     // Fish researcher

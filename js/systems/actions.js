@@ -17,7 +17,20 @@ function nothingToCatch(reason, rod) {
     return say("Your " + rod + " can't catch anything here.");
 }
 
+// stops a double click (or a key held down) from starting 2 fishing rounds at the same time
+let fishingNow = false;
+
 async function goFishing() {
+    if (fishingNow) return;
+    fishingNow = true;
+    try {
+        await fishOnce();
+    } finally {
+        fishingNow = false;
+    }
+}
+
+async function fishOnce() {
     const start = await act("fish.start");
     if (start.error) return say(start.error);
     if (start.none) return nothingToCatch(start.none, start.rod);
@@ -38,6 +51,7 @@ async function goFishing() {
         return;
     }
     const lines = ["+" + formatNumber(result.resonance) + " Resonance"];
+    if (result.coins > 0) lines.push("+" + formatNumber(result.coins) + (result.coins === 1 ? " Coin" : " Coins") + " (coinity)");
     for (const name of result.drops) lines.push("Something else was on your hook: a " + name + "!");
     if (result.mapPiece) lines.push("You got a piece of a map!\nIt goes straight into your world map (Map, at the top).");
     if (result.newSpecies) lines.push("New species! The " + type.name + " was added to your catalogue.");

@@ -5,7 +5,6 @@ import { travelAnimationEnabled } from "../core/settings.js";
 import { getState } from "../core/state.js";
 import { createScene, reducedMotion } from "./scene.js";
 
-const icons = { boat: "\\__/>", ferry: "[=]>", train: "[]=>" };
 const barWidth = 54;
 
 function drawTrip(canvas, time, length, text, options, startDay) {
@@ -22,14 +21,9 @@ function drawTrip(canvas, time, length, text, options, startDay) {
         canvas.lines(columns - x, 6 + (i % 2) * 3, clouds);
     }
 
-    // the trip: a track of waves with the ship on it, and the bar under it
+    // the trip: just the loading bar (no ship on top)
     const left = Math.floor((columns - barWidth - 2) / 2);
     const position = Math.round(progress * (barWidth - 1));
-    let track = "";
-    for (let x = 0; x < barWidth; x++) track += (x + Math.floor(time / 180)) % 3 === 0 ? "~" : " ";
-    canvas.text(left + 1, 16, track);
-    const icon = icons[options.kind] || icons.boat;
-    canvas.text(left + 1 + position - icon.length + 1, 15 + Math.round(Math.sin(time / 200) * 0.6), icon, true);
 
     let bar = "";
     for (let x = 0; x < barWidth; x++) bar += x === position ? "|" : x < position ? "=" : "-";

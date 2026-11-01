@@ -16,6 +16,7 @@ const stats = [
     ["zoneBonus", "Hitbox", format => "+" + formatNumber(format)],
     ["rewind", "Rewind", format => "x" + formatNumber(format)],
     ["resonity", "Resonity", format => "+" + formatNumber(format)],
+    ["coinity", "Coinity", format => "+" + formatNumber(format)],
     ["temptation", "Temptation", format => formatNumber(Math.min(50, format)) + "%"],
 ];
 
@@ -39,9 +40,9 @@ function showStats() {
     const abyssalLuck = getStat(save, "luck", 0, ["abyssal"]) - getStat(save, "luck", 0);
     if (abyssalLuck) effects.push("Luck +" + formatNumber(abyssalLuck) + " (abyssal)");
     
-    for (const [boost, catches] of Object.entries(save.boosts)) {
+    for (const [boost, tries] of Object.entries(save.boosts)) {
         const trinket = items.find(item => item.boost === boost);
-        if (catches > 0 && trinket) effects.push(trinket.name.replace(" trinket", "") + " x2 (" + catches + ")");
+        if (tries > 0 && trinket) effects.push(trinket.name.replace(" trinket", "") + " x2 (" + tries + ")");
     }
     lines(effectsBox, effects, "None yet");
 

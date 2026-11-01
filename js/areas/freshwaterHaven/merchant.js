@@ -1,6 +1,4 @@
-import { backpackUpgrades, merchantStock, merchantBuyPercent, lostGearPercent } from "../../shared/data/merchant.js";
-import { findGear } from "../../shared/data/gear.js";
-import { lostGearPrice } from "../../shared/rules/shops.js";
+import { backpackUpgrades, merchantStock, merchantBuyPercent } from "../../shared/data/merchant.js";
 import { findItem } from "../../shared/data/items.js";
 import { isMerchantHere } from "../../shared/rules/schedule.js";
 import { getBackpackSize } from "../../player/gear.js";
@@ -51,25 +49,6 @@ async function sellItem(item) {
     if (result.error) await say(result.error);
 }
 
-async function buyLostGear(gear) {
-    if (getCoins() < lostGearPrice(gear)) return say(pick(lines.merchant.noCoinsItem), merchant, { price: coinsText(lostGearPrice(gear)) });
-    const result = await act("merchant.buyLostGear", { id: gear.id });
-    if (result.error) await say(result.error);
-}
-
-function showLostGear() {
-    const lostGear = getState().lostGear || [];
-    if (lostGear.length === 0) return;
-    addCategoryText("Found gear (" + lostGearPercent + "% of its worth)");
-    addText(shop, "\"" + pick(lines.merchant.lostGear) + "\"");
-    for (const id of lostGear) {
-        const gear = findGear(id);
-        let effect = "";
-        if (gear.effect) effect = " | Effects: " + gear.effect;
-        addButton(shop, gear.name + effect + " | " + coinsText(lostGearPrice(gear)), () => buyLostGear(gear));
-    }
-}
-
 function showMerchant() {
     shop.innerHTML = "";
     addText(shop, "\"" + pick(lines.merchant.welcome) + "\"");
@@ -87,13 +66,11 @@ function showMerchant() {
         if (!(stock[id] > 0)) continue;
         anythingInStock = true;
         let effect = "";
-        if (item.effect) effect = " (" + item.effect + (item.catches ? " for " + item.catches + " catches" : "") + ")";
+        if (item.effect) effect = " (" + item.effect + (item.tries ? " for " + item.tries + " tries" : "") + ")";
         else if (item.resonance) effect = " (+" + item.resonance + " resonance)";
         addButton(shop, item.name + effect + " | " + coinsText(item.price) + " | " + stock[id] + " in stock", () => buyItem(item));
     }
     if (!anythingInStock) addText(shop, "\"" + pick(lines.merchant.soldOut) + "\"");
-
-    showLostGear();
 
     addCategoryText("Sell to the merchant (" + merchantBuyPercent + "% of the price)");
     let anythingToSell = false;

@@ -58,8 +58,9 @@ function fishSlot(type) {
 function showFishPage() {
     fishPage.innerHTML = "";
 
+    const visited = getState().visited || [];
     for (const [island, fishList] of Object.entries(fishByIsland)) {
-        if (fishList.length === 0) continue;
+        if (fishList.length === 0 || !visited.includes(island)) continue;
 
         const discovered = fishList.filter(type => isDiscovered(type.id)).length;
         const title = document.createElement("h3");
@@ -90,6 +91,7 @@ document.addEventListener("fishLogChanged", showFishPage);
 onState((state, previous) => {
     if (!previous || JSON.stringify(state.visited) !== JSON.stringify(previous.visited)) {
         showMechanicsPage();
+        showFishPage();
     }
 });
 

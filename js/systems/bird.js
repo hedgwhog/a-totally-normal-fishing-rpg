@@ -1,6 +1,6 @@
 import { birds } from "../shared/data/birds.js";
 import { findItem } from "../shared/data/items.js";
-import { discoverableTiles } from "../shared/rules/birds.js";
+import { discoverableTiles, compass } from "../shared/rules/birds.js";
 import { getState, onState, act } from "../core/state.js";
 import { showArt } from "../core/ascii.js";
 import { say, askYesNo } from "../core/dialogue.js";
@@ -98,14 +98,23 @@ function showPopup() {
 
     const actions = document.createElement("div");
     actions.className = "birdActions";
-    addButton(actions, "Send out to discover waters (" + birds.discoverFood + " birdfood)", discover);
+    const directions = document.createElement("div");
+    directions.className = "birdDirections";
+    directions.append("Send out to discover waters (" + birds.discoverFood + " birdfood): ");
+    for (const direction of compass) {
+        const left = discoverableTiles(getState(), direction).length;
+        const button = addButton(directions, capital(direction) + (left > 0 ? "" : " (nothing new)"), () => discover(direction));
+        button.title = left > 0 ? "New waters to find in the " + direction : "Nothing left to find in the " + direction + " from here";
+    }
+    actions.appendChild(directions);
     addButton(actions, "Send out with a letter (" + birds.mailFood + " birdfood)", () => openMail("mailWrite"));
     page.appendChild(actions);
 
     const note = document.createElement("p");
     note.className = "note";
     note.textContent = "It flies 1 hour per tile, and back again. It keeps flying while you're logged out. "
-        + "It only finds waters next to what's on your map, and it can't find map pieces of islands.";
+        + "Pick a direction: the map is split corner to corner, so east is everything between the top right and bottom right corner. "
+        + "It finds a random spot in that direction next to what's on your map, and it can't find map pieces of islands.";
     page.appendChild(note);
 }
 
@@ -116,13 +125,15 @@ async function rename(name) {
     if (result.error) return say(result.error);
 }
 
-async function discover() {
+const capital = text => text[0].toUpperCase() + text.slice(1);
+
+async function discover(direction) {
     const bird = getBird();
     if (bird.job) return say(bird.name + " is still out flying. " + birdStatus(bird) + ".");
     if (birdFood() < birds.discoverFood) return say(bird.name + " needs " + birds.discoverFood + " birdfood for this trip. You have " + birdFood() + ".\n\nThe marketplace sells birdfood.");
-    if (discoverableTiles(getState()).length === 0) return say(bird.name + " has found all the waters it can reach from here.");
-    if (!await askYesNo("Send " + bird.name + " out to discover new waters?\n\nIt costs " + birds.discoverFood + " birdfood. Where it goes is up to the pigeon: it flies to a random spot next to what you know, and back.")) return;
-    const result = await act("bird.discover");
+    if (discoverableTiles(getState(), direction).length === 0) return say(bird.name + " can't find any new waters in the " + direction + " from here. Try another direction.");
+    if (!await askYesNo("Send " + bird.name + " out to the " + direction + " to discover new waters?\n\nIt costs " + birds.discoverFood + " birdfood. It flies to a random spot in the " + direction + " next to what you know, and back.")) return;
+    const result = await act("bird.discover", { direction });
     if (result.error) return say(result.error);
     await say(bird.name + " flies off over the water.\n\nWho knows when it will be back...");
 }

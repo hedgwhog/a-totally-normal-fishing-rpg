@@ -105,7 +105,7 @@ function activeTrinketLines() {
     const boosts = getState().boosts;
     for (const boost of Object.keys(boosts)) {
         const trinket = items.find(item => item.boost === boost);
-        if (boosts[boost] > 0 && trinket) lines.push(trinket.name + ": " + boosts[boost] + " catches left");
+        if (boosts[boost] > 0 && trinket) lines.push(trinket.name + ": " + boosts[boost] + " tries left");
     }
     return lines;
 }

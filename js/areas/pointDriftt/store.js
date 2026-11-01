@@ -37,9 +37,7 @@ function addCategory(title) {
 
 function addGearRow(item) {
     const resold = isResold(getState(), item.id, "pointDriftt") ? " (you sold this here)" : "";
-    const label = hasGear(item.id)
-        ? item.name + " (owned)"
-        : item.name + resold + (item.effect ? " | Effects: " + item.effect : "") + " | " + coinsText(buyPrice(item));
+    const label = item.name + resold + (item.effect ? " | Effects: " + item.effect : "") + " | " + coinsText(buyPrice(item));
     addButton(shop, label, () => buyGear(item));
 }
 
@@ -103,8 +101,10 @@ function showStore() {
         rods.forEach(addGearRow);
     }
 
+    const clothing = stock.filter(item => item.slot !== "Rod");
     addCategory("Clothing");
-    stock.filter(item => item.slot !== "Rod").forEach(addGearRow);
+    clothing.forEach(addGearRow);
+    if (clothing.length === 0) addText(shop, "Sold out. Gear you sell here shows up again.");
 
     // addCategory("Bottles of resonance (" + numbers.supplyMultiplier + "x the price, it's a long way)");
     // bot.forEach(addSupplyRow);
