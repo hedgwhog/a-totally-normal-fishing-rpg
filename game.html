@@ -7,6 +7,8 @@
     <title>A Totally Normal Fishing RPG</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="css/style.css">
+    <!-- hides the start screen until the title animation is ready (so it doesn't flash) -->
+    <script src="js/launch.js"></script>
 </head>
 <body>
     <div class="container">
@@ -403,6 +405,14 @@
         </div>
 
         <!-- bird (js/bird.js) -->
+        <!-- the Ghost of Noy (js/systems/ghost.js). No close button: you leave with "Leave" -->
+        <div id="ghostDisplay" class="popup bigPopup">
+            <button id="ghostLeave" class="popupClose">Leave</button>
+            <h1>Ghost of Noy</h1>
+            <h4>Visits in the night before every 101st day. Pays in days, and coins and/or resonance.</h4>
+            <div id="ghostItem" class="popupBody"></div>
+        </div>
+
         <div id="birdDisplay" class="popup bigPopup">
             <button class="popupClose" data-close="birdDisplay">Close pigeon</button>
             <h1 id="birdTitle">Carrier pigeon</h1>

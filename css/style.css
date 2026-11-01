@@ -1042,6 +1042,13 @@ button.selectAllFish {
     margin-top: 6px;
 }
 
+.birdDirections {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+}
+
 
 .mailPage {
     display: none;
@@ -1194,17 +1201,18 @@ button.selectAllFish {
 }
 
 .mapShip {
+    /* 80% of the old size. It's part of the map, so it zooms with it (it doesn't grow when you zoom out) */
     position: absolute;
     margin: 0;
-    font-size: 12px;
-    line-height: 13px;
+    font-size: 9.6px;
+    line-height: 10.4px;
     font-weight: bold;
     white-space: pre;
-    padding: 0 2px;
+    padding: 0 1.6px;
     background-color: white;
-    border: 1px solid black;
+    border: 0.8px solid black;
     transform-origin: 50% 50%;
-    transform: translate(-50%, -50%) scale(calc(1 / var(--zoom, 1)));
+    transform: translate(-50%, -50%);
     z-index: 3;
 }
 
@@ -1273,3 +1281,27 @@ button.selectAllFish {
     position: relative;
 }
 
+
+/* the Ghost of Noy (js/systems/ghost.js) */
+.ghostRow {
+    margin: 6px 0;
+    padding: 4px 0;
+    border-bottom: 1px dotted black;
+}
+
+.ghostPay {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+    margin-top: 3px;
+}
+
+.ghostPay input {
+    width: 70px;
+}
+
+/* opened with "Launch game": the start screen stays hidden until the title animation covers it (js/launch.js) */
+html.launching #startScreen {
+    visibility: hidden;
+}
