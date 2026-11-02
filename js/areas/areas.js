@@ -12,8 +12,14 @@ export function getIsland() {
 }
 
 export function addEvent(islandId, event) {
+    const button = document.getElementById(event.button);
+    if (!button) {
+        // the page is older than the script (game.html not uploaded, or an old one in a cache)
+        console.warn("game.html has no button #" + event.button + ". Is game.html up to date on the server?");
+        return;
+    }
     events.push({ island: islandId, ...event });
-    document.getElementById(event.button).addEventListener("click", () => event.open());
+    button.addEventListener("click", () => event.open());
 }
 
 export function refreshEvents() {

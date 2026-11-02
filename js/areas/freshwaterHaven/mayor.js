@@ -1,3 +1,4 @@
+import { tellAboutNikki } from "./niece.js";
 import { mayor as numbers } from "../../shared/data/quests.js";
 import { lines } from "../../shared/data/dialogue.js";
 import { getState, onState, act } from "../../core/state.js";
@@ -62,7 +63,8 @@ welcome();
 
 export const mayor = {
     button: "mayor",
-    open() {
+    async open() {
+        await tellAboutNikki();
         showMayor();
         openPopup("mayorDisplay");
     },

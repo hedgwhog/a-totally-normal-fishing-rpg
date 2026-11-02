@@ -22,6 +22,7 @@ import "./systems/milestones.js";
 import "./areas/freshwaterHaven/index.js";
 import "./areas/pointDriftt/index.js";
 import "./areas/hadalDeep/index.js";
+import "./areas/pantryIsles/index.js";
 import { refreshTime } from "./core/time.js";
 import { refreshEvents } from "./areas/areas.js";
 import { handlePendingGear } from "./player/gear.js";

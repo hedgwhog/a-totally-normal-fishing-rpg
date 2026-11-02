@@ -232,6 +232,44 @@
                 <button id="rest">Rest</button>
             </div>
 
+            <!-- The District Isles  -->
+            <div class="island" id="capital">
+                <h1 class="center">The Capital</h1>
+                <div class="event-list">
+                    <button id="capitalShop">Capital shop</button>
+                    <button id="capitalLibrary">Resonance<br>library</button>
+                    <button id="capitalStation">Highway train<br>station</button>
+                    <button id="ferryCapital">Blue line<br>Cooperation</button>
+                </div>
+            </div>
+            <div class="island" id="heathland">
+                <h1 class="center">Heathland</h1>
+                <div class="event-list">
+                    <button id="marketHeathland">Local market</button>
+                    <button id="sellFishHeathland">Sell fish at the<br>local market</button>
+                    <button id="questHeathland">Warden Moss</button>
+                    <button id="stationHeathland">Highway train<br>station</button>
+                </div>
+            </div>
+            <div class="island" id="tableland">
+                <h1 class="center">Tableland</h1>
+                <div class="event-list">
+                    <button id="marketTableland">Local market</button>
+                    <button id="sellFishTableland">Sell fish at the<br>local market</button>
+                    <button id="questTableland">Miller Otto</button>
+                    <button id="stationTableland">Highway train<br>station</button>
+                </div>
+            </div>
+            <div class="island" id="mangal">
+                <h1 class="center">Mangal</h1>
+                <div class="event-list">
+                    <button id="marketMangal">Local market</button>
+                    <button id="sellFishMangal">Sell fish at the<br>local market</button>
+                    <button id="questMangal">Ranger Mara</button>
+                    <button id="stationMangal">Highway train<br>station</button>
+                </div>
+            </div>
+
             <div class="island" id="freshwaterHaven">
 
                 <!-- title area -->
@@ -405,6 +443,14 @@
         </div>
 
         <!-- bird (js/bird.js) -->
+        <!-- a shared window for places that don't have their own (js/core/panel.js) -->
+        <div id="panelDisplay" class="popup bigPopup">
+            <button id="panelClose" class="popupClose" data-close="panelDisplay">Close</button>
+            <h1 id="panelTitle"></h1>
+            <h4 id="panelNote"></h4>
+            <div id="panelItem" class="popupBody"></div>
+        </div>
+
         <!-- the Ghost of Noy (js/systems/ghost.js). No close button: you leave with "Leave" -->
         <div id="ghostDisplay" class="popup bigPopup">
             <button id="ghostLeave" class="popupClose">Leave</button>
