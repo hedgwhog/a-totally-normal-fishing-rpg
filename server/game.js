@@ -8,6 +8,8 @@ import { tileDistance, townOf, flightMs, discoverableTiles, compass } from "../j
 import { backpackUpgrades, merchantStock, merchantBuyPercent } from "../js/shared/data/merchant.js";
 import { researcherRounds, rareFish, tavern, ritual, ramlaris, altar, marketplace, fortuneTeller, mayor } from "../js/shared/data/quests.js";
 import { contract, boatman, lockers, station, store } from "../js/shared/data/areas/pointDriftt.js";
+import { pantryIslands, mayorRewards, trains, markets, islandQuests, restaurants, capitalShop, library, renamedItems } from "../js/shared/data/areas/pantryIsles.js";
+import { isMarketOpen, isCapitalShopOpen, findRestaurant, isRestaurantOpen, stillNeeded, findTrainLine } from "../js/shared/rules/pantryIsles.js";
 import * as schedule from "../js/shared/rules/schedule.js";
 import { shopStock, buyPrice, shopOf, ownsGear } from "../js/shared/rules/shops.js";
 import { ghostPrice, ghostStock, isGhostDay } from "../js/shared/rules/ghost.js";
@@ -62,6 +64,7 @@ export function newSave() {
         soldGear: {},
         lostGear: [],
         ghost: null,       // { day, owed }: the Ghost of Noy is visiting, owed = days you pay when it leaves
+        pantry: null,      // the Pantry Isles, see newPantry()
     };
 }
 
@@ -98,6 +101,17 @@ function updateOldSave(save) {
     save.soldGear ??= {};
     save.lostGear ??= [];
     save.ghost ??= null;
+    save.pantry ??= null;
+    // ingredients & dishes got new ids: move what a save had to the new ones
+    for (const [oldId, newId] of Object.entries(renamedItems)) {
+        if (save.items[oldId]) save.items[newId] = (save.items[newId] || 0) + save.items[oldId];
+        delete save.items[oldId];
+        for (const entry of Object.values(save.pantry ? save.pantry.restaurants : {})) {
+            if (!entry.given[oldId]) continue;
+            entry.given[newId] = (entry.given[newId] || 0) + entry.given[oldId];
+            delete entry.given[oldId];
+        }
+    }
     if (save.visited.includes("pointDriftt") && !save.driftt) startDriftt(save);
     if (save.visited.includes("pointDriftt")) save.ramlaris.sailed = true;
     if (save.driftt && save.driftt.delivered >= contract.hadalFishWanted && save.driftt.doneDay === undefined) save.driftt.doneDay = save.day;
@@ -108,7 +122,24 @@ function startDriftt(save) {
     if (!hasGear(save, deepRod.id) && save.pendingGear !== deepRod.id) giveGear(save, deepRod.id);
 }
 
+// The Pantry Isles start when you're in Freshwater Haven after Point Driftt is done:
+// the mayor asks you to bring his niece Nikki there, and Line Tuna starts (docked in Freshwater Haven).
+function newPantry(day) {
+    return {
+        lineStart: day,     // Line Tuna starts this day
+        told: false,        // the mayor told you about Nikki
+        boarded: false,     // you boarded Line Tuna with Nikki (the mayor paid)
+        reward: null,       // the reward you picked from the mayor
+        nikki: false,       // Nikki said goodbye and gave you the map of the Capital
+        quests: {},         // { island: true } island quests done
+        restaurants: {},    // { id: { given: { itemId: amount }, done } }
+        trackers: [],       // train line ids you have a tracker of
+    };
+}
+
 function visitTown(save) {
+    // every save that finished Point Driftt gets it, wherever it is (also old saves, on their first load)
+    if (!save.pantry && save.driftt && save.driftt.doneDay != null) save.pantry = newPantry(save.day);
     if (!save.visited.includes(save.island)) save.visited.push(save.island);
     for (const tile of mapTiles) {
         if (tile.visit && tile.island === save.island && !save.map.includes(tile.id)) save.map.push(tile.id);
@@ -197,7 +228,8 @@ function ghostVisit(save) {
 
 // while the ghost is there, time can't move and you can't go anywhere
 const ghostAllows = ["ghost.buy", "ghost.leave", "gear.equip", "gear.resolvePending", "item.use", "fish.finish",
-    "news.seen", "mail.delete", "bird.rename", "intro.seen", "friends.remove", "mayor.met", "driftt.introduced"];
+    "news.seen", "mail.delete", "bird.rename", "intro.seen", "friends.remove", "mayor.met", "driftt.introduced",
+    "pantry.told", "pantry.nikki"];
 export function ghostBlocks(save, type) {
     if (!save || !save.ghost || ghostAllows.includes(type)) return null;
     return "The Ghost of Noy is still floating in front of you. Finish with it first.";
@@ -208,6 +240,10 @@ function passDays(save, days) {
     for (let count = 0; count < days; count++) nextDay(save);
     save.timeIndex = timeIndex;
 }
+
+// the first Line Tuna trip to the Capital, with Nikki: the mayor pays
+export const isNikkiTrip = (save, line, trip) => line.id === "tuna" && save.pantry && !save.pantry.boarded
+    && save.island === "freshwaterHaven" && trip.town === "capital";
 
 // Dropped gear that's still sold somewhere goes back to that shop. Gear that's nowhere sold goes to the Ghost of Noy.
 function loseGear(save, saved) {
@@ -326,6 +362,16 @@ function inDriftt(save) {
     if (!save.driftt) fail("Nobody here knows you yet.");
 }
 
+function inIsland(save, island) {
+    if (save.island !== island) fail("You're not there.");
+    if (!save.pantry) fail("Nobody here knows you yet.");
+}
+
+function inPantryIsland(save) {
+    if (!pantryIslands.includes(save.island) || !save.pantry) fail("There's no market here.");
+    return save.island;
+}
+
 function notOnTrip(save) {
     if (save.island === "hadalDeep") fail("You're on Kaya's boat. Cast your line, he won't wait forever.");
 }
@@ -376,6 +422,7 @@ export const actions = {
     "fish.start"(save) {
         if (save.pending && save.pending.kind === "fish") return { fishId: save.pending.fishId };
         const rod = equippedGear(save, "Rod");
+        if (save.island === "capital") return { none: "illegal", rod: rod.name };
         const waters = rod.waters || [];
         const fishHere = fishByIsland[save.island] || [];
         const reachable = fishHere.filter(type => type.waters.some(water => waters.includes(water)));
@@ -686,6 +733,181 @@ export const actions = {
         return { days };
     },
 
+
+    // ---------- The Pantry Isles ----------
+    "pantry.told"(save) {
+        if (!save.pantry) fail("The mayor has nothing for you yet.");
+        save.pantry.told = true;
+        return {};
+    },
+
+    "pantry.nikki"(save) {
+        if (!save.pantry || !save.pantry.boarded) fail("Nikki isn't with you.");
+        if (save.pantry.nikki) return {};
+        save.pantry.nikki = true;
+        if (!save.map.includes("capital_0_0")) save.map.push("capital_0_0");
+        return {};
+    },
+
+    // data: { to }. Free. From the Capital in the morning, from an island in the evening.
+    "train.ride"(save, data) {
+        if (save.pending) fail("Finish what you're doing first.");
+        if (!save.pantry) fail("There's no train here.");
+        const to = String(data.to || "");
+        if (save.island === "capital") {
+            if (!pantryIslands.includes(to)) fail("There's no train to there.");
+            if (time(save) !== trains.fromCapital) fail("The trains to the islands leave in the " + trains.fromCapital + ".");
+            save.island = to;
+            save.timeIndex = schedule.times.indexOf(trains.arriveIsland);
+        } else if (pantryIslands.includes(save.island)) {
+            if (to !== "capital") fail("This train only goes to the Capital.");
+            if (time(save) !== trains.fromIsland) fail("The train to the Capital leaves in the " + trains.fromIsland + ".");
+            save.island = "capital";
+            save.timeIndex = schedule.times.indexOf(trains.arriveCapital);
+        } else {
+            fail("There's no train here.");
+        }
+        visitTown(save);
+        return {};
+    },
+
+    "train.buyTracker"(save, data) {
+        const line = findTrainLine(data.line);
+        if (!line || !save.pantry || (save.island !== "capital" && save.island !== line.island)) fail("They don't sell that tracker here.");
+        if (save.pantry.trackers.includes(line.id)) fail("You already have that tracker.");
+        pay(save, trains.trackerPrice);
+        save.pantry.trackers.push(line.id);
+        return {};
+    },
+
+    "pantryMarket.buyGear"(save, data) {
+        const island = inPantryIsland(save);
+        if (!isMarketOpen(time(save), save.day)) fail("The local market is closed.");
+        buyGearFrom(save, island, data.id);
+        return {};
+    },
+
+    // data: { id, amount }. Trinkets and the ingredients of this island.
+    "pantryMarket.buyItem"(save, data) {
+        const island = inPantryIsland(save);
+        if (!isMarketOpen(time(save), save.day)) fail("The local market is closed.");
+        const item = findItem(data.id);
+        const sold = item && item.price && (item.category === "Trinkets" || markets[island].ingredients.includes(item.id));
+        if (!sold) fail("That's not for sale here.");
+        const amount = wholeNumber(data.amount, 999);
+        if (amount === 0) fail("Choose how many you want to buy with + and - first.");
+        pay(save, round1(item.price * amount));
+        addItem(save, item.id, amount);
+        return {};
+    },
+
+    "pantryMarket.sellFish"(save, data) {
+        inPantryIsland(save);
+        if (!isMarketOpen(time(save), save.day)) fail("The local market is closed.");
+        return { price: sellFish(save, data.selected) };
+    },
+
+    "pantryQuest.give"(save) {
+        const island = inPantryIsland(save);
+        const quest = islandQuests[island];
+        if (save.pantry.quests[island]) fail("You already helped here.");
+        if (!(save.fish[quest.fish] > 0)) fail("You don't have that fish.");
+        save.fish[quest.fish]--;
+        save.pantry.quests[island] = true;
+        if (!save.map.includes(quest.tile)) save.map.push(quest.tile);
+        return {};
+    },
+
+    // gives what you have of the ingredients the restaurant still needs
+    "restaurant.give"(save, data) {
+        inIsland(save, "capital");
+        const restaurant = findRestaurant(data.id);
+        if (!restaurant) fail("That restaurant doesn't exist.");
+        if (!isRestaurantOpen(restaurant, time(save), save.day)) fail(restaurant.name + " is closed.");
+        const entry = save.pantry.restaurants[restaurant.id] ??= { given: {}, done: false };
+        if (entry.done) fail("You already helped " + restaurant.name + ".");
+        const given = {};
+        for (const [id, amount] of Object.entries(stillNeeded(save, restaurant))) {
+            const giving = Math.min(amount, save.items[id] || 0);
+            if (giving <= 0) continue;
+            save.items[id] -= giving;
+            entry.given[id] = (entry.given[id] || 0) + giving;
+            given[id] = giving;
+        }
+        if (Object.keys(given).length === 0) fail("You don't have any of the ingredients they still need.");
+        const result = { given, done: false };
+        if (Object.keys(stillNeeded(save, restaurant)).length === 0) {
+            entry.done = true;
+            result.done = true;
+            save.coins = round1(save.coins + (restaurant.reward.coins || 0));
+            const tile = restaurant.reward.tile;
+            if (tile && !save.map.includes(tile)) {
+                save.map.push(tile);
+                result.mapPiece = true;
+            }
+        }
+        return result;
+    },
+
+    "restaurant.buy"(save, data) {
+        inIsland(save, "capital");
+        const restaurant = findRestaurant(data.id);
+        if (!restaurant) fail("That restaurant doesn't exist.");
+        if (!isRestaurantOpen(restaurant, time(save), save.day)) fail(restaurant.name + " is closed.");
+        if (!(save.pantry.restaurants[restaurant.id] || {}).done) fail("Help them with their ingredients first.");
+        const dish = findItem(restaurant.dish);
+        pay(save, dish.price);
+        addItem(save, dish.id);
+        return {};
+    },
+
+    // data: { id, amount }
+    "capitalShop.buy"(save, data) {
+        inIsland(save, "capital");
+        if (!isCapitalShopOpen(time(save))) fail("The shop is closed.");
+        const item = findItem(data.id);
+        const multiplier = capitalShop.supplies.includes(data.id) ? 1 : capitalShop.bottles.includes(data.id) ? capitalShop.bottleMultiplier : 0;
+        if (!item || !multiplier) fail("That's not for sale here.");
+        const amount = wholeNumber(data.amount, 999);
+        if (amount === 0) fail("Choose how many you want to buy with + and - first.");
+        pay(save, round1(item.price * multiplier * amount));
+        addItem(save, item.id, amount);
+        return {};
+    },
+
+    // data: { id }. Only delicacies.
+    "capitalShop.sell"(save, data) {
+        inIsland(save, "capital");
+        if (!isCapitalShopOpen(time(save))) fail("The shop is closed.");
+        const item = findItem(data.id);
+        if (!item || item.category !== "Delicacies") fail("We only buy delicacies.");
+        takeItem(save, item.id);
+        const price = round1(item.price * capitalShop.delicacyPercent / 100);
+        save.coins = round1(save.coins + price);
+        return { price };
+    },
+
+    "library.resonate"(save, data) {
+        inIsland(save, "capital");
+        const level = library.levels.find(rank => rank.level === Number(data.rank));
+        if (!level) fail("The library only knows rank I and II.");
+        const rod = findRod(save, data.rod);
+        if (getResonances(rod).length > 0) fail("This rod already has resonances. Use dissonance on it first.");
+        if (save.resonance < level.cost) fail("You need " + level.cost + " resonance for this rank.");
+        save.resonance = round1(save.resonance - level.cost);
+        rod.resonances = rollResonances(level);
+        return { resonances: rod.resonances };
+    },
+
+    "library.dissonance"(save, data) {
+        inIsland(save, "capital");
+        const rod = findRod(save, data.rod);
+        if (getResonances(rod).length === 0) fail("This rod has no resonances to remove.");
+        pay(save, library.dissonanceCost);
+        rod.resonances = [];
+        return {};
+    },
+
     "intro.seen"(save) {
         save.introSeen = true;
         return {};
@@ -852,7 +1074,16 @@ export const actions = {
         if (save.pending) fail("Finish what you're doing first.");
         const trip = destinations(line, save, save.island).find(stop => stop.town === data.to);
         if (!trip) fail("The " + line.name + " doesn't leave for there today.");
-        pay(save, line.ticket * trip.legs);
+        if (isNikkiTrip(save, line, trip)) {
+            const reward = mayorRewards.find(option => option.id === data.reward);
+            if (!reward) fail("Pick a reward from the mayor first.");
+            for (const [id, amount] of Object.entries(reward.items)) addItem(save, id, amount);
+            save.pantry.boarded = true;
+            save.pantry.told = true;
+            save.pantry.reward = reward.id;
+        } else {
+            pay(save, line.ticket * trip.legs);
+        }
         passDays(save, trip.days);
         save.timeIndex = 0;
         save.island = trip.town;

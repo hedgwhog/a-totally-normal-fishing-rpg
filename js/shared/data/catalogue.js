@@ -3,6 +3,8 @@ import { birds } from "./birds.js";
 import { ghost } from "./ghost.js";
 import { items } from "./items.js";
 import { routeChartPrice } from "./transport.js";
+import { trains, restaurants, capitalShop, marketDays } from "./areas/pantryIsles.js";
+import { pantryIslesName } from "./islands.js";
 
 export const mechanics = [
     { title: "Time", text: [
@@ -44,7 +46,7 @@ export const mechanics = [
         "Lost gear costs time: 1 day for every " + ghost.coinsPerDay + " coins it's worth. On top of that, " + ghost.valuePercent + "% of its worth, paid in coins, resonance or both mixed. The days pass when the ghost leaves.",
     ] },
     { title: "Traveling", show: save => (save.visited || []).includes("pointDriftt"), text: [
-        "There is a ferry system, so you can travel between areas. You need coins as payment.",
+        "The Blue Line Cooperation runs ferry lines between the areas, named after fish: Line Marlin (Freshwater Haven & Point Driftt) and Line Tuna (Freshwater Haven & the Capital). You need coins for a ticket.",
         "Every ferry office sells a route chart (" + routeChartPrice + " coins). It draws the route on your map and shows where the ferry is, but only on waters you know."
     ] },
     { title: "The map and your carrier pigeon", text: [

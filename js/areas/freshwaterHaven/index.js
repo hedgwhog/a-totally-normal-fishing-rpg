@@ -10,6 +10,7 @@ import { isRitualDay } from "../../shared/rules/schedule.js";
 import { tavern } from "./tavern.js";
 import { fortuneTeller } from "./fortuneTeller.js";
 import { mayor } from "./mayor.js";
+import "./niece.js";
 import { transportOffice } from "../common/transportOffice.js";
 
 const island = "freshwaterHaven";
@@ -31,4 +32,4 @@ addEvent(island, closedOnRitualDay(ramlaris));
 addEvent(island, closedOnRitualDay(tavern));
 addEvent(island, closedOnRitualDay(fortuneTeller));
 addEvent(island, closedOnRitualDay({ ...mayor, isOpen: () => true }));
-addEvent(island, transportOffice("ferryHaven", "ffc"));
+addEvent(island, transportOffice("ferryHaven"));

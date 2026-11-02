@@ -35,9 +35,40 @@ export const items = [
 
     { id: "theCharm", name: "The charm", category: "Special",
       info: "Caught at the annual ritual." },
+
+    // The District Isles
+    // Tableland: wheat & bread
+    { id: "udonFlour", name: "Bag of udon flour", category: "Ingredients", island: "tableland", price: 7, info: "From the Tablelands." },
+    { id: "ryeFlour", name: "Bag of rye flour", category: "Ingredients", island: "tableland", price: 6, info: "From the Tablelands." },
+    { id: "sourdough", name: "Jar of sourdough starter", category: "Ingredients", island: "tableland", price: 14, info: "From the Tablelands." },
+    { id: "panko", name: "Bag of panko", category: "Ingredients", island: "tableland", price: 5, info: "From the Tablelands." },
+    // Heathland: tea & flora
+    { id: "matcha", name: "Tin of matcha powder", category: "Ingredients", island: "heathland", price: 12, info: "From the Heathlands." },
+    { id: "jasmine", name: "Bundle of jasmine blossoms", category: "Ingredients", island: "heathland", price: 8, info: "From the Heathlands." },
+    { id: "heatherHoney", name: "Jar of heather honey", category: "Ingredients", island: "heathland", price: 10, info: "From the Heathlands." },
+    { id: "elderflowerSyrup", name: "Bottle of elderflower syrup", category: "Ingredients", island: "heathland", price: 7, info: "From the Heathlands." },
+    // Mangal: nuts, berries & seeds
+    { id: "bananas", name: "Bunch of bananas", category: "Ingredients", island: "mangal", price: 5, info: "From the Mangal." },
+    { id: "cashews", name: "Bag of cashews", category: "Ingredients", island: "mangal", price: 9, info: "From the Mangal." },
+    { id: "acaiBerries", name: "Pack of açaí berries", category: "Ingredients", island: "mangal", price: 11, info: "From the Mangal." },
+    { id: "blackSesame", name: "Pouch of black sesame", category: "Ingredients", island: "mangal", price: 6, info: "From the Mangal." },
+
+    // Delicacies: dishes from the restaurants in the Capital, after you finished their quest.
+    { id: "bananaBread", name: "Banana bread", category: "Delicacies", price: 40, info: "Banana bread" },
+    { id: "matchaBoba", name: "Matcha boba tea", category: "Delicacies", price: 40, info: "Matcha boba tea" },
+    { id: "acaiBowl", name: "Açaí bowl", category: "Delicacies", price: 45, info: "Açaí bowl" },
+    { id: "neonUdon", name: "Neon udon soup", category: "Delicacies", price: 60, info: "Neon udon soup" },
+    { id: "sesameBao", name: "Black sesame bao", category: "Delicacies", price: 50, info: "Black sesame bao" },
+    { id: "tastingMenu", name: "Twelve-course tasting menu", category: "Delicacies", price: 120, info: "Twelve-course tasting menu" },
+    { id: "jasmineRamen", name: "Jasmine ramen", category: "Delicacies", price: 55, info: "Jasmine ramen" },
+    { id: "matchaCronut", name: "Matcha cronut", category: "Delicacies", price: 45, info: "Matcha cronut" },
+    { id: "cashewDumplings", name: "Cashew dumplings", category: "Delicacies", price: 50, info: "Cashew dumplings" },
+    { id: "mochiIceCream", name: "Sesame mochi ice cream", category: "Delicacies", price: 45, info: "Sesame mochi ice cream" },
+    { id: "tofuKatsu", name: "Panko tofu katsu", category: "Delicacies", price: 50, info: "Panko tofu katsu" },
+    { id: "synthSushi", name: "Synth-sushi roll", category: "Delicacies", price: 65, info: "Synth-sushi roll" },
 ];
 
-export const itemCategories = ["Trinkets", "Bottles", "Supplies", "Special", "Fossils"];
+export const itemCategories = ["Trinkets", "Bottles", "Supplies", "Ingredients", "Delicacies", "Special", "Fossils"];
 
 export function findItem(id) {
     return items.find(item => item.id === id);

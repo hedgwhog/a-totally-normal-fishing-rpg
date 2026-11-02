@@ -15,4 +15,4 @@ addEvent(island, storageLockers);
 addEvent(island, resonanceStation);
 addEvent(island, inconvenienceStore);
 addEvent(island, storeFishBuyer);
-addEvent(island, transportOffice("ferryPointDriftt", "ffc"));
+addEvent(island, transportOffice("ferryPointDriftt"));

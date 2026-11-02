@@ -2,6 +2,7 @@ import { api, connect, getToken, setToken } from "./core/net.js";
 import { startState } from "./core/state.js";
 import { playTitle } from "./screens/titleScreen.js";
 import { startCastIn } from "./screens/castIn.js";
+import { playMenuMusic, stopMenuMusic } from "./screens/menuMusic.js";
 
 const screen = document.getElementById("startScreen");
 const panels = {
@@ -149,6 +150,7 @@ function play() {
     socket.once("state", async state => {
         startState(socket, { username: account.username, displayName: account.displayName, slot: slot }, state);
         screen.style.display = "none";
+        stopMenuMusic();
         await import("./game.js");
         loading.finish();
     });
@@ -159,3 +161,4 @@ document.getElementById("playButton").addEventListener("click", play);
 if (getToken()) showSaves();
 else showPanel("login");
 playTitle();
+playMenuMusic();

@@ -76,10 +76,72 @@ const hadalDeep = [
     { id: "marianaSnailfish", name: "Mariana Snailfish", price: 0, sellable: false, waters: ["hadal"], zone: 2, speed: 16, chance: 0.5, rarity: 12, resonance: 50, rounds: 16, hits: 16, barWidth: [12, 10, 11], fishSpeed: 95, times: allTimes },
 ];
 
+
+// ---------- The Pantry Isles ----------
+// Every island has its own fish, also in the same kind of water: shallow fish of a mangrove aren't the
+// shallow fish of Freshwater Haven. The last fish of every island is its hardest fish (the island quest wants it).
+const hardest = { zone: 2, speed: 18, chance: 0.3, rarity: 10, rounds: 7, hits: 7, barWidth: [12, 10, 11], fishSpeed: 100 };
+
+// Heathland: bog & coastal
+const heathland = [
+    // Bog
+    { id: "mudminnow", name: "Central Mudminnow", price: 3, waters: ["bog"], zone: 5, speed: 45, chance: 60, rarity: 0, resonance: 2, rounds: 3, hits: 2, barWidth: 20, bars: 1, fishSpeed: 240 },
+    { id: "weatherfish", name: "European Weatherfish", price: 3, waters: ["bog"], zone: 5, speed: 42, chance: 50, rarity: 0.5, resonance: 2, rounds: 3, hits: 3, barWidth: 20, bars: 1, fishSpeed: 220 },
+    { id: "crucianCarp", name: "Crucian Carp", price: 4, waters: ["bog"], zone: 4, speed: 42, chance: 40, rarity: 1, resonance: 2, rounds: 4, hits: 3, barWidth: 18, bars: 1, fishSpeed: 200 },
+    { id: "blackBullhead", name: "Black Bullhead", price: 5, waters: ["bog"], zone: 4, speed: 38, chance: 30, rarity: 1.5, resonance: 3, rounds: 4, hits: 3, barWidth: 18, bars: 1, fishSpeed: 190, times: ["evening", "night"] },
+    { id: "bowfin", name: "Bowfin", price: 9, waters: ["bog"], zone: 3, speed: 30, chance: 12, rarity: 3, resonance: 4, rounds: 5, hits: 4, barWidth: [16, 14], fishSpeed: 150 },
+    // Coastal
+    { id: "sandGoby", name: "Sand Goby", price: 3, waters: ["coastal"], zone: 5, speed: 45, chance: 55, rarity: 0, resonance: 2, rounds: 3, hits: 2, barWidth: 20, bars: 1, fishSpeed: 230 },
+    { id: "stickleback", name: "Three-spined Stickleback", price: 3, waters: ["coastal"], zone: 5, speed: 42, chance: 50, rarity: 0.5, resonance: 2, rounds: 3, hits: 3, barWidth: 20, bars: 1, fishSpeed: 210 },
+    { id: "flounder", name: "European Flounder", price: 5, waters: ["coastal"], zone: 4, speed: 40, chance: 35, rarity: 1, resonance: 3, rounds: 4, hits: 3, barWidth: 18, bars: 1, fishSpeed: 190 },
+    { id: "seaTrout", name: "Sea Trout", price: 10, waters: ["coastal"], zone: 3, speed: 30, chance: 10, rarity: 3, resonance: 5, rounds: 5, hits: 4, barWidth: [16, 14], fishSpeed: 145 },
+    // Hardest
+    { id: "europeanEel", name: "European Eel", price: 60, waters: ["bog", "coastal"], ...hardest, resonance: 25, times: ["evening", "night"] },
+];
+
+// Tableland: shallow & mountain
+const tableland = [
+    // Shallow
+    { id: "minnow", name: "Eurasian Minnow", price: 3, waters: ["shallow"], zone: 5, speed: 45, chance: 60, rarity: 0, resonance: 2, rounds: 3, hits: 2, barWidth: 20, bars: 1, fishSpeed: 240 },
+    { id: "gudgeon", name: "Gudgeon", price: 3, waters: ["shallow"], zone: 5, speed: 42, chance: 50, rarity: 0.5, resonance: 2, rounds: 3, hits: 3, barWidth: 20, bars: 1, fishSpeed: 220 },
+    { id: "rudd", name: "Rudd", price: 4, waters: ["shallow"], zone: 4, speed: 42, chance: 40, rarity: 1, resonance: 2, rounds: 4, hits: 3, barWidth: 18, bars: 1, fishSpeed: 200 },
+    { id: "chub", name: "European Chub", price: 5, waters: ["shallow"], zone: 4, speed: 38, chance: 30, rarity: 1.5, resonance: 3, rounds: 4, hits: 3, barWidth: 18, bars: 1, fishSpeed: 185 },
+    { id: "barbel", name: "Barbel", price: 9, waters: ["shallow"], zone: 3, speed: 30, chance: 12, rarity: 3, resonance: 4, rounds: 5, hits: 4, barWidth: [16, 14], fishSpeed: 150, times: ["evening", "night"] },
+    // Mountain
+    { id: "alpineBullhead", name: "Alpine Bullhead", price: 3, waters: ["mountain"], zone: 5, speed: 42, chance: 55, rarity: 0, resonance: 2, rounds: 3, hits: 3, barWidth: 20, bars: 1, fishSpeed: 220 },
+    { id: "brookTrout", name: "Brook Trout", price: 5, waters: ["mountain"], zone: 4, speed: 40, chance: 40, rarity: 1, resonance: 3, rounds: 4, hits: 3, barWidth: 18, bars: 1, fishSpeed: 195 },
+    { id: "grayling", name: "Arctic Grayling", price: 6, waters: ["mountain"], zone: 4, speed: 36, chance: 28, rarity: 1.5, resonance: 3, rounds: 4, hits: 4, barWidth: 18, bars: 1, fishSpeed: 175 },
+    { id: "arcticChar", name: "Arctic Char", price: 11, waters: ["mountain"], zone: 3, speed: 28, chance: 10, rarity: 3, resonance: 5, rounds: 5, hits: 4, barWidth: [16, 14], fishSpeed: 140 },
+    // Hardest
+    { id: "huchen", name: "Huchen", price: 65, waters: ["mountain"], ...hardest, resonance: 27 },
+];
+
+// Mangal: mangrove, shallow & coastal
+const mangal = [
+    // Mangrove
+    { id: "mudskipper", name: "Mudskipper", price: 3, waters: ["mangrove"], zone: 5, speed: 45, chance: 60, rarity: 0, resonance: 2, rounds: 3, hits: 2, barWidth: 20, bars: 1, fishSpeed: 240 },
+    { id: "archerfish", name: "Banded Archerfish", price: 4, waters: ["mangrove"], zone: 4, speed: 42, chance: 45, rarity: 0.5, resonance: 2, rounds: 4, hits: 3, barWidth: 18, bars: 1, fishSpeed: 210 },
+    { id: "mangroveSnapper", name: "Mangrove Snapper", price: 6, waters: ["mangrove"], zone: 4, speed: 36, chance: 30, rarity: 1.5, resonance: 3, rounds: 4, hits: 4, barWidth: 18, bars: 1, fishSpeed: 180, times: ["evening", "night"] },
+    { id: "snook", name: "Common Snook", price: 10, waters: ["mangrove"], zone: 3, speed: 30, chance: 12, rarity: 3, resonance: 5, rounds: 5, hits: 4, barWidth: [16, 14], fishSpeed: 145 },
+    // Shallow
+    { id: "mangroveKillifish", name: "Mangrove Killifish", price: 3, waters: ["shallow"], zone: 5, speed: 45, chance: 55, rarity: 0, resonance: 2, rounds: 3, hits: 2, barWidth: 20, bars: 1, fishSpeed: 230 },
+    { id: "sheepsheadMinnow", name: "Sheepshead Minnow", price: 3, waters: ["shallow"], zone: 5, speed: 42, chance: 50, rarity: 0.5, resonance: 2, rounds: 3, hits: 3, barWidth: 20, bars: 1, fishSpeed: 215 },
+    { id: "bonefish", name: "Bonefish", price: 9, waters: ["shallow"], zone: 3, speed: 32, chance: 14, rarity: 2.5, resonance: 4, rounds: 5, hits: 4, barWidth: [16, 14], fishSpeed: 135 },
+    // Coastal
+    { id: "barramundi", name: "Barramundi", price: 7, waters: ["coastal"], zone: 4, speed: 38, chance: 30, rarity: 1.5, resonance: 3, rounds: 4, hits: 4, barWidth: 18, bars: 1, fishSpeed: 180 },
+    { id: "giantTrevally", name: "Giant Trevally", price: 12, waters: ["coastal"], zone: 3, speed: 28, chance: 9, rarity: 3.5, resonance: 5, rounds: 5, hits: 5, barWidth: [16, 14], fishSpeed: 135 },
+    // Hardest
+    { id: "tarpon", name: "Atlantic Tarpon", price: 70, waters: ["mangrove", "coastal"], ...hardest, resonance: 30 },
+];
+
 export const fishByIsland = {
     freshwaterHaven: freshwaterHaven,
     pointDriftt: pointDriftt,
     hadalDeep: hadalDeep,
+    capital: [], // fishing is illegal in the Capital
+    heathland: heathland,
+    tableland: tableland,
+    mangal: mangal,
 };
 
 export const allFish = Object.values(fishByIsland).flat();

@@ -903,6 +903,11 @@ button.selectAllFish {
 }
 
 
+/* room for the scrollbar, so it doesn't cover the bars */
+#milestoneItem {
+    padding-right: 14px;
+}
+
 #milestoneItem h3 {
     margin: 12px 0 4px 0;
     text-decoration: underline;
@@ -1198,6 +1203,12 @@ button.selectAllFish {
     stroke-width: 1.5px;
     stroke-dasharray: 4 4;
     vector-effect: non-scaling-stroke;
+}
+
+/* the highway train tracks of the Pantry Isles: a solid double line, like rails */
+.mapRoutes polyline.mapTrack {
+    stroke-width: 2px;
+    stroke-dasharray: 7 2;
 }
 
 .mapShip {

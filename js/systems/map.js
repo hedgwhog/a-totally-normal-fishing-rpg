@@ -4,6 +4,10 @@ import { openPopup } from "../core/ui.js";
 import { transportLines } from "../shared/data/transport.js";
 import { linePosition } from "../shared/rules/transport.js";
 import { lineRoutes, dockIndex } from "./routes.js";
+import { trains } from "../shared/data/areas/pantryIsles.js";
+import { trainPosition } from "../shared/rules/pantryIsles.js";
+import { islandNames } from "../shared/data/islands.js";
+import { times } from "../shared/rules/schedule.js";
 // Which tiles are in data/world.js
 // Which tiles comes from where = save.map
 
@@ -150,7 +154,56 @@ async function drawRoutes(known) {
         polyline.setAttribute("points", run.map(toPixels).join(" "));
         layer.appendChild(polyline);
     }
+    drawTrains(known, layer);
     showStatus();
+}
+
+// The highway trains of the Pantry Isles: a straight track from the Capital to every island (if you have its tracker)
+const townPoint = id => ({
+    x: (towns[id].column - worldBounds.minColumn) * tileSize.width + towns[id].x,
+    y: (towns[id].row - worldBounds.minRow) * tileSize.height + towns[id].y,
+});
+
+function drawTrains(known, layer) {
+    const save = getState();
+    const owned = trains.lines.filter(line => save.pantry && save.pantry.trackers.includes(line.id));
+    for (const line of owned) {
+        const from = townPoint("capital");
+        const to = townPoint(line.island);
+        const steps = Math.ceil(Math.hypot(to.x - from.x, to.y - from.y));
+        const points = Array.from({ length: steps + 1 }, (_, i) => ({ x: from.x + (to.x - from.x) * i / steps, y: from.y + (to.y - from.y) * i / steps }));
+        let run = [];
+        const runs = [];
+        for (const point of points) {
+            if (tileKnown(known, point)) run.push(point);
+            else if (run.length) { runs.push(run); run = []; }
+        }
+        if (run.length) runs.push(run);
+        for (const part of runs) {
+            if (part.length < 2) continue;
+            const track = document.createElementNS(svgSpace, "polyline");
+            track.setAttribute("class", "mapTrack");
+            track.setAttribute("points", part.map(toPixels).join(" "));
+            layer.appendChild(track);
+        }
+
+        const position = trainPosition(line, times[save.timeIndex]);
+        const point = position.at ? townPoint(position.at) : { x: (from.x + to.x) / 2, y: (from.y + to.y) / 2 };
+        const goingRight = position.at ? true : townPoint(position.to).x >= townPoint(position.from).x;
+        const where = position.at ? "at the station of " + islandNames[position.at] : "on its way to " + islandNames[position.to];
+        if (!tileKnown(known, point)) {
+            shipLines.push(line.name + ": somewhere under the clouds.");
+            continue;
+        }
+        const train = document.createElement("div");
+        train.className = "mapShip mapTrain";
+        train.textContent = goingRight ? shipIcon.train[0] : shipIcon.train[1];
+        train.title = line.name;
+        train.style.left = (point.x + 0.5) * charWidth + "px";
+        train.style.top = (point.y + 0.5 - (position.at ? 1 : 0)) * lineHeight + "px";
+        world.appendChild(train);
+        shipLines.push(line.name + ": " + where + ".");
+    }
 }
 
 let shipLines = []; // status lines for the ships you can see
@@ -247,9 +300,10 @@ function setZoom(level, smooth = true) {
         scale = Math.min(view.clientWidth / worldWidth(), view.clientHeight / worldHeight());
     } else {
         scale = 1;
-        const here = towns[getState().island];
-        const hereTile = here && tileAt(here.column, here.row);
-        const town = hereTile && getState().map.includes(hereTile.id) ? here : { column: 0, row: 0 };
+        // the area you're in (a town, or a map tile of the area like the Hadal Deep), Freshwater Haven if neither
+        const island = getState().island;
+        const areaTile = mapTiles.find(tile => tile.island === island);
+        const town = towns[island] || areaTile || { column: 0, row: 0 };
         offsetX = view.clientWidth / 2 - (spotLeft(town.column) + tileWidth / 2);
         offsetY = view.clientHeight / 2 - (spotTop(town.row) + tileHeight / 2);
     }
