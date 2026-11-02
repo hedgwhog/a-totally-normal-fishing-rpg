@@ -74,6 +74,22 @@ button {
     text-align: center;
 }
 
+/* the menu music volume, in the top right of the start screen */
+.menuVolume {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+}
+
+.menuVolume input {
+    width: 60px;
+    accent-color: black;
+}
+
 #startScreen h1 {
     margin: 12px 0 8px 0;
     font-size: 26px;
