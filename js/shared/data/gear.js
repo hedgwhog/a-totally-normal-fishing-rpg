@@ -41,6 +41,22 @@ export const storeGear = [
     { id: "researchCloak", name: "Research cloak", price: 200, slot: "Cloak", effect: "Focus: 7.5%", stats: { slowBar: 7.5 } },
 ];
 
+// sold at the local markets of the Pantry Isles (data/areas/pantryIsles.js says which market sells what)
+export const pantryGear = [
+    // Heathland
+    { id: "rodPeat", name: "Peat fishing rod (Bog)", price: 90, slot: "Rod", effect: "Focus: 5%", stats: { slowBar: 5 }, waters: ["bog"] },
+    { id: "rodMoorland", name: "Moorland fishing rod (Bog & Coastal)", price: 180, slot: "Rod", effect: "Focus: 2.5% + Luck: +0.5", stats: { slowBar: 2.5, luck: 0.5 }, waters: ["bog", "coastal"] },
+    { id: "heatherHat", name: "Heather fishing hat", price: 80, slot: "Hat", effect: "Luck: +1 (bog)", stats: {}, waterStats: { bog: { luck: 1 } } },
+    // Tableland
+    { id: "rodRidge", name: "Ridge fishing rod (Mountain)", price: 100, slot: "Rod", effect: "Focus: 5%", stats: { slowBar: 5 }, waters: ["mountain"] },
+    { id: "rodMesa", name: "Mesa fishing rod (Shallow & Mountain)", price: 200, slot: "Rod", effect: "Focus: 2.5% + Luck: +0.5", stats: { slowBar: 2.5, luck: 0.5 }, waters: ["shallow", "mountain"] },
+    { id: "strawHat", name: "Straw fishing hat", price: 80, slot: "Hat", effect: "Luck: +1 (mountain)", stats: {}, waterStats: { mountain: { luck: 1 } } },
+    // Mangal
+    { id: "rodRoot", name: "Root fishing rod (Mangrove)", price: 110, slot: "Rod", effect: "Focus: 5%", stats: { slowBar: 5 }, waters: ["mangrove"] },
+    { id: "rodDelta", name: "Delta fishing rod (Mangrove, Shallow & Coastal)", price: 260, slot: "Rod", effect: "Focus: 2.5% + Luck: +0.5", stats: { slowBar: 2.5, luck: 0.5 }, waters: ["mangrove", "shallow", "coastal"] },
+    { id: "leafHat", name: "Leaf fishing hat", price: 80, slot: "Hat", effect: "Luck: +1 (mangrove)", stats: {}, waterStats: { mangrove: { luck: 1 } } },
+];
+
 // you get it from the research facility when you arrive on Point Driftt. It belongs to them (see the contract).
 export const deepRod = {
     id: "rodDeep", name: "Deep fishing rod (Ocean & Hadal)", slot: "Rod", effect: "",
@@ -60,7 +76,7 @@ export const charmCloak = {
 };
 
 // every piece of gear in the game. New gear must be in here, or it can't be loaded from a save.
-export const allGear = [...Object.values(starterGear), ...marketplaceGear, ...storeGear, charmCloak, luckRod, deepRod];
+export const allGear = [...Object.values(starterGear), ...marketplaceGear, ...storeGear, ...pantryGear, charmCloak, luckRod, deepRod];
 
 export const findGear = id => allGear.find(gear => gear.id === id);
 export const isStarterGear = id => Object.values(starterGear).some(gear => gear.id === id);

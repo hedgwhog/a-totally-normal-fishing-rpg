@@ -3,6 +3,7 @@ import { mapTiles } from "./world.js";
 import { researcherRounds, mayor } from "./quests.js";
 import { backpackUpgrades } from "./merchant.js";
 import { contract, lockers, station } from "./areas/pointDriftt.js";
+import { restaurants, trains, islandQuests } from "./areas/pantryIsles.js";
 
 const share = (have, total) => (total > 0 ? Math.min(1, have / total) : 1);
 const done = yes => (yes ? 1 : 0);
@@ -33,6 +34,16 @@ export const areaTasks = {
         { name: "Buy every storage locker", progress: save => share((save.lockers || []).length, lockers.prices.length) },
         { name: "Upgrade the resonance station", progress: save => share(save.driftt ? save.driftt.rankResonations : 0, station.rodsWanted) },
     ],
+    capital: [
+        { name: "Bring Nikki to the Capital", progress: save => done(save.pantry && save.pantry.nikki) },
+        { name: "Help every restaurant", progress: save => share(restaurants.filter(restaurant => save.pantry && (save.pantry.restaurants[restaurant.id] || {}).done).length, restaurants.length) },
+        { name: "Buy every train tracker", progress: save => share(save.pantry ? save.pantry.trackers.length : 0, trains.lines.length) },
+    ],
+    ...Object.fromEntries(Object.keys(islandQuests).map(island => [island, [
+        { name: "Catch every fish", progress: save => fishFound(save, island) },
+        { name: "Find every map piece", progress: save => tilesFound(save, island) },
+        { name: "Bring the hardest fish", progress: save => done(save.pantry && save.pantry.quests[island]) },
+    ]])),
     hadalDeep: [
         { name: "Catch every hadal fish", progress: save => fishFound(save, "hadalDeep") },
         { name: "Find the map of the Hadal Deep", progress: save => tilesFound(save, "hadalDeep") },

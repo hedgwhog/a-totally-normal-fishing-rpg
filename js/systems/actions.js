@@ -10,6 +10,7 @@ import { closeAllPopups } from "../core/ui.js";
 import { formatNumber } from "../core/helpers.js";
 
 function nothingToCatch(reason, rod) {
+    if (reason === "illegal") return say("Fishing is illegal in the Capital. A guard is already looking at your rod...\n\nTake the train to one of the islands to fish.");
     if (reason === "quiet") return say("The water here is strangely quiet. Nothing bites yet.");
     if (reason === "night") return say("It's pitch dark. Your " + rod + " can't catch anything at night.\n\nYou should go to sleep.");
     if (reason === "notNow") return say("Nothing bites on your " + rod + " right now.");

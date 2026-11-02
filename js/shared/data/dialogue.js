@@ -1,4 +1,5 @@
 export const characters = {
+    // Freshwater Haven
     researcher: { name: "Professor Sam" },
     sailor: { name: "Old sailor Pete" },
     keeper: { name: "Mr. Moon" },
@@ -7,26 +8,104 @@ export const characters = {
     fishmonger: { name: "Fishmonger Finn" },
     chef: { name: "Pierre Crumble" },
     fortuneTeller: { name: "Madame Crystal" },
-    boatman: { name: "Kaya" },
     mayor: { name: "Mayor Navi" },
     altarKeeper: { name: "Mr/Miss. ?" },
+
+    // Point Driftt
+    boatman: { name: "Kaya" },
     director: { name: "Dr. Director" },
     ferryClerk: { name: "Ticket Tim" },
     lockerKeeper: { name: "Mr. Bartholomew Lock" },
     stationResearcher: { name: "Dr. Sparky" },
     shopkeeper: { name: "Miss Lovett" },
     ghost: { name: "Ghost of Noy" },
+
+    // The District Isles
+    nikki: { name: "Nikki" },
+    conductor: { name: "Conductor" },
+    librarian: { name: "Librarian Folio" },
+    capitalShopkeeper: { name: "David" },
+    heathMarket: { name: "Hazel" },
+    tableMarket: { name: "Mae" },
+    mangalMarket: { name: "Eleanor" },
+    heathWarden: { name: "Warden" },
+    miller: { name: "Otto" },
+    ranger: { name: "Ranger Maria" },
 };
 
 export const lines = {
-    // the Ghost of Noy (js/systems/ghost.js), visits in the night before every 101st day
+    // nice of the mayor
+    niece: {
+        ask: [
+            { who: "mayor", text: "Ah, welcome back! I heard what you did for the research facility on Point Driftt. Amazing!" },
+            { who: "mayor", text: "Because of that, we finally have a ferry line to The District Isles. (Line Tina)" },
+            { who: "mayor", text: "Now, I have a favour to ask. My niece Nikki wants to move there. Our family lives on the islands, and because of the ferry, she can finally live there." },
+            { who: "mayor", text: "But I'm drowning in work at the town hall, I can't bring her myself. Would you go with her?" },
+            { who: "mayor", text: "I'll pay both your tickets. And you'll get a reward too. You can pick it when you board." },
+            { who: "mayor", text: "Line Tuna leaves on day {day}. Nikki and I will wait for you at the Blue Line Cooperation office." },
+        ],
+        atFerry: "There you are! Nikki is all packed. Here are your tickets.\n\nAnd as promised, a reward. What would you like?",
+        notYet: ["No rush. We'll wait for the next one."],
+        goodbye: [
+            { who: "nikki", text: "Bye uncle Navi! I'll write you!" },
+            { who: "mayor", text: "Take care of her!" },
+        ],
+    },
+    // Nikki at arrival
+    nikkiArrival: [
+        { who: "", text: "After 7 days at sea, the ferry docks at the Capital. Tall buildings everywhere, and everything smells like food." },
+        { who: "nikki", text: "We're here! The Capital! It is even more amazing then showed in the textbooks." },
+        { who: "nikki", text: "Okay, since we are going to part ways, I should tell you about The District Isles."},
+        { who: "nikki", text: "The District Isles are three islands around the Capital. The Heathland, Tableland and Mangal. All with their own food culture." },
+        { who: "nikki", text: "Heathland is the smallest. Full of heather, tea and flowers. Little amount of fish, bad waters." },
+        { who: "nikki", text: "Tableland is the middle one. Flat plateaus of wheat and rice. From rivers to mountains." },
+        { who: "nikki", text: "Mangal is the biggest. Mangroves everywhere, with nuts, berries and seeds." },
+        { who: "nikki", text: "The islands mostly keep to themselves. Everything goes through the Capital. The highway trains are free: they leave here in the morning and come back from the islands in the evening." },
+        { who: "nikki", text: "And don't even think about fishing here. It's illegal in the Capital." },
+        { who: "nikki", text: "The restaurants here always need ingredients from the islands. Every island has their local market where you can buy them." },
+        { who: "nikki", text: "Here, take my map of the Capital. I know it by heart anyway." },
+        { who: "nikki", text: "Thanks for bringing me, really. If you take the ferry back, say hi to uncle Navi for me!" },
+    ],
+    conductor: {
+        greeting: ["The highway trains are always free. Mind the gap."],
+        fromCapital: "The trains to the islands leave in the morning. You'll be there in the afternoon.",
+        fromIsland: "The train to the Capital leaves in the evening. You'll be there at night.",
+        trackerBought: ["Here's the tracker. It shows the line and the train on your map."],
+    },
+    librarian: { greeting: ["Shh. The library is small, but it's always open. We only know rank I and II, I'm afraid."] },
+    capitalShopkeeper: {
+        greeting: ["Supplies and Bottles! And if you ever find a delicacy, I'm buying."],
+        noDelicacy: ["Fish? Ew. I only buy delicacies."],
+    },
+    marketKeeper: {
+        greeting: ["Fresh from the island! Rods, hats, trinkets, and the best ingredients you'll find."],
+        sellOffer: "Let me see...\n{list}\nI'll give you {price} for those.",
+        nothingSelected: ["Pick the fish you want to sell with + and - in your fish tab first."],
+    },
+    // the island quests. {fish} = the hardest fish of the island
+    heathWarden: {
+        ask: [{ who: "heathWarden", text: "Thirty years I've walked these moors. Thirty years I've tried to catch the {fish} in the bog. It only comes out in the evening. Bring me one, and I'll give you my map of the moors." }],
+        done: [{ who: "heathWarden", text: "Look at that. After all these years. Here, my map. You've earned it." }],
+        after: ["The moors are quiet today. Good fishing weather."],
+    },
+    miller: {
+        ask: [{ who: "miller", text: "See those cliffs? Up in the mountain streams lives a {fish}. Broke three of my rods. Bring me one, and the map of Tableland is yours." }],
+        done: [{ who: "miller", text: "Ha! You got it! Here, take my map." }],
+        after: ["Thanks to you, I'm finally sleeping again."],
+    },
+    ranger: {
+        ask: [{ who: "ranger", text: "There's one fish in these waters I never caught: the {fish}. It jumps higher than the mangroves. Catch one and bring it here, and I'll give you my map of Mangal." }],
+        done: [{ who: "ranger", text: "Wow! Here, my map. You know these waters better than me now." }],
+        after: ["Watch your step on the roots."],
+    },
+
     ghost: {
         arrival: [
             { who: "", text: "The night goes cold. Something pale floats out of the dark..." },
-            { who: "ghost", text: "Noooy... I am the Ghost of Noy. I keep what the living let go of." },
-            { who: "ghost", text: "These were yours, once. Want them back? It will cost you time... and a little something more." },
+            { who: "ghost", text: "I am the Ghost of Noy. I keep what the living let go of." },
+            { who: "ghost", text: "These were yours, once. Want them back? It will cost you time. And a little something more." },
         ],
-        welcome: ["Take your time. Well... I'll take your time."],
+        welcome: ["Take your time. Well. I'll take your time."],
         bought: ["It's yours again. The days are on your tab."],
         leaveNothing: ["Nothing? Then I'll fade away. Until the next 101st day..."],
         leavePaid: ["The deal is done. {days} days slip away while you sleep..."],
@@ -303,11 +382,14 @@ export const lines = {
         letter: ["A pigeon lands next to you with a letter from {friend}!{gifts}\nRead it in Mail."],
     },
     ferryClerk: {
-        notToday: ["The next Blue Line ferry to {place} leaves on day {day}, in {wait} days. A ticket is {price}, and the crossing takes {days} days.\n\nThe {chart} is {chartPrice}, if you want to follow the ferry on your map."],
-        askBoard: "The Blue Line ferry to {place} leaves today!\nA ticket is {price}. The crossing takes {days} days.\n\nAll aboard?",
+        // the office lists every line that stops here with lineInfo, then asks askBoard (a ferry leaves today) or notToday
+        welcome: "Welcome to the Blue Line Cooperation!",
+        lineInfo: "{line} to {place}: leaves on day {day} ({when}). A ticket is {price}, the crossing takes {days} days.",
+        notToday: ["No ferry leaves today. A route chart ({chartPrice}) shows a line and its ferry on your map."],
+        askBoard: "A ferry leaves today! All aboard?",
         notNow: ["Suit yourself. The next one is a long wait."],
         noCoins: ["No ticket, no trip. It's {price}."],
-        arrived: [{ who: "", text: "After {days} days at sea, the ferry docks at {place}." }],
+        arrived: [{ who: "", text: "After {days} days at sea, the {line} docks at {place}." }],
         chartBought: ["Here's the {chart}. It shows our route on your map, and where the ferry is. As far as you know those waters, at least."],
     },
 };

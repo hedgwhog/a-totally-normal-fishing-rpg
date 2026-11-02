@@ -6,12 +6,16 @@ import { lines } from "../shared/data/dialogue.js";
 import { ghostPrice, ghostStock } from "../shared/rules/ghost.js";
 import { getState, onState, act, localKey } from "../core/state.js";
 import { say, pick, fill, whenFree, isFree } from "../core/dialogue.js";
-import { openPopup } from "../core/ui.js";
+import { openPopup, ensurePopup } from "../core/ui.js";
 import { addText, addButton, round1, formatNumber } from "../core/helpers.js";
 import { handlePendingGear } from "../player/gear.js";
 
 const ghost = "ghost";
-const popup = document.getElementById("ghostDisplay");
+const popup = ensurePopup("ghostDisplay", `
+    <button id="ghostLeave" class="popupClose">Leave</button>
+    <h1>Ghost of Noy</h1>
+    <h4>Visits in the night before every 101st day. Pays in days, and coins and/or resonance.</h4>
+    <div id="ghostItem" class="popupBody"></div>`);
 const page = document.getElementById("ghostItem");
 let busy = false;
 

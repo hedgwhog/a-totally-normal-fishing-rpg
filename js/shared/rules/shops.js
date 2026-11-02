@@ -1,8 +1,11 @@
 import { allGear, marketplaceGear, storeGear, findGear } from "../data/gear.js";
+import { markets } from "../data/areas/pantryIsles.js";
 
 const ownShop = {};
 marketplaceGear.forEach(gear => ownShop[gear.id] = "freshwaterHaven");
 storeGear.forEach(gear => ownShop[gear.id] = "pointDriftt");
+// the local markets of the Pantry Isles (the shop id is the island id)
+for (const [island, market] of Object.entries(markets)) market.gear.forEach(id => ownShop[id] = island);
 
 export function shopOf(save, id) {
     const sold = save.soldGear || {};
