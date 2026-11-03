@@ -104,6 +104,11 @@ export function loadSave(userId, slot) {
 
 export function writeSave(userId, slot, save) {
     const account = getAccount(userId);
+    // A brand new save (the first one, or after deleting a save) starts with the account's friends, blocked players
+    // and letters. Without this, its empty lists would overwrite the account's lists, and your friends would be gone.
+    if (!saves.get(saveKey(userId, slot))) {
+        for (const field of accountFields) save[field] = account[field];
+    }
     const onDisk = { ...save };
     for (const field of accountFields) {
         if (save[field]) account[field] = save[field];
