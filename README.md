@@ -1,6 +1,6 @@
 # A totally normal fishing rpg
 
-**Play it online:** [a-totally-normal-fishing-rpg.hedgwhog.com](https://a-totally-normal-fishing-rpg.hedgwhog.com/)
+**Play it online:** [Just a Little Undercurrent of Noy](https://undercurrent.hedgwhog.com/)
 
 ## Run it on your own computer 
 By running this on your own computer, VoIP only works for people on the same network.
