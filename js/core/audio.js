@@ -1,10 +1,12 @@
 import { getOstVolume, onVolumeChange } from "./settings.js";
+import { musicFile, useBackupOnError } from "./musicFiles.js";
 
+// the track for every time of day: a name in ost/, without the extension (see musicFiles.js)
 const tracks = {
-    morning: "ost/night-ost.wav",
-    afternoon: "ost/night-ost.wav",
-    evening: "ost/night-ost.wav",
-    night: "ost/night-ost.wav",
+    morning: "night-ost",
+    afternoon: "night-ost",
+    evening: "night-ost",
+    night: "night-ost",
 };
 
 const player = new Audio();
@@ -19,8 +21,9 @@ onVolumeChange(volume => {
     player.volume = volume;
 });
 
+useBackupOnError(player, () => tryPlay());
 player.addEventListener("error", () => {
-    console.warn("Could not load the music file:", currentTrack);
+    if (!(player.getAttribute("src") || "").endsWith(".ogg")) console.warn("Could not load the music file:", player.getAttribute("src"));
 });
 
 function tryPlay() {
@@ -50,7 +53,7 @@ export function playMusicFor(time) {
 
     if (track !== currentTrack) {
         currentTrack = track;
-        player.src = track;
+        player.src = musicFile(track);
     }
     if (player.paused) tryPlay();
 }
@@ -58,7 +61,7 @@ export function playMusicFor(time) {
 export function refreshMusic() {
     if (!currentTrack) return;
     player.pause();
-    player.src = currentTrack;
+    player.src = musicFile(currentTrack);
     player.load();
     tryPlay();
 }

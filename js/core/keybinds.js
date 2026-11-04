@@ -9,12 +9,16 @@ export const defaultKeys = {
     back: "Backspace",
     reel: "Space",
     backpack: "Tab",
+    sleep: "KeyQ",
+    rest: "KeyE",
 };
 export const keyNames = {
     continue: "Continue dialogue",
     back: "Previous line",
     reel: "Reel (fishing)",
     backpack: "Open backpack",
+    sleep: "Sleep",
+    rest: "Rest",
 };
 for (let index = 1; index <= maxSlots; index++) {
     defaultKeys["slot" + index] = "Digit" + index;
@@ -39,11 +43,13 @@ export function setKey(action, code) {
     }
     keys[action] = code;
     save("saveKeybinds", keys);
+    window.dispatchEvent(new Event("keybindsChanged"));
 }
 
 export function resetKeys() {
     keys = { ...defaultKeys };
     save("saveKeybinds", keys);
+    window.dispatchEvent(new Event("keybindsChanged"));
 }
 
 // a readable name for a key codes
