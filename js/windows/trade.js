@@ -1,8 +1,10 @@
+import { listenForNotices } from "../core/notice.js";
 import { connect } from "../core/net.js";
 import { showOfferForm, offerText } from "./offerForm.js";
 
 const params = new URLSearchParams(location.search);
 const socket = connect("trade", { sessionId: params.get("id") });
+listenForNotices(socket); // emergency notices from the admins
 const el = id => document.getElementById(id);
 let formShown = false;
 

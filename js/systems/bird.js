@@ -1,7 +1,7 @@
 import { birds } from "../shared/data/birds.js";
 import { findItem } from "../shared/data/items.js";
 import { discoverableTiles, compass } from "../shared/rules/birds.js";
-import { getState, onState, act } from "../core/state.js";
+import { getState, onState, act, multiplayerAllowed } from "../core/state.js";
 import { showArt } from "../core/ascii.js";
 import { say, askYesNo } from "../core/dialogue.js";
 import { openPopup } from "../core/ui.js";
@@ -107,7 +107,8 @@ function showPopup() {
         button.title = left > 0 ? "New waters to find in the " + direction : "Nothing left to find in the " + direction + " from here";
     }
     actions.appendChild(directions);
-    addButton(actions, "Send out with a letter (" + birds.mailFood + " birdfood)", () => openMail("mailWrite"));
+    // players under 16 play alone: their pigeon only explores
+    if (multiplayerAllowed()) addButton(actions, "Send out with a letter (" + birds.mailFood + " birdfood)", () => openMail("mailWrite"));
     page.appendChild(actions);
 
     const note = document.createElement("p");

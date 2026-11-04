@@ -217,3 +217,32 @@ footer {
     font-weight: bold;
     white-space: pre;
 }
+/* reports (js/windows/chat.js) */
+.reportButton {
+    padding: 0 4px;
+    font-size: 10px;
+}
+
+.reportCover {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.reportForm {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: calc(100% - 40px);
+    max-width: 360px;
+    background: white;
+}
+
+.reportForm textarea {
+    font-family: inherit;
+    resize: vertical;
+}

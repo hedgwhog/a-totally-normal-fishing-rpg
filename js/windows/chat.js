@@ -1,7 +1,10 @@
 import { connect } from "../core/net.js";
 import { islandNames } from "../shared/data/islands.js";
+import { gameRules } from "../shared/data/legal.js";
+import { listenForNotices } from "../core/notice.js";
 
 const socket = connect("chat");
+listenForNotices(socket); // emergency notices from the admins
 
 function el(id) {
     return document.getElementById(id);
@@ -79,7 +82,18 @@ function showMessage(message) {
     });
 
     const name = document.createElement("b");
-    name.textContent = message.name + ":";
+    name.textContent = (message.title ? "[" + message.title + "] " : "") + message.name + ":";
+    line.dataset.id = message.id;
+    // the Report button comes first, in front of the date
+    if (!me || message.userId !== me.id) {
+        const report = document.createElement("button");
+        report.type = "button";
+        report.className = "reportButton";
+        report.textContent = "Report";
+        report.title = "Report this message to the admins";
+        report.addEventListener("click", () => openReport({ messageId: message.id, name: message.name, text: message.text }));
+        line.append(report, " ");
+    }
     line.append(time + " ", name, message.text);
     box.appendChild(line);
     box.scrollTop = box.scrollHeight;
@@ -96,7 +110,88 @@ socket.on("area:enter", data => {
     el("messages").innerHTML = "";
     data.messages.forEach(showMessage);
     leaveVoice();
+    setChatAllowed(data.chatAllowed !== false, data.chatAge);
+    if (data.muted) showMuted(data.muted);
 });
+
+// players under 16 can't use the chat: no messages, no voice (the players list, invites and blocking still work)
+function setChatAllowed(allowed, age) {
+    el("chatForm").style.display = allowed ? "" : "none";
+    el("voiceCreate").style.display = allowed ? "" : "none";
+    if (!allowed) addText(el("messages"), "The chat is for players aged " + age + " and older. You can still add friends, trade and duel in the Players tab.", "muted");
+}
+
+function showMuted(text) {
+    showError(text);
+    el("chatInput").disabled = true;
+    el("sendButton").disabled = true;
+}
+
+socket.on("chat:muted", text => {
+    hangUp();
+    leaveVoice(false);
+    showMuted(text);
+});
+
+// an admin removed a message
+socket.on("chat:removed", ({ id }) => {
+    const line = el("messages").querySelector('.message[data-id="' + Number(id) + '"]');
+    if (line) line.remove();
+});
+
+// ---------- Reports ----------
+// a form over the chat window: what rule was broken, and what happened. The admins see the chat around a reported message.
+function openReport(target) {
+    const cover = document.createElement("div");
+    cover.className = "reportCover";
+    const form = document.createElement("form");
+    form.className = "reportForm box";
+    const title = document.createElement("h3");
+    title.textContent = "Report " + target.name;
+    form.appendChild(title);
+    if (target.text) addText(form, "\"" + target.text + "\"", "muted");
+
+    const select = document.createElement("select");
+    const pick = document.createElement("option");
+    pick.value = "";
+    pick.textContent = "Which rule? (optional)";
+    select.appendChild(pick);
+    for (const rule of gameRules) {
+        const option = document.createElement("option");
+        option.value = rule.number;
+        option.textContent = rule.number + ". " + rule.title;
+        select.appendChild(option);
+    }
+    const details = document.createElement("textarea");
+    details.maxLength = 500;
+    details.rows = 4;
+    details.placeholder = "What happened? (optional if you picked a rule)";
+    addText(form, "Is someone in danger? Contact the police or emergency services first.", "muted");
+
+    const buttons = document.createElement("div");
+    buttons.className = "row";
+    const send = document.createElement("button");
+    send.type = "submit";
+    send.textContent = "Send report";
+    addButton(buttons, "Cancel", () => cover.remove());
+    buttons.appendChild(send);
+    form.append(select, details, buttons);
+
+    form.addEventListener("submit", async event => {
+        event.preventDefault();
+        const result = await socket.emitWithAck("report:send", {
+            messageId: target.messageId || null,
+            playerId: target.playerId || null,
+            rule: Number(select.value) || 0,
+            details: details.value,
+        });
+        if (result.error) return showError(result.error);
+        cover.remove();
+        showError("Thanks! Your report was sent to the admins.");
+    });
+    cover.appendChild(form);
+    document.body.appendChild(cover);
+}
 
 socket.on("chat:message", showMessage);
 
@@ -139,7 +234,7 @@ function showPlayers() {
     for (const player of lastPlayers) {
         const row = document.createElement("div");
         row.className = "row line";
-        let label = player.name;
+        let label = (player.title ? "[" + player.title + "] " : "") + player.name;
         if (player.inVoice) label += " (in voice)";
         if (me && player.id === me.id) label += " (you)";
         addText(row, label);
@@ -154,6 +249,7 @@ function showPlayers() {
             }
             if (isBlocked) addButton(buttons, "Unblock", () => setBlocked(player, false));
             else addButton(buttons, "Block", () => setBlocked(player, true));
+            addButton(buttons, "Report", () => openReport({ playerId: player.id, name: player.name }));
             row.appendChild(buttons);
         }
         list.appendChild(row);

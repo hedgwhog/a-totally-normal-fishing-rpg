@@ -1,0 +1,97 @@
+Just a Little Undercurrent of Noy
+
+(previously named "A normal fishing rpg")
+
+Copyright (c) 2026 Lucas Bouwmeester ("hedgwhog") Sweden. All rights reserved. Contact: hedgwhog@gmail.com
+
+THIS IS NOT AN OPEN SOURCE LICENSE.
+
+The source code of this game is public so people can look at it learn from it and help improve it. Making it public does not give anyone the right to use it in ways than the ones listed below.
+
+1. WHAT THIS LICENSE COVERS
+
+The source code, both server and client files.
+
+The ASCII art, maps, fish, items, characters, story, dialogue and other written content.
+
+The game design, the games name (including all its variations) and any logo.
+
+The music located in the ost/ folder (see section 5 it belongs to its creator).
+
+Everything, except the music and third‑party software described in section 6 belongs to the copyright holder.
+
+2. WHAT YOU MAY DO
+
+a. View. Read the source code on GitHub.
+
+B. Fork the repository on GitHub following GitHubs Terms of Service.
+
+C. Download the code. Run the game on your own computer for personal use only to test, learn or contribute (see section 4).
+
+D. Play the game at its site following the Terms of Service, Privacy Policy and Rules.
+
+E. Create videos, streams, screenshots and fan art of yourself playing the game provided you do not use the music outside of gameplay footage (see section 5) and you do not claim ownership or official status.
+
+3. WHAT YOU MAY NOT DO
+
+a. Host. Run the game or any modified version on a server, website or service that others can access (even for free or just for friends).
+
+B. Use the music outside of playing this game. Do not place the music in games, projects, videos, streams or other content as standalone music and do not copy, share or upload the music files.
+
+C. Use the art, texts, characters or any other part of the game for profit. Do not sell it include it in products or use it in any money‑making endeavor.
+
+D. Copy any art, maps, characters, story or texts into other projects.
+
+E. Sell, rent, lend, sublicense or distribute the game or any part of it.
+
+F. Use the game’s name, its name or its logo for anything else or in a way that makes something appear official or connected to the game.
+
+G. Remove, alter or obscure any copyright, trademark, license or other notices in or on the game.
+
+H. Use the game, its code, art, texts or music to train intelligence or machine learning models.
+
+4. CONTRIBUTIONS
+
+You may suggest changes via issues. Pull requests on GitHub. By submitting a contribution you agree that:
+
+It is your work or you have permission to submit it.
+
+The copyright holder may use, modify and publish it as part of the game of charge forever under this license or any future license of the game.
+
+You do not receive any rights to the rest of the game by contributing.
+
+5. THE MUSIC (OST)
+
+The music in the ost/ folder was created by SilteTheFloof (https://github.com/siltefluff-glitch) and is used in the game with permission. The maker owns all rights to the music. The music may only be heard as part of the game. Videos and streams showing the game with the music are permitted. Any other use requires written permission, from the music maker.
+
+6. THIRD-PARTY SOFTWARE
+
+The Game uses software made by others. That software is NOT covered by this license:
+
+software keeps its license, which you must follow when you use it.
+
+- Express (https://expressjs.com). MIT License
+
+- Socket.IO (https://socket.io). MIT License
+
+- and the packages that these depend on (installed by npm, each with its license in node_modules/). The license texts and copyright notices of these packages are included in their folders in node_modules/ and in the files they come with.
+
+7. ENDING
+
+If you break this license your permission under section two ends automatically. You must then stop using the Game. Delete any copies you have.
+
+8. NO WARRANTY
+
+The Game is provided 'as is without any warranty of any kind expressed or implied including but not limited to warranties of merchantability fitness for a purpose and non-infringement.
+
+9. LIABILITY
+
+far as the law allows the copyright holder is not liable for any damage or loss caused by using or not being able to use the Game or its code. This does not limit any rights you have by law that cannot be limited for example as a consumer in the European Union.
+
+10. LAW
+
+This license is governed by law.
+
+11. PERMISSION
+
+Want to do something that this license does not allow (, for example host a copy use the music or use the art)? Ask first: hedgwhog@gmail.com. Permission only counts when it is given in writing.

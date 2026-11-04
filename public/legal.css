@@ -1,0 +1,33 @@
+/* the rules, terms of service and privacy policy pages */
+body {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 16px;
+    font-family: monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    color: black;
+    background: white;
+}
+
+h1 {
+    font-size: 20px;
+}
+
+h2 {
+    margin-top: 22px;
+    font-size: 15px;
+    text-decoration: underline;
+}
+
+a {
+    color: black;
+}
+
+nav {
+    margin-bottom: 12px;
+}
+
+.updated {
+    color: #555;
+}

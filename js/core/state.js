@@ -31,6 +31,11 @@ function setState(next) {
     listeners.forEach(listener => listener(state, previous));
 }
 
+// players under 16 play alone: no chat, mail, friends, trades or duels (the server checks this too)
+export function multiplayerAllowed() {
+    return Boolean(session && session.multiplayer !== false);
+}
+
 export function startState(gameSocket, info, firstState) {
     socket = gameSocket;
     session = info;

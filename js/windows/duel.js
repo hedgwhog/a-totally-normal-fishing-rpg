@@ -1,3 +1,4 @@
+import { listenForNotices } from "../core/notice.js";
 import { connect } from "../core/net.js";
 import { showOfferForm, offerText } from "./offerForm.js";
 import { positions } from "../shared/rules/duel.js";
@@ -6,6 +7,7 @@ import { isKey, keyHint } from "../core/keybinds.js";
 
 const params = new URLSearchParams(location.search);
 const socket = connect("duel", { sessionId: params.get("id") });
+listenForNotices(socket); // emergency notices from the admins
 const el = id => document.getElementById(id);
 
 let stakeFormShown = false;

@@ -16,8 +16,13 @@
         <!-- login/signup/hero screen -->
             <div id="startScreen">
                 <!-- the volume of the menu music (js/screens/menuMusic.js), separate from the music setting in the game -->
-                <label class="menuVolume">OST <input id="menuVolumeSlider" type="range" min="0" max="1" step="0.05"></label>
-                <h1>A totally normal fishing rpg</h1>
+                <label class="menuVolume"><input id="menuVolumeSlider" type="range" min="0" max="1" step="0.05">OST</label>
+                <!-- top left: your account, and the admin panel for admins (js/main.js) -->
+                <div class="menuButtons">
+                    <button id="accountButton" type="button">Account</button>
+                    <button id="adminButton" type="button">Admin</button>
+                </div>
+                <h1>Just a Little Undercurrent of Noy</h1>
 
                 <!-- log in -->
                 <div class="startPanel" id="loginPanel">
@@ -35,14 +40,71 @@
                 <div class="startPanel" id="signupPanel">
                     <h3>Sign up</h3>
                     <form id="signupForm">
-                        <label>Username <input id="signupUsername" autocomplete="username" required></label>
-                        <label>Display name <input id="signupDisplayName" required></label>
+                        <label>Username <input id="signupUsername" autocomplete="off" required></label>
+                        <label>Display name <input id="signupDisplayName" autocomplete="off" required></label>
                         <label>Password <input id="signupPassword" type="password" autocomplete="new-password" required></label>
                         <label>Repeat password <input id="signupPassword2" type="password" autocomplete="new-password" required></label>
+                        <p class="startNote passwordNote">Password: at least 8 characters, with a capital letter, a small letter and a number.</p>
+                        <label>Date of birth <input id="signupBirthDate" type="date" required></label>
+                        <!-- only bots fill in this field: people never see it -->
+                        <label class="trapField" aria-hidden="true">Website <input id="signupWebsite" tabindex="-1" autocomplete="off"></label>
+                        <label class="checkLabel"><input id="signupTerms" type="checkbox" required>
+                            <span>I accept the <a href="terms.html" data-legal="terms">Terms of Service</a>
+                            and the <a href="privacy.html" data-legal="privacy">Privacy Policy</a>.</span></label>
                         <button type="submit">Sign up</button>
                     </form>
                     <p class="startMessage"></p>
                     <button class="startLink" id="toLogin" type="button">Already have an account? Log in</button>
+                </div>
+
+                <!-- accounts made before the age check / new Terms of Service: fill in and accept first -->
+                <div class="startPanel" id="updatePanel">
+                    <h3>Update your account</h3>
+                    <p class="startNote" id="updateNote"></p>
+                    <form id="updateForm">
+                        <label id="updateBirthRow">Date of birth <input id="updateBirthDate" type="date"></label>
+                        <label class="checkLabel"><input id="updateTerms" type="checkbox" required>
+                            <span>I accept the <a href="terms.html" data-legal="terms">Terms of Service</a>
+                            and the <a href="privacy.html" data-legal="privacy">Privacy Policy</a>.</span></label>
+                        <button type="submit">Continue</button>
+                    </form>
+                    <p class="startMessage"></p>
+                    <button class="startLink" id="updateLogout" type="button">Log out</button>
+                </div>
+
+                <!-- your account: details, display name, delete -->
+                <div class="startPanel" id="accountPanel">
+                    <h3>Your account</h3>
+                    <div id="accountDetails" class="accountDetails"></div>
+                    <form id="nameForm" class="accountForm">
+                        <label>Display name <input id="newDisplayName" maxlength="20" required></label>
+                        <button type="submit">Change</button>
+                    </form>
+                    <!-- titles: shown in front of your name in the chat -->
+                    <form id="titleForm" class="accountForm">
+                        <label>Title <select id="titleSelect"></select></label>
+                        <button type="submit">Wear</button>
+                    </form>
+                    <p class="startMessage"></p>
+                    <details class="accountDelete">
+                        <summary>Change my password</summary>
+                        <form id="passwordForm">
+                            <label>Current password <input id="currentPassword" type="password" autocomplete="current-password" required></label>
+                            <label>New password <input id="newPassword" type="password" autocomplete="new-password" required></label>
+                            <label>Repeat new password <input id="newPassword2" type="password" autocomplete="new-password" required></label>
+                            <p class="startNote">At least 8 characters, with a capital letter, a small letter and a number. Your other devices get logged out.</p>
+                            <button type="submit">Change password</button>
+                        </form>
+                    </details>
+                    <details class="accountDelete">
+                        <summary>Delete my account</summary>
+                        <p class="startNote">This deletes your account, all 3 saves, your friends, letters and chat messages. It can't be undone.</p>
+                        <form id="deleteForm" class="accountForm">
+                            <label>Password <input id="deletePassword" type="password" autocomplete="current-password" required></label>
+                            <button type="submit">Delete forever</button>
+                        </form>
+                    </details>
+                    <button class="startLink" id="accountBack" type="button">Back</button>
                 </div>
 
                 <div class="startPanel" id="savePanel">
@@ -70,65 +132,56 @@
                         </div>
                     </div>
                 </div>
-                <!-- privacy policy -->
-                <div class="privacyBox">
-                    <b>Privacy policy</b> (last updated: 29 October 2026)
+                <!-- the admin panel (js/admin.js): only for accounts in data/admins.json, the server checks every request -->
+                <div class="startPanel" id="adminPanel">
+                    <div class="adminTop">
+                        <button class="startLink" id="adminBack" type="button">Back</button>
+                        <h3>Admin panel</h3>
+                        <span id="online" class="startNote"></span>
+                    </div>
+                    <p class="startMessage" id="adminError"></p>
+                    <div id="adminMain">
+                        <section class="adminBox">
+                            <h4>Emergency notice</h4>
+                            <p class="startNote">Pops up right away for everyone online, and for everyone who logs in while it's active.</p>
+                            <div id="currentNotice"></div>
+                            <form id="noticeForm" class="adminColumn">
+                                <input id="noticeTitle" maxlength="100" placeholder="Title (for example: Security incident)" required>
+                                <textarea id="noticeText" maxlength="2000" rows="3" placeholder="The message" required></textarea>
+                                <label class="adminRow">Show for <input id="noticeHours" type="number" min="1" value="48"> hours</label>
+                                <button type="submit">Send to everyone</button>
+                            </form>
+                        </section>
+                        <section class="adminBox">
+                            <h4>Reports</h4>
+                            <label class="adminRow"><input id="showResolved" type="checkbox"> Also show handled reports</label>
+                            <div id="reports"></div>
+                        </section>
+                        <section class="adminBox">
+                            <h4>Player</h4>
+                            <form id="searchForm" class="adminRow">
+                                <input id="searchInput" placeholder="username, display name or #id">
+                                <button type="submit">Find</button>
+                            </form>
+                            <div id="player"></div>
+                        </section>
+                        <section class="adminBox">
+                            <h4>Moderation log</h4>
+                            <div id="log"></div>
+                        </section>
+                    </div>
+                </div>
 
-                    <h4>General Ownership:</h4>
-                    <p>This game is run by hedgwhog, who is responsible for your data. Have any questions? Or want something changed or deleted? Email hedgwhog@gmail.com.</p>
-
-                    <h4>Requirements:</h4>
-                    <p>You must be at least 13 years old to make an account. By making an account, you automatically agree on the fact that you are above 13.</p>
-
-                    <h4>What is stored, and why</h4>
-                    <p><u>Your account:</u> <br> 
-                    In your account, your username, display name, the date you signed up, and your password are saved. The password is only stored as a scrambled hash with a unique salt. That means that nobody can read it including the owner. Your username and display name are stored as normal text. You need an account to play. Without a username, display name and password the game can't save your progress.</p><br>
-
-                    <p><u>Your progress:</u> <br> 
-                    Every account has 3 saves. Every save has: your items, fish, coins, resonance, gear, map, quests, the name of your carrier pigeon, how long you played, which town you're in, and which areas you've been to.</p><br>
-
-                    <p><u>Friends and letters:</u><br> 
-                    Your friend list (it belongs to your account, not to a specific save.), and the letters your friends have/are sending you (the message, who sent it, from which town, and the gifts that came with it). The town you're in is used to calculate how long a pigeon flies.</p><br>
-
-                    <p><u>Chat:</u><br>
-                    Your messages, with your display name, the time and the area. Players in the same area can read them, except players who blocked you.</p><br>
-
-                    <p><u>Blocked players:</u><br> 
-                    The players you block are saved in your account, until you unblock them. This is used to keep their messages, invites, letters and voice away from you. Blocked players are not told that you blocked them.</p><br>
-
-                    <p><u>Voice chat:</u> 
-                    Voice is never recorded or stored. It goes directly between the players in your voice room. Players make their own rooms. A closed room has a password: it is only kept in the server's memory while the room exists, and is never shown to anyone. The game doesn't show your IP address, but the players in your room receive it to connect to each other. Which means someone with technical knowledge can find it. To connect to a room, your browser also contacts our TURN server to facilitate the connection, which sees your IP address. This only happens when you join a voice room, and the game warns you before you join.</p><br>
-
-                    <p><u>Filters:</u></p>
-                    There are no chat filters, so interact on your own advice.<br>
-
-                    <p><u>IP address:</u> 
-                    To slow down password guessing, your IP address is kept in the server's memory for 1 minute after you log in or sign up. The hosting provider "CPanel" may also keep standard server logs.</p><br>
-
-                    <p><u>Your browser:</u> 
-                    The game stores your login and your settings (volume, colors, keybinds and animations) in your browser's local storage. This is only needed to make the game work. There are no tracking cookies, no ads and no analytics. Which means, there is no cookie banner.</p><br>
-
-                    <p>All of this is used to only run the game you signed up to play. That is the legal basis: it's needed to provide the game to you (GDPR article 6(1)(b)). Nothing is sold, and nothing is used to decide things about you automatically.</p>
-
-                    <h4>Who else can see it</h4>
-                    <p>Other players see your display name, your chat messages, and the letters you send them. Players in your voice room receive your IP address. The start screen shows how many players are online: only the number, never who. Your friends see on their start screen if you are online. The hosting provider "CPanel" stores the game's data on its servers. Google sees your IP address when you use voice chat.</p>
-
-                    <h4>How long it's kept</h4>
-                    <p>Chat messages: deleted after 18 hours.<br>
-                    Logins: expire after 30 days.<br>
-                    Letters: until the person who got them throws them away. Every player keeps at most 30, the oldest are deleted first.<br>
-                    Your progress in a save: until you reset it (Settings in the game) or ask for your account to be deleted.<br>
-                    Your block list: until you unblock someone or ask for your account to be deleted.<br>
-                    Your account: until you ask for it to be deleted. During new updates, all in game attributes you might've owned could be deleted if the developer decides so.</p>
-
-                    <h4>Your rights</h4>
-                    <p>You can ask for a copy of your data. You can ask to have it corrected or deleted, and to ask for it in a file format, so you can take with you. You also may object to how it's used.<br><br>Email hedgwhog@gmail.com. You'll get an answer within 1 month. Not happy with the answer? You can complain to the data protection authority in your country.</p>
-
-                    <h4>Changes</h4>
-                    <p>If this policy changes, the date at the top changes too. Big changes are announced in atleast one of the following places: <br>
-                    - Introduction page (The webpage before you open the game window) <br>
-                    - GitHub: github.com/hedgwhog/a-totally-normal-fishing-rpg </p>
-                    <p>For detailed changes, check the GitHub.</p>
+                <!-- the rules, terms and privacy policy: the bar switches between them (js/screens/legalBox.js).
+                     The texts are the pages in public/, so they are also on their own at /rules.html, /terms.html and /privacy.html -->
+                <div class="legalBox" id="legalBox">
+                    <div class="legalTabs">
+                        <a href="rules.html" data-legal="rules">Rules</a> &middot;
+                        <a href="terms.html" data-legal="terms">Terms of Service</a> &middot;
+                        <a href="privacy.html" data-legal="privacy">Privacy Policy</a> &middot;
+                        Questions or complaints?: <a href="mailto:hedgwhog@gmail.com">hedgwhog@gmail.com</a>
+                    </div>
+                    <div class="legalContent" id="legalContent"></div>
                 </div>
             </div>
 
