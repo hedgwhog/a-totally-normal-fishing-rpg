@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- the pages Google should know about. Change lastmod when the homepage changes. -->
+<!-- the pages Google should know about. Change lastmod when a page changes. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://a-totally-normal-fishing-rpg.hedgwhog.com/</loc>
-        <lastmod>2026-10-28</lastmod>
+        <loc>https://undercurrent.hedgwhog.com/</loc>
+        <lastmod>2026-11-03</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://undercurrent.hedgwhog.com/rules.html</loc>
+        <lastmod>2026-11-03</lastmod>
+        <priority>0.3</priority>
+    </url>
+    <url>
+        <loc>https://undercurrent.hedgwhog.com/terms.html</loc>
+        <lastmod>2026-11-03</lastmod>
+        <priority>0.3</priority>
+    </url>
+    <url>
+        <loc>https://undercurrent.hedgwhog.com/privacy.html</loc>
+        <lastmod>2026-11-03</lastmod>
+        <priority>0.3</priority>
     </url>
 </urlset>

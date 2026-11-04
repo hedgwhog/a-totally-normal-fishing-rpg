@@ -78,9 +78,10 @@ button {
 .menuVolume {
     position: absolute;
     top: 8px;
-    right: 10px;
+    right: 4px;
     display: flex;
     align-items: center;
+    flex-direction: column;
     gap: 6px;
     font-size: 12px;
 }
@@ -212,32 +213,293 @@ button {
     font-weight: bold;
 }
 
-.privacyBox {
+/* the rules, terms and privacy policy, under the start screen: fills the rest of the screen (js/screens/legalBox.js) */
+.legalBox {
+    flex: 1 1 0;
+    min-height: 70px;
     width: 100%;
     max-width: 692px;
-    max-height: 170px;
     margin: 10px 0;
-    padding: 6px 8px;
     box-sizing: border-box;
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
     border: 1px dashed black;
+    font-size: 11px;
+}
+
+.legalTabs {
+    flex-shrink: 0;
+    padding: 5px 8px;
+    border-bottom: 1px dashed black;
+}
+
+.legalTabs a {
+    color: black;
+}
+
+.legalTabs a.active {
+    font-weight: bold;
+}
+
+.legalContent {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 4px 8px 8px 8px;
     font-size: 10px;
-    line-height: 1.35;
+    line-height: 1.4;
     text-align: left;
     user-select: text;
     -webkit-user-select: text;
 }
 
-.privacyBox h4 {
-    margin: 8px 0 2px 0;
-    font-size: 10px;
+#startScreen .legalContent h1 {
+    margin: 4px 0;
+    font-size: 13px;
+}
+
+.legalContent h2 {
+    margin: 10px 0 2px 0;
+    font-size: 11px;
     text-decoration: underline;
 }
 
-.privacyBox p {
-    margin: 0 0 4px 0;
+.legalContent p,
+.legalContent ul,
+.legalContent ol {
+    margin: 0 0 5px 0;
 }
 
+.legalContent ul,
+.legalContent ol {
+    padding-left: 18px;
+}
+
+.legalContent a {
+    color: black;
+}
+
+.legalContent .updated {
+    color: #555;
+}
+
+/* the admin panel, in the start screen (js/admin.js) */
+#adminPanel {
+    flex: 1 1 0;
+    min-height: 0;
+    width: 100%;
+    max-width: 692px;
+    margin-bottom: 10px;
+    overflow-y: auto;
+    text-align: left;
+    font-size: 11px;
+}
+
+#adminPanel .adminTop {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 2px 0;
+    background: white;
+}
+
+#adminPanel .adminTop h3 {
+    margin: 0;
+}
+
+#adminPanel h4 {
+    margin: 0 0 4px 0;
+    text-decoration: underline;
+}
+
+#adminPanel .adminBox {
+    margin-bottom: 8px;
+    padding: 6px;
+    border: 1px dashed black;
+}
+
+#adminPanel .adminColumn,
+#adminPanel .column {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#adminPanel .adminRow,
+#adminPanel .row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+#adminPanel input,
+#adminPanel textarea,
+#adminPanel select {
+    width: auto;
+    font-family: inherit;
+    font-size: 11px;
+}
+
+#adminPanel textarea,
+#adminPanel #noticeTitle,
+#adminPanel select,
+#adminPanel .column textarea {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#adminPanel #searchInput {
+    flex: 1;
+}
+
+#adminPanel .item {
+    border-top: 1px dotted #999;
+    padding: 4px 0;
+}
+
+#adminPanel .item.open {
+    border-left: 3px solid black;
+    padding-left: 6px;
+}
+
+#adminPanel .context {
+    margin: 3px 0;
+    padding: 3px;
+    background: #f3f3f3;
+    white-space: pre-wrap;
+}
+
+#adminPanel .context .reported {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+#adminPanel .restriction,
+#adminPanel .error {
+    font-weight: bold;
+    white-space: pre-wrap;
+}
+
+#adminPanel .muted {
+    color: #555;
+}
+
+#adminPanel table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#adminPanel td,
+#adminPanel th {
+    padding: 2px 4px;
+    border-bottom: 1px dotted #999;
+    text-align: left;
+    vertical-align: top;
+}
+
+/* top left of the start screen: Account (and Admin for admins) */
+.menuButtons {
+    position: absolute;
+    top: 8px;
+    left: 10px;
+    display: none;
+    gap: 6px;
+    font-size: 12px;
+}
+
+.menuButtons button {
+    padding: 2px 8px;
+    font-size: 12px;
+}
+
+#adminButton {
+    display: none;
+}
+
+/* a field for bots only: invisible for people */
+.trapField {
+    position: absolute !important;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+.startPanel .checkLabel {
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 12px;
+    text-align: left;
+}
+
+.startPanel .checkLabel input {
+    width: auto;
+    margin-top: 2px;
+}
+
+.startPanel .checkLabel a {
+    color: black;
+}
+
+.accountDetails {
+    margin-bottom: 8px;
+    font-size: 12px;
+    text-align: left;
+}
+
+.accountDetails div {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    border-bottom: 1px dotted #999;
+    padding: 2px 0;
+}
+
+.accountDetails .restriction {
+    display: block;
+    white-space: pre-wrap;
+    font-weight: bold;
+}
+
+.startPanel .accountForm {
+    flex-direction: row;
+    align-items: center;
+}
+
+.startPanel .accountForm input {
+    width: 150px;
+}
+
+.accountDelete {
+    margin-top: 8px;
+    font-size: 12px;
+    text-align: left;
+}
+
+.accountDelete summary {
+    cursor: pointer;
+}
+
+.accountDelete form {
+    margin-top: 4px;
+}
+
+.startPanel .accountForm select {
+    width: 150px;
+}
+
+.startPanel .passwordNote {
+    margin: 0;
+    font-size: 10px;
+    text-align: left;
+}
 
 #introPopup {
     display: none;
@@ -1331,4 +1593,17 @@ button.selectAllFish {
 /* opened with "Launch game": the start screen stays hidden until the title animation covers it (js/launch.js) */
 html.launching #startScreen {
     visibility: hidden;
+}
+
+/* reporting a letter (js/systems/mail.js) */
+.letterReport {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.letterReport textarea {
+    font-family: inherit;
+    font-size: 11px;
 }

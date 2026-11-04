@@ -1,5 +1,5 @@
 import { allFish } from "../shared/data/fish.js";
-import { act, getState, getSession } from "../core/state.js";
+import { act, getState, getSession, multiplayerAllowed } from "../core/state.js";
 import { startFishing } from "./fishing.js";
 import { say, pick } from "../core/dialogue.js";
 import { lines as dialogue } from "../shared/data/dialogue.js";
@@ -86,6 +86,11 @@ document.getElementById("nextFish").addEventListener("click", goFishing);
 document.getElementById("nextDay").addEventListener("click", sleep);
 document.getElementById("rest").addEventListener("click", rest);
 document.getElementById("openChat").addEventListener("click", openChat);
+// players under 16 play alone: no Chat and Mail buttons
+if (!multiplayerAllowed()) {
+    document.getElementById("openChat").style.display = "none";
+    document.getElementById("openMail").style.display = "none";
+}
 document.getElementById("switchSave").addEventListener("click", () => {
     closeAllPopups();
     castOut("Casting out of save " + getSession().slot);

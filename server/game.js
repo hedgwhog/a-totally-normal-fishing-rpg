@@ -1,3 +1,7 @@
+import * as dataStore from "./store.js";
+import * as moderation from "./moderation.js";
+import { cleanText as cleanReport } from "../js/shared/rules/text.js";
+import { censor, hasFilteredWord } from "./filter.js";
 import { fishByIsland, allFish, fishTimes, isSellable } from "../js/shared/data/fish.js";
 import { items, findItem } from "../js/shared/data/items.js";
 import { charmCloak, luckRod, allGear, deepRod, findGear, isStarterGear } from "../js/shared/data/gear.js";
@@ -228,7 +232,7 @@ function ghostVisit(save) {
 
 // while the ghost is there, time can't move and you can't go anywhere
 const ghostAllows = ["ghost.buy", "ghost.leave", "gear.equip", "gear.resolvePending", "item.use", "fish.finish",
-    "news.seen", "mail.delete", "bird.rename", "intro.seen", "friends.remove", "mayor.met", "driftt.introduced",
+    "news.seen", "mail.delete", "mail.report", "bird.rename", "intro.seen", "friends.remove", "mayor.met", "driftt.introduced",
     "pantry.told", "pantry.nikki"];
 export function ghostBlocks(save, type) {
     if (!save || !save.ghost || ghostAllows.includes(type)) return null;
@@ -1126,6 +1130,7 @@ export const actions = {
         const name = cleanText(data.name, { maxLength: 40 });
         if (name.length < 1 || name.length > birds.maxNameLength) fail("A name needs 1-" + birds.maxNameLength + " characters.");
         if (isReservedName(name)) fail("That name is reserved. Pick another one.");
+        if (hasFilteredWord(name)) fail("That name isn't allowed. Pick another one.");
         save.bird.name = name;
         return {};
     },
@@ -1148,17 +1153,19 @@ export const actions = {
     },
 
     "mail.send"(save, data, ctx) {
+        if (!ctx.multiplayer) fail("Letters are for players aged 16 and older. Your pigeon can still explore.");
         needIdleBird(save);
         const friend = save.friends.find(friend => friend.id === Number(data.to));
         if (!friend) fail("You can only send letters to your friends.");
         if (String(data.text || "").length > birds.maxLetterLength + 50) fail("Your letter is too long (" + birds.maxLetterLength + " characters max).");
-        const text = cleanText(data.text, { newLines: true, maxLines: 12, maxLength: birds.maxLetterLength });
+        const text = censor(cleanText(data.text, { newLines: true, maxLines: 12, maxLength: birds.maxLetterLength }));
         if (!text) fail("Write something first.");
         const from = townOf(save.island);
         if (!from) fail("Your pigeon can only fly out from a town.");
         if ((save.items[birds.food] || 0) < birds.mailFood) fail("Your pigeon needs " + birds.mailFood + " birdfood for this trip.");
         const gifts = checkGifts(save, data.gifts);
 
+        if (!ctx.canContact(friend.id)) fail(friend.name + " can't get letters right now.");
         const other = ctx.loadOther(friend.id);
         if (!other) fail(friend.name + " doesn't have a save anymore.");
         const isBlocked = (other.blocked || []).some(player => player.id === ctx.userId) || save.blocked.some(player => player.id === friend.id);
@@ -1179,6 +1186,22 @@ export const actions = {
             other.inbox.splice(other.inbox.findIndex(letter => letter.delivered), 1);
         }
         save.bird.job = { type: "mail", toId: friend.id, toName: friend.name, leftAt: now, arrivesAt, backAt };
+        return {};
+    },
+
+    // report a letter: the admins get its text and who sent it. data: { id, rule, details }
+    "mail.report"(save, data, ctx) {
+        const letter = save.inbox.find(item => item.id === data.id && item.delivered);
+        if (!letter) fail("That letter isn't in your inbox anymore.");
+        const target = dataStore.findUser(letter.fromId);
+        if (!target) fail("The player who sent it doesn't exist anymore.");
+        if (!String(data.details || "").trim() && !data.rule) fail("Pick a rule or tell us what happened.");
+        const reporter = dataStore.findUser(ctx.userId);
+        try {
+            moderation.addReport({ reporter, target, letter, rule: data.rule, details: cleanReport(data.details, { newLines: true, maxLines: 8, maxLength: 500 }) });
+        } catch (error) {
+            fail(error.message);
+        }
         return {};
     },
 

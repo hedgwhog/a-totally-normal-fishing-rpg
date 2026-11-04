@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import crypto from "node:crypto";
 import path from "node:path";
 import { config } from "./config.js";
 
@@ -38,23 +39,63 @@ export function addUser(user) {
     return user;
 }
 
+// call after changing a user (display name, birth date, accepted terms)
+export function saveUsers() {
+    writeJson(usersFile, users);
+}
+
+export function allUsers() {
+    return users;
+}
+
+export function findUsersByDisplayName(name) {
+    const wanted = String(name).toLowerCase();
+    return users.filter(user => user.displayName.toLowerCase() === wanted);
+}
+
+// Logins (sessions). Only a hash of every login token is stored, so a leaked sessions.json can't be used to log in.
 const sessionsFile = path.join(dataDir, "sessions.json");
-let sessions = readJson(sessionsFile, {});
+const tokenHash = token => crypto.createHash("sha256").update(String(token)).digest("hex");
+let sessions = {};
+{
+    const saved = readJson(sessionsFile, {});
+    if (saved.version === 2) {
+        sessions = saved.sessions || {};
+    } else {
+        // an older file with readable tokens: hash them (everyone stays logged in)
+        for (const [token, session] of Object.entries(saved)) sessions[tokenHash(token)] = session;
+        writeSessions();
+    }
+}
+
+function writeSessions() {
+    for (const [hash, session] of Object.entries(sessions)) if (session.expires < Date.now()) delete sessions[hash];
+    writeJson(sessionsFile, { version: 2, sessions });
+}
 
 export function addSession(token, userId) {
-    sessions[token] = { userId, expires: Date.now() + config.sessionDays * 24 * 60 * 60 * 1000 };
-    writeJson(sessionsFile, sessions);
+    sessions[tokenHash(token)] = { userId, expires: Date.now() + config.sessionDays * 24 * 60 * 60 * 1000 };
+    writeSessions();
 }
 
 export function findSession(token) {
-    const session = sessions[token];
+    const session = sessions[tokenHash(token)];
     if (!session || session.expires < Date.now()) return null;
     return session;
 }
 
 export function removeSession(token) {
-    delete sessions[token];
-    writeJson(sessionsFile, sessions);
+    delete sessions[tokenHash(token)];
+    writeSessions();
+}
+
+// logs an account out everywhere (keepToken: except this login, for example after changing the password)
+export function removeSessionsOf(userId, keepToken = null) {
+    const keep = keepToken ? tokenHash(keepToken) : null;
+    for (const [hash, session] of Object.entries(sessions)) {
+        if (session.userId === userId && hash !== keep) delete sessions[hash];
+    }
+    writeSessions();
 }
 
 const accountsFile = path.join(dataDir, "accounts.json");
@@ -70,6 +111,24 @@ export function getAccount(userId) {
 
 function writeAccounts() {
     writeJson(accountsFile, accounts);
+}
+
+export function saveAccounts() {
+    writeAccounts();
+}
+
+export function allAccounts() {
+    return accounts;
+}
+
+// a new display name also shows in the friend and block lists of others
+export function renameInAccounts(userId, name) {
+    for (const account of Object.values(accounts)) {
+        for (const list of [account.friends || [], account.blocked || []]) {
+            for (const player of list) if (player.id === userId) player.name = name;
+        }
+    }
+    writeAccounts();
 }
 
 export function setLastSlot(userId, slot) {
@@ -140,6 +199,51 @@ export function addMessage(message) {
     messages.push(message);
     writeJson(chatFile, messages);
     return message;
+}
+
+export function findMessage(id) {
+    return messages.find(message => message.id === Number(id)) || null;
+}
+
+// the messages around one message in the same area (for a report)
+export function messagesAround(message, before = 10, after = 5) {
+    const area = messages.filter(other => other.island === message.island);
+    const index = area.findIndex(other => other.id === message.id);
+    return area.slice(Math.max(0, index - before), index + after + 1);
+}
+
+export function lastMessagesOf(userId, amount = 20) {
+    return messages.filter(message => message.userId === userId).slice(-amount);
+}
+
+export function removeMessage(id) {
+    const before = messages.length;
+    messages = messages.filter(message => message.id !== Number(id));
+    if (messages.length !== before) writeJson(chatFile, messages);
+    return messages.length !== before;
+}
+
+// everything of an account: user, sessions, saves, account (friends, letters, ...) and chat messages.
+// Others lose this player from their friend and block lists.
+export function deleteUser(userId, saveSlots) {
+    const index = users.findIndex(user => user.id === userId);
+    if (index >= 0) users.splice(index, 1);
+    writeJson(usersFile, users);
+    removeSessionsOf(userId);
+    for (let slot = 1; slot <= saveSlots; slot++) deleteSave(userId, slot);
+    delete accounts[userId];
+    // removed in place: loaded saves share these lists with the account (see loadSave)
+    const removeWhere = (list, test) => {
+        for (let i = (list || []).length - 1; i >= 0; i--) if (test(list[i])) list.splice(i, 1);
+    };
+    for (const account of Object.values(accounts)) {
+        removeWhere(account.friends, player => player.id === userId);
+        removeWhere(account.blocked, player => player.id === userId);
+        removeWhere(account.inbox, letter => letter.fromId === userId);
+    }
+    writeAccounts();
+    messages = messages.filter(message => message.userId !== userId);
+    writeJson(chatFile, messages);
 }
 
 export function recentMessages(island, amount = 50) {

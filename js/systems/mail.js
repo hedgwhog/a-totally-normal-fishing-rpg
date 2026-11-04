@@ -1,3 +1,4 @@
+import { gameRules } from "../shared/data/legal.js";
 import { birds } from "../shared/data/birds.js";
 import { items } from "../shared/data/items.js";
 import { towns } from "../shared/data/world.js";
@@ -60,6 +61,47 @@ function dateText(time) {
     return new Date(time).toLocaleString([], { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 }
 
+// a small form under a letter: which rule, and what happened. The admins get the letter's text and the sender.
+function reportForm(letter, onClose) {
+    const form = document.createElement("form");
+    form.className = "letterReport";
+    const select = document.createElement("select");
+    const pick = document.createElement("option");
+    pick.value = "";
+    pick.textContent = "Which rule? (optional)";
+    select.appendChild(pick);
+    for (const rule of gameRules) {
+        const option = document.createElement("option");
+        option.value = rule.number;
+        option.textContent = rule.number + ". " + rule.title;
+        select.appendChild(option);
+    }
+    const details = document.createElement("textarea");
+    details.rows = 3;
+    details.maxLength = 500;
+    details.placeholder = "What happened? (optional if you picked a rule)";
+    const send = document.createElement("button");
+    send.type = "submit";
+    send.textContent = "Send report";
+    const cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.textContent = "Cancel";
+    cancel.addEventListener("click", () => {
+        form.remove();
+        onClose();
+    });
+    form.append(select, details, send, cancel);
+    form.addEventListener("submit", async event => {
+        event.preventDefault();
+        const result = await act("mail.report", { id: letter.id, rule: Number(select.value) || 0, details: details.value });
+        if (result.error) return say(result.error);
+        form.remove();
+        onClose();
+        await say("Thanks! Your report was sent to the admins. Don't want letters from " + letter.fromName + " anymore? Remove them as a friend in the Friends tab.");
+    });
+    return form;
+}
+
 function showInbox() {
     const page = pages.mailInbox;
     page.innerHTML = "";
@@ -100,6 +142,10 @@ function showInbox() {
             if (!await askYesNo("Throw away the letter from " + letter.fromName + "?")) return;
             const result = await act("mail.delete", { id: letter.id });
             if (result.error) await say(result.error);
+        });
+        const reportButton = addButton(box, "Report", () => {
+            reportButton.style.display = "none";
+            box.appendChild(reportForm(letter, () => (reportButton.style.display = "")));
         });
         page.appendChild(box);
     }

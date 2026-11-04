@@ -7,6 +7,11 @@ import { isHit } from "../js/shared/rules/duel.js";
 import { round1 } from "../js/shared/rules/stats.js";
 import { duelStats, duelRods, addFriend, blockedBetween } from "./game.js";
 import { cleanText } from "../js/shared/rules/text.js";
+import { legal } from "../js/shared/data/legal.js";
+import { oldEnoughToChat } from "../js/shared/rules/age.js";
+import { censor } from "./filter.js";
+import * as moderation from "./moderation.js";
+import { wornTitle } from "./titles.js";
 
 // Also not really sure how this workers, surely it will be fine?
 
@@ -55,6 +60,7 @@ export function setupSocial(io, { saveOf, storeSaveOf }) {
             players.set(user.id, {
                 id: user.id,
                 name: user.displayName,
+                title: wornTitle(user.id),
                 active: isActive(user.id),
                 inVoice: Boolean(voiceRoomOf(socket)),
             });
@@ -121,9 +127,15 @@ export function setupSocial(io, { saveOf, storeSaveOf }) {
         }
         socket.data.island = island;
         socket.data.blocked = blockedIds(socket.data.user.id);
+        // players under the chat age (16) don't see or send messages, and can't use voice
+        socket.data.chatAllowed = oldEnoughToChat(socket.data.user.birthDate);
         socket.join(areaRoom(island));
-        const messages = store.recentMessages(island).filter(message => !socket.data.blocked.has(message.userId));
+        const messages = socket.data.chatAllowed ? store.recentMessages(island).filter(message => !socket.data.blocked.has(message.userId)) : [];
+        const mute = moderation.activeRestriction(socket.data.user.id, "chatMute");
         socket.emit("area:enter", {
+            chatAllowed: socket.data.chatAllowed,
+            chatAge: legal.chatAge,
+            muted: mute ? moderation.restrictionMessage(mute) : null,
             island,
             me: { id: socket.data.user.id, name: socket.data.user.displayName },
             messages,
@@ -195,16 +207,26 @@ export function setupSocial(io, { saveOf, storeSaveOf }) {
         enterArea(socket, saveOf(user.id).island);
         socket.emit("block:list", saveOf(user.id).blocked || []);
 
+        // why someone can't talk right now (too young, or timed out from the chat), or null
+        function cantTalk() {
+            if (!socket.data.chatAllowed) return "The chat is for players aged " + legal.chatAge + " and older.";
+            const mute = moderation.activeRestriction(user.id, "chatMute");
+            return mute ? moderation.restrictionMessage(mute) : null;
+        }
+
         socket.on("chat:send", (text, answer) => {
             if (typeof answer !== "function") return;
+            const problem = cantTalk();
+            if (problem) return answer({ error: problem });
             const wait = config.chatCooldownMs - (Date.now() - (lastMessage.get(user.id) || 0));
             if (wait > 0) return answer({ error: "Wait " + Math.ceil(wait / 1000) + " seconds before your next message." });
-            const clean = cleanText(text, { maxLength: config.chatMaxLength });
+            const clean = censor(cleanText(text, { maxLength: config.chatMaxLength }));
             if (!clean) return answer({ error: "Type a message first." });
             lastMessage.set(user.id, Date.now());
-            const message = store.addMessage({ island: socket.data.island, userId: user.id, name: user.displayName, text: clean, time: Date.now() });
+            const message = store.addMessage({ island: socket.data.island, userId: user.id, name: user.displayName, title: wornTitle(user.id), text: clean, time: Date.now() });
             for (const other of socketsOfKind("chat")) {
                 if (other.data.island !== socket.data.island) continue;
+                if (!other.data.chatAllowed) continue;
                 if (other.data.blocked && other.data.blocked.has(user.id)) continue;
                 other.emit("chat:message", message);
             }
@@ -212,14 +234,34 @@ export function setupSocial(io, { saveOf, storeSaveOf }) {
             answer({});
         });
 
+        // report a chat message ({ messageId }) or a player ({ playerId }), with a rule and details
+        socket.on("report:send", (data, answer) => {
+            if (typeof answer !== "function") return;
+            const request = data || {};
+            const message = request.messageId ? store.findMessage(request.messageId) : null;
+            const targetId = message ? message.userId : Number(request.playerId);
+            const target = store.findUser(targetId);
+            if (!target) return answer({ error: "That player doesn't exist anymore." });
+            if (target.id === user.id) return answer({ error: "You can't report yourself." });
+            if (!String(request.details || "").trim() && !request.rule) return answer({ error: "Pick a rule or tell us what happened." });
+            try {
+                moderation.addReport({ reporter: user, target, message, rule: request.rule, details: cleanText(request.details, { newLines: true, maxLines: 8, maxLength: 500 }) });
+                answer({});
+            } catch (error) {
+                answer({ error: error.message });
+            }
+        });
+
         socket.on("voice:create", (options, answer) => {
             if (typeof answer !== "function") return;
+            const problem = cantTalk();
+            if (problem) return answer({ error: problem });
             const settings = options || {};
             const island = socket.data.island;
             const roomsHere = [...voiceRooms.values()].filter(room => room.island === island).length;
             if (roomsHere >= config.voiceRoomsPerArea) return answer({ error: "There are too many rooms here. Join one, or wait." });
 
-            let name = cleanText(settings.name, { maxLength: config.voiceNameLength });
+            let name = censor(cleanText(settings.name, { maxLength: config.voiceNameLength }));
             if (!name) name = user.displayName + "'s room";
             const maxSize = Number(settings.maxSize);
             if (!(Number.isInteger(maxSize) && maxSize >= 2 && maxSize <= config.voiceRoomMaxSize)) {
@@ -241,6 +283,8 @@ export function setupSocial(io, { saveOf, storeSaveOf }) {
 
         socket.on("voice:join", (data, answer) => {
             if (typeof answer !== "function") return;
+            const problem = cantTalk();
+            if (problem) return answer({ error: problem });
             const request = data || {};
             const room = voiceRooms.get(String(request.id));
             if (!room || room.island !== socket.data.island) return answer({ error: "That room doesn't exist anymore." });
@@ -678,6 +722,18 @@ export function setupSocial(io, { saveOf, storeSaveOf }) {
             for (const socket of chatSocketsOf(userId)) {
                 if (socket.data.island !== island) enterArea(socket, island);
             }
+        },
+        // a chat timeout: tell their chat windows, and take them out of voice
+        chatMuted(userId, message) {
+            for (const socket of chatSocketsOf(userId)) {
+                leaveVoice(socket);
+                socket.emit("chat:muted", message);
+                updateArea(socket.data.island);
+            }
+        },
+        // an admin deleted a message: it disappears from every chat window
+        messageRemoved(message) {
+            for (const socket of socketsOfKind("chat")) socket.emit("chat:removed", { id: message.id });
         },
         playerLeft(userId) {
             for (const socket of io.sockets.sockets.values()) {
